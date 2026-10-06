@@ -1,18 +1,220 @@
 window.App={
-  async init(){await AppData.load();this.bindNav();this.bindForms();this.populateSelectors();this.renderAll();},
-  bindNav(){document.querySelectorAll("[data-page]").forEach(b=>b.addEventListener("click",()=>this.go(b.dataset.page)));document.getElementById("mobileMenu").onclick=()=>document.getElementById("sidebar").classList.toggle("open");},
-  go(page){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById("page-"+page).classList.add("active");document.querySelectorAll(".nav-item").forEach(n=>n.classList.toggle("active",n.dataset.page===page));const titles={dashboard:"Dashboard",replacement:"Replacement",members:"Member",lines:"Line",history:"Riwayat Replacement"};document.getElementById("pageTitle").textContent=titles[page];document.getElementById("sidebar").classList.remove("open");},
-  bindForms(){document.getElementById("replaceLine").onchange=()=>this.populateOperations();document.getElementById("searchCandidate").onclick=()=>Replacement.render();document.getElementById("candidateSearch").oninput=()=>Replacement.render();document.getElementById("memberSearch").oninput=()=>this.renderMembers();document.getElementById("memberStatus").onchange=()=>this.renderMembers();document.getElementById("addMemberBtn").onclick=()=>document.getElementById("memberModal").classList.remove("hidden");document.getElementById("closeModal").onclick=document.getElementById("cancelModal").onclick=()=>document.getElementById("memberModal").classList.add("hidden");document.getElementById("photoInput").onchange=e=>this.previewPhoto(e);document.getElementById("memberForm").onsubmit=e=>this.addMember(e);},
-  populateSelectors(){const sel=document.getElementById("replaceLine");sel.innerHTML=AppData.data.lines.map(l=>`<option value="${l.id}">${UI.esc(l.name)}</option>`).join("");this.populateOperations();},
-  populateOperations(){const ops=AppData.data.operations[document.getElementById("replaceLine").value]||[];document.getElementById("replaceOperation").innerHTML=ops.map(o=>`<option value="${o.name}">${UI.esc(o.name)}</option>`).join("");Replacement.render();},
-  renderAll(){this.renderKpi();this.renderLines();this.renderMembers();this.renderLineTable();this.renderHistory();Replacement.render();},
-  renderKpi(){const d=AppData.data,m=d.members.length,available=d.members.filter(x=>x.availability==="available").length,assigned=d.assignments.length;document.getElementById("kpiGrid").innerHTML=[["Total Member",m,"👥"],["Siap Replace",available,"✓"],["Sedang Ditugaskan",assigned,"↗"],["Total Line",d.lines.length,"▦"]].map(x=>`<div class="kpi"><div class="label">${x[2]} ${x[0]}</div><div class="value">${x[1]}</div></div>`).join("");},
-  renderLines(){document.getElementById("lineList").innerHTML=AppData.data.lines.map(l=>`<div class="line-row"><div><strong>${UI.esc(l.name)}</strong><div class="muted">Standar ${l.standardMembers} member</div></div><button class="primary" onclick="App.selectLine('${l.id}')">Lihat</button></div>`).join("");const candidates=AppData.data.members.filter(m=>m.availability==="available").slice(0,5);document.getElementById("candidatePreview").innerHTML=candidates.map(m=>`<div class="candidate-row"><div class="member-cell">${UI.photo(m)}<div><strong>${UI.esc(m.name)}</strong><div class="muted">${UI.esc(m.id)}</div></div></div><span class="pill green">Tersedia</span></div>`).join("");},
-  selectLine(id){this.go("replacement");document.getElementById("replaceLine").value=id;this.populateOperations();},
-  renderMembers(){const q=document.getElementById("memberSearch").value.toLowerCase(),st=document.getElementById("memberStatus").value;const rows=AppData.data.members.filter(m=>(!q||m.name.toLowerCase().includes(q)||m.id.toLowerCase().includes(q))&&(!st||m.status===st));document.getElementById("memberTable").innerHTML=`<div class="table-wrap"><table class="table"><thead><tr><th>Member</th><th>Status</th><th>Ketersediaan</th><th>Skill</th></tr></thead><tbody>${rows.map(m=>`<tr><td><div class="member-cell">${UI.photo(m)}<div><strong>${UI.esc(m.name)}</strong><div class="muted">${UI.esc(m.id)}</div></div></div></td><td>${UI.esc(m.status)}</td><td><span class="pill ${m.availability==="available"?"green":"red"}">${m.availability==="available"?"Tersedia":"Tidak tersedia"}</span></td><td><div class="skill-mini">${Object.entries(m.skills||{}).map(([k,v])=>`<span class="skill-dot">${UI.esc(k.replace("Operation ","OP "))}: ${v}</span>`).join("")||"-"}</div></td></tr>`).join("")}</tbody></table></div>`;},
-  renderLineTable(){document.getElementById("linesTable").innerHTML=`<div class="table-wrap"><table class="table"><thead><tr><th>Line</th><th>Member Standar</th><th>Member Siap</th><th>Aksi</th></tr></thead><tbody>${AppData.data.lines.map(l=>{const c=AppData.data.members.filter(m=>m.availability==="available").length;return `<tr><td><strong>${UI.esc(l.name)}</strong></td><td>${l.standardMembers}</td><td><span class="pill green">${c}</span></td><td><button class="primary" onclick="App.selectLine('${l.id}')">Replacement</button></td></tr>`}).join("")}</tbody></table></div>`;},
-  renderHistory(){const rows=AppData.data.assignments||[];document.getElementById("historyTable").innerHTML=rows.length?`<div class="table-wrap"><table class="table"><thead><tr><th>Tanggal</th><th>Member</th><th>Line</th><th>Operation</th><th>Alasan</th></tr></thead><tbody>${rows.slice().reverse().map(a=>`<tr><td>${new Date(a.date).toLocaleString("id-ID")}</td><td><strong>${UI.esc(a.memberName)}</strong></td><td>${UI.esc((AppData.data.lines.find(l=>l.id===a.lineId)||{}).name||a.lineId)}</td><td>${UI.esc(a.operation)}</td><td>${UI.esc(a.reason)}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">Belum ada riwayat replacement.</div>`;},
-  previewPhoto(e){const file=e.target.files[0];if(!file)return;if(file.size>1024*1024){UI.toast("Foto maksimal 1 MB sebelum diproses.");return}const r=new FileReader();r.onload=()=>document.getElementById("photoPreview").innerHTML=`<img src="${r.result}" alt="">`;r.readAsDataURL(file);},
-  addMember(e){e.preventDefault();const file=document.getElementById("photoInput").files[0];const save=photo=>{const m={id:document.getElementById("newId").value.trim().toUpperCase(),name:document.getElementById("newName").value.trim(),status:document.getElementById("newStatus").value,availability:"available",photoUrl:photo||"",skills:{}};if(!m.id||!m.name)return;AppData.data.members.push(m);Storage.save();document.getElementById("memberModal").classList.add("hidden");e.target.reset();document.getElementById("photoPreview").textContent="👤";this.renderAll();UI.toast("Member berhasil ditambahkan");};if(file){const r=new FileReader();r.onload=()=>save(r.result);r.readAsDataURL(file)}else save("");}
+  async init(){
+    await AppData.load();
+    this.bindNav();
+    this.bindForms();
+    this.populateSelectors();
+    this.renderAll();
+  },
+
+  bindNav(){
+    document.querySelectorAll("[data-page]").forEach(button=>{
+      button.addEventListener("click",()=>this.go(button.dataset.page));
+    });
+
+    document.getElementById("mobileMenu").onclick=()=>{
+      document.getElementById("sidebar").classList.toggle("open");
+    };
+  },
+
+  go(page){
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    document.getElementById("page-"+page).classList.add("active");
+
+    document.querySelectorAll(".nav-item").forEach(n=>{
+      n.classList.toggle("active",n.dataset.page===page);
+    });
+
+    const titles={
+      dashboard:"Dashboard",
+      replacement:"Replacement",
+      members:"Member",
+      lines:"Line",
+      history:"Riwayat Replacement"
+    };
+
+    document.getElementById("pageTitle").textContent=titles[page];
+    document.getElementById("sidebar").classList.remove("open");
+  },
+
+  bindForms(){
+    document.getElementById("replaceLine").onchange=()=>this.populateOperations();
+    document.getElementById("searchCandidate").onclick=()=>Replacement.render();
+    document.getElementById("candidateSearch").oninput=()=>Replacement.render();
+
+    document.getElementById("memberSearch").oninput=()=>this.renderMembers();
+    document.getElementById("memberStatus").onchange=()=>this.renderMembers();
+
+    document.getElementById("addMemberBtn").onclick=()=>MemberManager.openAddModal();
+    document.getElementById("closeModal").onclick=()=>MemberManager.closeModal();
+    document.getElementById("cancelModal").onclick=()=>MemberManager.closeModal();
+    document.getElementById("photoInput").onchange=e=>this.previewPhoto(e);
+    document.getElementById("memberForm").onsubmit=e=>MemberManager.save(e);
+
+    document.getElementById("addLineBtn").onclick=()=>LineManager.openAddModal();
+    document.getElementById("addLineBtnPage").onclick=()=>LineManager.openAddModal();
+    document.getElementById("closeLineModal").onclick=()=>LineManager.closeModal();
+    document.getElementById("cancelLineModal").onclick=()=>LineManager.closeModal();
+    document.getElementById("lineForm").onsubmit=e=>LineManager.save(e);
+  },
+
+  populateSelectors(){
+    const select=document.getElementById("replaceLine");
+
+    select.innerHTML=(AppData.data.lines||[]).map(line=>
+      `<option value="${line.id}">${UI.esc(line.name)}</option>`
+    ).join("");
+
+    this.populateOperations();
+  },
+
+  populateOperations(){
+    const lineId=document.getElementById("replaceLine").value;
+    const operations=(AppData.data.operations||{})[lineId]||[];
+
+    document.getElementById("replaceOperation").innerHTML=operations.length
+      ? operations.map(operation=>
+          `<option value="${UI.esc(operation.name)}">${UI.esc(operation.name)}</option>`
+        ).join("")
+      : `<option value="">Belum ada operation</option>`;
+
+    Replacement.render();
+  },
+
+  renderAll(){
+    this.renderKpi();
+    this.renderLines();
+    this.renderMembers();
+    this.renderLineTable();
+    this.renderHistory();
+    Replacement.render();
+
+    if(!LineManager.selectedLineId){
+      LineManager.selectedLineId=AppData.data.lines?.[0]?.id || null;
+    }
+
+    LineManager.renderLineList();
+    LineManager.renderDashboardRanking();
+  },
+
+  renderKpi(){
+    const data=AppData.data;
+    const memberCount=(data.members||[]).length;
+    const available=(data.members||[]).filter(member=>member.availability==="available").length;
+    const assigned=(data.assignments||[]).length;
+    const lineCount=(data.lines||[]).length;
+
+    document.getElementById("kpiGrid").innerHTML=[
+      ["Total Member",memberCount,"👥"],
+      ["Siap Replace",available,"✓"],
+      ["Sedang Ditugaskan",assigned,"↗"],
+      ["Total Line",lineCount,"▦"]
+    ].map(item=>
+      `<div class="kpi"><div class="label">${item[2]} ${item[0]}</div><div class="value">${item[1]}</div></div>`
+    ).join("");
+  },
+
+  renderLines(){
+    LineManager.renderLineList();
+  },
+
+  renderMembers(){
+    const query=document.getElementById("memberSearch").value.toLowerCase();
+    const status=document.getElementById("memberStatus").value;
+
+    const rows=(AppData.data.members||[]).filter(member=>
+      (!query ||
+        member.name.toLowerCase().includes(query) ||
+        member.id.toLowerCase().includes(query)) &&
+      (!status || member.status===status)
+    );
+
+    document.getElementById("memberTable").innerHTML=rows.length
+      ? `<div class="table-wrap"><table class="table">
+          <thead><tr><th>Member</th><th>Status</th><th>Ketersediaan</th><th>Skill</th><th>Aksi</th></tr></thead>
+          <tbody>
+          ${rows.map(member=>`
+            <tr>
+              <td><div class="member-cell">${UI.photo(member)}
+                <div><strong>${UI.esc(member.name)}</strong><div class="muted">${UI.esc(member.id)}</div></div>
+              </div></td>
+              <td>${UI.esc(member.status)}</td>
+              <td><span class="pill ${member.availability==="available"?"green":"red"}">
+                ${member.availability==="available"?"Tersedia":"Tidak tersedia"}
+              </span></td>
+              <td><div class="skill-mini">
+                ${Object.entries(member.skills||{}).map(([key,value])=>
+                  `<span class="skill-dot">${UI.esc(key)}: ${value}</span>`
+                ).join("") || "-"}
+              </div></td>
+              <td><button class="primary edit-member-btn" onclick="MemberManager.openEditModal('${member.id}')">Edit</button></td>
+            </tr>`).join("")}
+          </tbody></table></div>`
+      : `<div class="empty">Member tidak ditemukan.</div>`;
+  },
+
+  renderLineTable(){
+    const rows=AppData.data.lines||[];
+
+    document.getElementById("linesTable").innerHTML=rows.length
+      ? `<div class="table-wrap"><table class="table">
+          <thead><tr><th>Line</th><th>Member Standar</th><th>Operation</th><th>Aksi</th></tr></thead>
+          <tbody>
+          ${rows.map(line=>{
+            const operationCount=(AppData.data.operations?.[line.id]||[]).length;
+
+            return `<tr>
+              <td><strong>${UI.esc(line.name)}</strong></td>
+              <td>${line.standardMembers}</td>
+              <td>${operationCount}</td>
+              <td>
+                <button class="secondary" onclick="LineManager.openEditModal('${line.id}')">Edit</button>
+                <button class="secondary danger-text" onclick="LineManager.remove('${line.id}')">Hapus</button>
+              </td>
+            </tr>`;
+          }).join("")}
+          </tbody></table></div>`
+      : `<div class="empty">Belum ada line.</div>`;
+  },
+
+  renderHistory(){
+    const rows=AppData.data.assignments||[];
+
+    document.getElementById("historyTable").innerHTML=rows.length
+      ? `<div class="table-wrap"><table class="table">
+          <thead><tr><th>Tanggal</th><th>Member</th><th>Line</th><th>Operation</th><th>Alasan</th></tr></thead>
+          <tbody>
+          ${rows.slice().reverse().map(item=>{
+            const line=(AppData.data.lines.find(line=>line.id===item.lineId)||{}).name||item.lineId;
+
+            return `<tr>
+              <td>${new Date(item.date).toLocaleString("id-ID")}</td>
+              <td><strong>${UI.esc(item.memberName)}</strong></td>
+              <td>${UI.esc(line)}</td>
+              <td>${UI.esc(item.operation||"-")}</td>
+              <td>${UI.esc(item.reason)}</td>
+            </tr>`;
+          }).join("")}
+          </tbody></table></div>`
+      : `<div class="empty">Belum ada riwayat replacement.</div>`;
+  },
+
+  previewPhoto(event){
+    const file=event.target.files[0];
+    if(!file) return;
+
+    if(file.size>1024*1024){
+      UI.toast("Foto maksimal 1 MB sebelum diproses.");
+      event.target.value="";
+      return;
+    }
+
+    const reader=new FileReader();
+    reader.onload=()=>{
+      document.getElementById("photoPreview").innerHTML=`<img src="${reader.result}" alt="">`;
+    };
+    reader.readAsDataURL(file);
+  }
 };
+
 document.addEventListener("DOMContentLoaded",()=>App.init());
