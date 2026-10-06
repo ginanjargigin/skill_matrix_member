@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="css/dashboard.css">
 <link rel="stylesheet" href="css/member.css">
 <link rel="stylesheet" href="css/replacement.css">
+<link rel="stylesheet" href="css/line.css">
 </head>
 <body>
 <div class="app-shell">
@@ -35,8 +36,23 @@
       <div class="hero"><div><p class="eyebrow">KONTROL MAN POWER</p><h2>Pilih pengganti dengan cepat dan tepat.</h2><p>Gunakan line, skill, dan status ketersediaan untuk menemukan kandidat replacement.</p></div><button class="primary" data-page="replacement">+ Buat Replacement</button></div>
       <div class="kpi-grid" id="kpiGrid"></div>
       <div class="grid-2">
-        <section class="card"><div class="card-head"><h3>Line</h3><span class="muted">Pilih line untuk melihat kandidat</span></div><div id="lineList"></div></section>
-        <section class="card"><div class="card-head"><h3>Member Siap Replace</h3><span class="muted">Ranking skill tertinggi</span></div><div id="candidatePreview"></div></section>
+        <section class="card">
+          <div class="card-head">
+            <div><h3>Line</h3><span class="muted">Klik line untuk melihat ranking skill</span></div>
+            <button class="primary compact-btn" id="addLineBtn">+ Tambah Line</button>
+          </div>
+          <div id="lineList"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <div>
+              <h3 id="rankingLineName">Ranking Skill</h3>
+              <span class="muted" id="rankingLineSubtitle">Pilih line untuk melihat kandidat</span>
+            </div>
+          </div>
+          <div id="candidatePreview"></div>
+        </section>
       </div>
     </section>
 
@@ -59,7 +75,7 @@
     </section>
 
     <section class="page" id="page-lines">
-      <div class="section-head"><div><h2>Line</h2><p>Daftar line dan kebutuhan member standar.</p></div></div>
+      <div class="section-head"><div><h2>Line</h2><p>Daftar line dan kebutuhan member standar.</p></div><button class="primary" id="addLineBtnPage">+ Tambah Line</button></div>
       <section class="card"><div id="linesTable"></div></section>
     </section>
 
@@ -71,24 +87,49 @@
 </div>
 
 <div class="modal hidden" id="memberModal">
-  <div class="modal-box">
-    <div class="modal-head"><h3>Tambah Member</h3><button id="closeModal">×</button></div>
+  <div class="modal-box member-modal-box">
+    <div class="modal-head"><h3 id="memberModalTitle">Tambah Member</h3><button id="closeModal">×</button></div>
     <form id="memberForm">
-      <div class="photo-upload"><div class="photo-preview" id="photoPreview">👤</div><div><label class="upload-btn">Upload Foto<input type="file" id="photoInput" accept="image/*" hidden></label><small>JPG/PNG, otomatis diperkecil untuk demo.</small></div></div>
+      <input type="hidden" id="memberEditId">
+      <div class="photo-upload"><div class="photo-preview" id="photoPreview">👤</div><div><label class="upload-btn">Upload Foto<input type="file" id="photoInput" accept="image/*" hidden></label><small>JPG/PNG, maksimal 1 MB untuk prototype.</small></div></div>
       <div class="form-grid">
         <label>No Reg<input required id="newId"></label>
         <label>Nama<input required id="newName"></label>
         <label>Status<select id="newStatus"><option>PERMANENT</option><option>Kontrak</option><option>Magang</option></select></label>
       </div>
-      <div class="modal-actions"><button type="button" class="secondary" id="cancelModal">Batal</button><button class="primary">Simpan Member</button></div>
+
+      <div class="skill-editor">
+        <div class="skill-editor-head"><h4>Skill Member</h4><span>Nilai 1 = qualified</span></div>
+        <div id="memberSkillFields"></div>
+      </div>
+
+      <div class="modal-actions"><button type="button" class="secondary" id="cancelModal">Batal</button><button class="primary">Simpan</button></div>
     </form>
   </div>
 </div>
+
+<div class="modal hidden" id="lineModal">
+  <div class="modal-box">
+    <div class="modal-head"><h3 id="lineModalTitle">Tambah Line</h3><button id="closeLineModal">×</button></div>
+    <form id="lineForm">
+      <input type="hidden" id="lineId">
+      <div class="form-grid line-form-grid">
+        <label>Nama Line<input required id="lineName" placeholder="Contoh: Stamping"></label>
+        <label>Member Standar<input required id="lineStandard" type="number" min="0" value="2"></label>
+      </div>
+      <p class="modal-help">Operation tidak dibuat otomatis. Ini mencegah sistem mengarang skill yang belum tersedia.</p>
+      <div class="modal-actions"><button type="button" class="secondary" id="cancelLineModal">Batal</button><button class="primary">Simpan Line</button></div>
+    </form>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 <script src="config.js"></script>
 <script src="js/data.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/line.js"></script>
+<script src="js/member.js"></script>
 <script src="js/replacement.js"></script>
 <script src="js/app.js"></script>
 </body>
