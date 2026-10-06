@@ -1,0 +1,1 @@
+window.AppData={data:null,async load(){const saved=localStorage.getItem("mpr_data");if(saved){try{this.data=JSON.parse(saved);return this.data}catch(e){localStorage.removeItem("mpr_data")}}const r=await fetch("data/seed.json");this.data=await r.json();return this.data}};
