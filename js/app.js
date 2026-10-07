@@ -260,6 +260,9 @@
       history:
         "Riwayat"
 
+      master:
+  "Master Line & Station"
+
     }[name] || "Dashboard";
 
 
@@ -275,6 +278,10 @@
       MemberManager.populateLines();
 
     }
+
+  if (name === "master") {
+
+  MasterManager.render();
 
   }
 
@@ -1639,7 +1646,25 @@
 
     MemberManager.bind();
 
+    MasterManager.configure({
 
+  getState: () => s,
+
+  refresh: async () => {
+
+    await load();
+
+    render();
+
+    MasterManager.render();
+
+  }
+
+});
+
+
+MasterManager.bind();
+    
     /* ===================================================
        LOGIN
        =================================================== */
