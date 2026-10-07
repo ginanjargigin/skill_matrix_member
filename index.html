@@ -62,6 +62,13 @@
       </button>
 
       <button
+  type="button"
+  data-page="master"
+>
+  ⚙ Master Line & Station
+</button>
+
+      <button
         type="button"
         data-page="history"
       >
@@ -497,6 +504,112 @@
 
     </section>
 
+    <!-- ===================================================
+     MASTER LINE & STATION
+     =================================================== -->
+
+<section
+  class="page"
+  id="page-master"
+>
+
+  <div class="section-head">
+
+    <div>
+
+      <h2>
+        Master Line & Station
+      </h2>
+
+      <p>
+        Kelola Line produksi dan Station.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- =================================================
+       MASTER LINE
+       ================================================= -->
+
+  <section class="card master-card">
+
+    <div class="master-header">
+
+      <div>
+
+        <h2>
+          Master Line
+        </h2>
+
+        <p>
+          Kelola daftar Line produksi.
+        </p>
+
+      </div>
+
+
+      <button
+        id="addLineBtn"
+        class="primary"
+        type="button"
+      >
+        ＋ Tambah Line
+      </button>
+
+    </div>
+
+
+    <div
+      id="masterLineList"
+      class="master-list"
+    ></div>
+
+  </section>
+
+
+  <!-- =================================================
+       MASTER STATION
+       ================================================= -->
+
+  <section class="card master-card">
+
+    <div class="master-header">
+
+      <div>
+
+        <h2>
+          Master Station
+        </h2>
+
+        <p>
+          Kelola Station berdasarkan Line.
+        </p>
+
+      </div>
+
+
+      <button
+        id="addStationBtn"
+        class="primary"
+        type="button"
+      >
+        ＋ Tambah Station
+      </button>
+
+    </div>
+
+
+    <div
+      id="masterStationList"
+      class="master-list"
+    ></div>
+
+  </section>
+
+</section>
 
     <!-- ===================================================
          HISTORY
@@ -801,7 +914,263 @@
 
 </div>
 
+<!-- =======================================================
+     MODAL ADD / EDIT LINE
+     ======================================================= -->
 
+<div
+  class="modal"
+  id="lineModal"
+>
+
+  <div class="modal-box">
+
+    <button
+      class="close"
+      id="lineCancel"
+      type="button"
+    >
+      ×
+    </button>
+
+
+    <h2 id="lineModalTitle">
+      Tambah Line
+    </h2>
+
+
+    <p id="lineModalSubtitle">
+      Tambahkan line produksi baru.
+    </p>
+
+
+    <form
+      id="lineForm"
+      class="form"
+    >
+
+      <input
+        type="hidden"
+        id="lineEditId"
+      >
+
+
+      <label>
+
+        Nama Line
+
+        <input
+          id="lineName"
+          type="text"
+          maxlength="100"
+          autocomplete="off"
+          placeholder="Contoh: Line A"
+          required
+        >
+
+      </label>
+
+
+      <label>
+
+        Area
+
+        <input
+          id="lineArea"
+          type="text"
+          maxlength="100"
+          autocomplete="off"
+          placeholder="Contoh: Area 1"
+        >
+
+      </label>
+
+
+      <label>
+
+        Standard Member
+
+        <input
+          id="lineStandardMembers"
+          type="number"
+          min="0"
+          step="1"
+          value="0"
+        >
+
+      </label>
+
+
+      <label class="checkbox-label">
+
+        <input
+          id="lineActive"
+          type="checkbox"
+          checked
+        >
+
+        Line Aktif
+
+      </label>
+
+
+      <div class="actions">
+
+        <button
+          class="secondary"
+          id="lineCancel2"
+          type="button"
+        >
+          Batal
+        </button>
+
+
+        <button
+          class="primary"
+          id="lineSave"
+          type="submit"
+        >
+          Simpan Line
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+  <!-- =======================================================
+     MODAL ADD / EDIT STATION
+     ======================================================= -->
+
+<div
+  class="modal"
+  id="stationModal"
+>
+
+  <div class="modal-box">
+
+    <button
+      class="close"
+      id="stationCancel"
+      type="button"
+    >
+      ×
+    </button>
+
+
+    <h2 id="stationModalTitle">
+      Tambah Station
+    </h2>
+
+
+    <p id="stationModalSubtitle">
+      Tambahkan station ke Line.
+    </p>
+
+
+    <form
+      id="stationForm"
+      class="form"
+    >
+
+      <input
+        type="hidden"
+        id="stationEditId"
+      >
+
+
+      <label>
+
+        Line
+
+        <select
+          id="stationLineId"
+          required
+        >
+
+          <option value="">
+            Pilih Line
+          </option>
+
+        </select>
+
+      </label>
+
+
+      <label>
+
+        Nama Station
+
+        <input
+          id="stationName"
+          type="text"
+          maxlength="120"
+          autocomplete="off"
+          placeholder="Contoh: Station 01"
+          required
+        >
+
+      </label>
+
+
+      <label>
+
+        Position / Job
+
+        <input
+          id="stationPosition"
+          type="text"
+          maxlength="120"
+          autocomplete="off"
+          placeholder="Contoh: Operator"
+        >
+
+      </label>
+
+
+      <label class="checkbox-label">
+
+        <input
+          id="stationActive"
+          type="checkbox"
+          checked
+        >
+
+        Station Aktif
+
+      </label>
+
+
+      <div class="actions">
+
+        <button
+          class="secondary"
+          id="stationCancel2"
+          type="button"
+        >
+          Batal
+        </button>
+
+
+        <button
+          class="primary"
+          id="stationSave"
+          type="submit"
+        >
+          Simpan Station
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+  
 <!-- =======================================================
      LOGIN
      ======================================================= -->
@@ -892,6 +1261,8 @@
 <script src="js/db.js"></script>
 
 <script src="js/member.js"></script>
+
+<script src="js/master.js"></script>  
 
 <script src="js/app.js"></script>
 
