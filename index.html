@@ -1,1 +1,899 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#10213b"><title>Manpower Management</title><link rel="stylesheet" href="css/v2.css"></head><body><div class="app"><aside class="sidebar"><div class="brand">MANPOWER MANAGEMENT<small>Skill & Replacement</small></div><nav class="nav"><button data-page="dashboard" class="active">⌂ Dashboard</button><button data-page="replacement">⇄ Replacement</button><button data-page="members">👥 Member & Skill</button><button data-page="history">▤ Riwayat</button></nav></aside><main class="main"><header class="topbar"><button id="mobileMenu" class="menu-btn">☰</button><div><div class="eyebrow">WORKFORCE CONTROL</div><h1 id="pageTitle">Dashboard</h1></div><span id="mode" class="mode">DEMO</span></header><section class="page active" id="page-dashboard"><div class="grid"><div class="kpi"><small>Member aktif</small><b id="kpiMembers">0</b></div><div class="kpi"><small>Line aktif</small><b id="kpiLines">0</b></div><div class="kpi"><small>Total perubahan</small><b id="kpiChanges">0</b></div><div class="kpi"><small>Perubahan hari ini</small><b id="kpiToday">0</b></div></div><div class="layout"><section class="card"><h2>Pilih Line</h2><p>Masuk ke line tanpa tabel horizontal.</p><div id="lineList"></div></section><section class="card"><h2>Alur cepat</h2><p>Gunakan urutan ini saat manpower tidak masuk.</p><div class="empty">Line → Station → Cari kandidat → Pilih → Konfirmasi → Histori.</div></section></div></section><section class="page" id="page-replacement"><div class="section-head"><div><h2>Replacement</h2><p id="selectedLine">Pilih line dari dashboard.</p></div></div><div class="layout"><section class="card"><h2>1. Station</h2><div id="stationList"></div></section><section class="card"><h2>2. Cari kandidat</h2><div class="form"><label>Tanggal<input id="changeDate" type="date"></label><label>Shift<select id="changeShift"><option>A</option><option>B</option><option>C</option></select></label><label>Station<select id="replaceStation"></select></label><input class="search" id="candidateSearch" placeholder="Cari nama / REG dummy..."><label>Alasan<select id="changeReason"><option>Member tidak masuk</option><option>Back up sementara</option><option>Kebutuhan tambahan</option></select></label><textarea id="changeNotes" rows="2" placeholder="Catatan (opsional)"></textarea></div><div id="candidateList" style="margin-top:12px"></div></section></div></section><section class="page" id="page-members"><div class="section-head"><div><h2>Member & Skill</h2><p>Edit skill setelah training selesai.</p></div></div><section class="card"><input class="search" id="memberSearch" placeholder="Cari member dummy..."><div id="memberList"></div></section></section><section class="page" id="page-history"><div class="section-head"><div><h2>Riwayat Manpower Change</h2><p>Melihat tanggal yang memiliki pergantian manpower.</p></div></div><section class="card"><div id="historyList"></div></section></section></main></div><div class="modal" id="confirmModal"><div class="modal-box"><button class="close" id="confirmCancel">×</button><h2>Konfirmasi Replacement</h2><p id="confirmText"></p><div class="actions"><button class="secondary" id="confirmCancel2">Batal</button><button class="primary" id="confirmSave">Simpan Pergantian</button></div></div></div><div class="modal" id="skillModal"><div class="modal-box"><button class="close" id="skillCancel">×</button><h2>Edit Skill</h2><p id="skillMemberName"></p><input type="hidden" id="skillMemberId"><div id="skillEditor"></div><div class="actions"><button class="secondary" id="skillCancel2">Batal</button><button class="primary" id="skillSave">Simpan Skill</button></div></div></div><div class="modal" id="loginModal"><div class="modal-box"><h2>Login Privat</h2><p>Gunakan akun Supabase Authentication.</p><form id="loginForm" class="form"><label>Email<input id="loginEmail" type="email" required></label><label>Password<input id="loginPassword" type="password" required></label><button class="primary">Masuk</button></form></div></div><div id="toast" class="mode" style="position:fixed;right:15px;bottom:15px;opacity:0;transition:.2s"></div><script src="config.js"></script><script src="data/demo.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/supabase.js"></script><script src="js/db.js"></script><script src="js/app.js"></script><script>document.addEventListener("DOMContentLoaded",()=>{document.getElementById("confirmCancel2").onclick=()=>document.getElementById("confirmCancel").click();document.getElementById("skillCancel2").onclick=()=>document.getElementById("skillCancel").click()});</script></body></html>
+<!doctype html>
+<html lang="id">
+
+<head>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#10213b"
+  >
+
+  <title>Manpower Management</title>
+
+  <link
+    rel="stylesheet"
+    href="css/v2.css"
+  >
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- =====================================================
+       SIDEBAR
+       ===================================================== -->
+
+  <aside class="sidebar">
+
+    <div class="brand">
+      MANPOWER MANAGEMENT
+      <small>Skill & Replacement</small>
+    </div>
+
+    <nav class="nav">
+
+      <button
+        type="button"
+        data-page="dashboard"
+        class="active"
+      >
+        ⌂ Dashboard
+      </button>
+
+      <button
+        type="button"
+        data-page="replacement"
+      >
+        ⇄ Replacement
+      </button>
+
+      <button
+        type="button"
+        data-page="members"
+      >
+        👥 Member & Skill
+      </button>
+
+      <button
+        type="button"
+        data-page="history"
+      >
+        ▤ Riwayat
+      </button>
+
+    </nav>
+
+  </aside>
+
+
+  <!-- =====================================================
+       MAIN
+       ===================================================== -->
+
+  <main class="main">
+
+    <header class="topbar">
+
+      <button
+        id="mobileMenu"
+        class="menu-btn"
+        type="button"
+      >
+        ☰
+      </button>
+
+      <div>
+
+        <div class="eyebrow">
+          WORKFORCE CONTROL
+        </div>
+
+        <h1 id="pageTitle">
+          Dashboard
+        </h1>
+
+      </div>
+
+      <span
+        id="mode"
+        class="mode"
+      >
+        DEMO
+      </span>
+
+    </header>
+
+
+    <!-- ===================================================
+         DASHBOARD
+         =================================================== -->
+
+    <section
+      class="page active"
+      id="page-dashboard"
+    >
+
+      <div class="grid">
+
+        <div class="kpi">
+          <small>Member aktif</small>
+          <b id="kpiMembers">0</b>
+        </div>
+
+        <div class="kpi">
+          <small>Line aktif</small>
+          <b id="kpiLines">0</b>
+        </div>
+
+        <div class="kpi">
+          <small>Total perubahan</small>
+          <b id="kpiChanges">0</b>
+        </div>
+
+        <div class="kpi">
+          <small>Perubahan hari ini</small>
+          <b id="kpiToday">0</b>
+        </div>
+
+      </div>
+
+
+      <div class="layout">
+
+        <section class="card">
+
+          <h2>
+            Pilih Line
+          </h2>
+
+          <p>
+            Pilih line untuk memulai proses replacement.
+          </p>
+
+          <div id="lineList"></div>
+
+        </section>
+
+
+        <section class="card">
+
+          <h2>
+            Alur Replacement
+          </h2>
+
+          <p>
+            Gunakan urutan berikut saat manpower tidak masuk.
+          </p>
+
+          <div class="workflow-vertical">
+
+            <div>
+              <strong>1</strong>
+              <span>Pilih Line</span>
+            </div>
+
+            <div>
+              <strong>2</strong>
+              <span>Pilih Station</span>
+            </div>
+
+            <div>
+              <strong>3</strong>
+              <span>Cari kandidat</span>
+            </div>
+
+            <div>
+              <strong>4</strong>
+              <span>Pilih manpower</span>
+            </div>
+
+            <div>
+              <strong>5</strong>
+              <span>Konfirmasi</span>
+            </div>
+
+            <div>
+              <strong>6</strong>
+              <span>Masuk Riwayat</span>
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         REPLACEMENT
+         =================================================== -->
+
+    <section
+      class="page"
+      id="page-replacement"
+    >
+
+      <div class="section-head">
+
+        <div>
+
+          <h2>
+            Replacement
+          </h2>
+
+          <p id="selectedLine">
+            Pilih line dari dashboard.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!--
+        MOBILE:
+        Station → form → kandidat
+        semuanya vertikal.
+
+        DESKTOP:
+        tetap bisa menggunakan dua kolom.
+      -->
+
+      <div class="replacement-layout">
+
+        <!-- ===============================================
+             STATION
+             =============================================== -->
+
+        <section class="card">
+
+          <div class="step-title">
+
+            <span class="step-number">
+              1
+            </span>
+
+            <div>
+
+              <h2>
+                Pilih Station
+              </h2>
+
+              <p>
+                Tentukan station yang membutuhkan pengganti.
+              </p>
+
+            </div>
+
+          </div>
+
+          <div id="stationList"></div>
+
+        </section>
+
+
+        <!-- ===============================================
+             INPUT REPLACEMENT
+             =============================================== -->
+
+        <section class="card">
+
+          <div class="step-title">
+
+            <span class="step-number">
+              2
+            </span>
+
+            <div>
+
+              <h2>
+                Data Replacement
+              </h2>
+
+              <p>
+                Tentukan tanggal, shift, dan station.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="form">
+
+            <label>
+              Tanggal
+
+              <input
+                id="changeDate"
+                type="date"
+              >
+
+            </label>
+
+
+            <label>
+              Shift
+
+              <select id="changeShift">
+
+                <option value="A">
+                  A
+                </option>
+
+                <option value="B">
+                  B
+                </option>
+
+                <option value="C">
+                  C
+                </option>
+
+              </select>
+
+            </label>
+
+
+            <label>
+              Station
+
+              <select id="replaceStation"></select>
+
+            </label>
+
+
+            <label>
+              Cari Kandidat
+
+              <input
+                class="search"
+                id="candidateSearch"
+                type="search"
+                placeholder="Ketik nama / REG..."
+                autocomplete="off"
+              >
+
+            </label>
+
+
+            <label>
+              Alasan
+
+              <select id="changeReason">
+
+                <option>
+                  Member tidak masuk
+                </option>
+
+                <option>
+                  Back up sementara
+                </option>
+
+                <option>
+                  Kebutuhan tambahan
+                </option>
+
+              </select>
+
+            </label>
+
+
+            <label>
+              Catatan
+
+              <textarea
+                id="changeNotes"
+                rows="3"
+                placeholder="Catatan tambahan (opsional)"
+              ></textarea>
+
+            </label>
+
+          </div>
+
+        </section>
+
+
+        <!-- ===============================================
+             CANDIDATE
+             =============================================== -->
+
+        <section class="card candidate-section">
+
+          <div class="step-title">
+
+            <span class="step-number">
+              3
+            </span>
+
+            <div>
+
+              <h2>
+                Kandidat Replacement
+              </h2>
+
+              <p>
+                Kandidat diurutkan berdasarkan skill tertinggi.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <!--
+            Kandidat akan dibuat VERTIKAL.
+          -->
+
+          <div
+            id="candidateList"
+            class="candidate-list"
+          ></div>
+
+        </section>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         MEMBER
+         =================================================== -->
+
+    <section
+      class="page"
+      id="page-members"
+    >
+
+      <div class="section-head member-section-head">
+
+        <div>
+
+          <h2>
+            Member & Skill
+          </h2>
+
+          <p>
+            Kelola data member dan skill secara terpisah.
+          </p>
+
+        </div>
+
+
+        <button
+          id="addMemberBtn"
+          class="primary"
+          type="button"
+        >
+          ＋ Tambah Member
+        </button>
+
+      </div>
+
+
+      <section class="card">
+
+        <input
+          class="search"
+          id="memberSearch"
+          type="search"
+          placeholder="Cari nama / REG..."
+          autocomplete="off"
+        >
+
+        <div id="memberList"></div>
+
+      </section>
+
+    </section>
+
+
+    <!-- ===================================================
+         HISTORY
+         =================================================== -->
+
+    <section
+      class="page"
+      id="page-history"
+    >
+
+      <div class="section-head">
+
+        <div>
+
+          <h2>
+            Riwayat Manpower Change
+          </h2>
+
+          <p>
+            Melihat histori pergantian manpower.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <section class="card">
+
+        <div id="historyList"></div>
+
+      </section>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<!-- =======================================================
+     MODAL REPLACEMENT
+     ======================================================= -->
+
+<div
+  class="modal"
+  id="confirmModal"
+>
+
+  <div class="modal-box">
+
+    <button
+      class="close"
+      id="confirmCancel"
+      type="button"
+    >
+      ×
+    </button>
+
+    <h2>
+      Konfirmasi Replacement
+    </h2>
+
+    <p id="confirmText"></p>
+
+    <div class="actions">
+
+      <button
+        class="secondary"
+        id="confirmCancel2"
+        type="button"
+      >
+        Batal
+      </button>
+
+      <button
+        class="primary"
+        id="confirmSave"
+        type="button"
+      >
+        Simpan Pergantian
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =======================================================
+     MODAL EDIT SKILL
+     ======================================================= -->
+
+<div
+  class="modal"
+  id="skillModal"
+>
+
+  <div class="modal-box">
+
+    <button
+      class="close"
+      id="skillCancel"
+      type="button"
+    >
+      ×
+    </button>
+
+    <h2>
+      Edit Skill
+    </h2>
+
+    <p id="skillMemberName"></p>
+
+    <input
+      type="hidden"
+      id="skillMemberId"
+    >
+
+    <div id="skillEditor"></div>
+
+    <div class="actions">
+
+      <button
+        class="secondary"
+        id="skillCancel2"
+        type="button"
+      >
+        Batal
+      </button>
+
+      <button
+        class="primary"
+        id="skillSave"
+        type="button"
+      >
+        Simpan Skill
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =======================================================
+     MODAL ADD / EDIT MEMBER
+     ======================================================= -->
+
+<div
+  class="modal"
+  id="memberModal"
+>
+
+  <div class="modal-box">
+
+    <button
+      class="close"
+      id="memberCancel"
+      type="button"
+    >
+      ×
+    </button>
+
+
+    <h2 id="memberModalTitle">
+      Tambah Member
+    </h2>
+
+
+    <p id="memberModalSubtitle">
+      Isi data member baru.
+    </p>
+
+
+    <form
+      id="memberForm"
+      class="form"
+    >
+
+      <input
+        type="hidden"
+        id="memberEditId"
+      >
+
+
+      <label>
+        No Reg
+
+        <input
+          id="memberRegCode"
+          type="text"
+          maxlength="50"
+          autocomplete="off"
+          required
+        >
+
+      </label>
+
+
+      <label>
+        Nama Member
+
+        <input
+          id="memberName"
+          type="text"
+          maxlength="120"
+          autocomplete="off"
+          required
+        >
+
+      </label>
+
+
+      <label>
+        Status
+
+        <select id="memberStatus">
+
+          <option value="PERMANENT">
+            PERMANENT
+          </option>
+
+          <option value="KONTRAK">
+            KONTRAK
+          </option>
+
+          <option value="MAGANG">
+            MAGANG
+          </option>
+
+        </select>
+
+      </label>
+
+
+      <label>
+        Shift
+
+        <select id="memberShift">
+
+          <option value="">
+            Belum ditentukan
+          </option>
+
+          <option value="A">
+            A
+          </option>
+
+          <option value="B">
+            B
+          </option>
+
+          <option value="C">
+            C
+          </option>
+
+        </select>
+
+      </label>
+
+
+      <label>
+        Line Utama
+
+        <select id="memberHomeLine">
+
+          <option value="">
+            Belum ditentukan
+          </option>
+
+        </select>
+
+      </label>
+
+
+      <div class="actions">
+
+        <button
+          class="secondary"
+          id="memberCancel2"
+          type="button"
+        >
+          Batal
+        </button>
+
+        <button
+          class="primary"
+          id="memberSave"
+          type="submit"
+        >
+          Simpan Member
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- =======================================================
+     LOGIN
+     ======================================================= -->
+
+<div
+  class="modal"
+  id="loginModal"
+>
+
+  <div class="modal-box">
+
+    <h2>
+      Login Privat
+    </h2>
+
+    <p>
+      Gunakan akun Supabase Authentication.
+    </p>
+
+
+    <form
+      id="loginForm"
+      class="form"
+    >
+
+      <label>
+        Email
+
+        <input
+          id="loginEmail"
+          type="email"
+          required
+        >
+
+      </label>
+
+
+      <label>
+        Password
+
+        <input
+          id="loginPassword"
+          type="password"
+          required
+        >
+
+      </label>
+
+
+      <button
+        class="primary"
+        type="submit"
+      >
+        Masuk
+      </button>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- =======================================================
+     TOAST
+     ======================================================= -->
+
+<div
+  id="toast"
+  class="toast"
+  role="status"
+  aria-live="polite"
+></div>
+
+
+<!-- =======================================================
+     JAVASCRIPT
+     ======================================================= -->
+
+<script src="config.js"></script>
+
+<script src="data/demo.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/supabase.js"></script>
+
+<script src="js/db.js"></script>
+
+<script src="js/member.js"></script>
+
+<script src="js/app.js"></script>
+
+</body>
+</html>
