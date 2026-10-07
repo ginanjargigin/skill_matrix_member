@@ -3,9 +3,6 @@ window.MasterManager = (() => {
   let getState = null;
   let refresh = null;
 
-  const $ = id =>
-    document.getElementById(id);
-
 
   /* =====================================================
      CONFIG
@@ -29,8 +26,12 @@ window.MasterManager = (() => {
 
 
   /* =====================================================
-     TOAST
+     HELPERS
      ===================================================== */
+
+  const $ = id =>
+    document.getElementById(id);
+
 
   function toast(message) {
 
@@ -45,10 +46,6 @@ window.MasterManager = (() => {
 
   }
 
-
-  /* =====================================================
-     ESCAPE HTML
-     ===================================================== */
 
   function esc(value) {
 
@@ -65,7 +62,7 @@ window.MasterManager = (() => {
 
 
   /* =====================================================
-     RENDER
+     RENDER ALL
      ===================================================== */
 
   function render() {
@@ -84,27 +81,22 @@ window.MasterManager = (() => {
 
     const s = state();
 
-    if (!s) {
-      return;
-    }
-
-
     const container =
       $("masterLineList");
 
-    if (!container) {
+    if (!s || !container) {
       return;
     }
 
 
     const lines =
-      [...s.lines]
-        .sort((a, b) =>
+      [...s.lines].sort(
+        (a, b) =>
           String(a.name || "")
             .localeCompare(
               String(b.name || "")
             )
-        );
+      );
 
 
     container.innerHTML =
@@ -122,9 +114,7 @@ window.MasterManager = (() => {
 
           return `
 
-            <article
-              class="master-item"
-            >
+            <article class="master-item">
 
               <div class="master-item-info">
 
@@ -205,13 +195,9 @@ window.MasterManager = (() => {
       ||
 
       `
-
         <div class="empty">
-
           Belum ada Line.
-
         </div>
-
       `;
 
 
@@ -265,22 +251,17 @@ window.MasterManager = (() => {
 
     const s = state();
 
-    if (!s) {
-      return;
-    }
-
-
     const container =
       $("masterStationList");
 
-    if (!container) {
+    if (!s || !container) {
       return;
     }
 
 
     const stations =
-      [...s.stations]
-        .sort((a, b) => {
+      [...s.stations].sort(
+        (a, b) => {
 
           const lineA =
             s.lines.find(
@@ -299,6 +280,7 @@ window.MasterManager = (() => {
 
 
           return (
+
             String(lineA?.name || "")
               .localeCompare(
                 String(lineB?.name || "")
@@ -308,9 +290,11 @@ window.MasterManager = (() => {
               .localeCompare(
                 String(b.name || "")
               )
+
           );
 
-        });
+        }
+      );
 
 
     container.innerHTML =
@@ -328,9 +312,7 @@ window.MasterManager = (() => {
 
           return `
 
-            <article
-              class="master-item"
-            >
+            <article class="master-item">
 
               <div class="master-item-info">
 
@@ -405,13 +387,9 @@ window.MasterManager = (() => {
       ||
 
       `
-
         <div class="empty">
-
           Belum ada Station.
-
         </div>
-
       `;
 
 
@@ -458,17 +436,19 @@ window.MasterManager = (() => {
 
 
   /* =====================================================
-     POPULATE LINE SELECT
+     LINE SELECT FOR STATION
      ===================================================== */
 
-  function populateLineSelect(selected = "") {
+  function populateLineSelect(
+    selected = ""
+  ) {
 
     const s = state();
 
     const select =
       $("stationLineId");
 
-    if (!select || !s) {
+    if (!s || !select) {
       return;
     }
 
@@ -479,26 +459,27 @@ window.MasterManager = (() => {
           line =>
             line.active !== false
         )
-        .sort((a, b) =>
-          String(a.name || "")
-            .localeCompare(
-              String(b.name || "")
-            )
+        .sort(
+          (a, b) =>
+            String(a.name || "")
+              .localeCompare(
+                String(b.name || "")
+              )
         );
 
 
     select.innerHTML =
 
-      `<option value="">
-        Pilih Line
-      </option>` +
+      `
+        <option value="">
+          Pilih Line
+        </option>
+      ` +
 
       lines
         .map(line => `
 
-          <option
-            value="${esc(line.id)}"
-          >
+          <option value="${esc(line.id)}">
             ${esc(line.name)}
           </option>
 
@@ -513,7 +494,7 @@ window.MasterManager = (() => {
 
 
   /* =====================================================
-     OPEN ADD LINE
+     ADD LINE
      ===================================================== */
 
   function openAddLine() {
@@ -541,6 +522,10 @@ window.MasterManager = (() => {
       "Tambahkan line produksi baru.";
 
 
+    $("lineStandardMembers").value =
+      0;
+
+
     $("lineActive").checked =
       true;
 
@@ -560,7 +545,7 @@ window.MasterManager = (() => {
 
 
   /* =====================================================
-     OPEN EDIT LINE
+     EDIT LINE
      ===================================================== */
 
   function openLineEdit(id) {
@@ -691,7 +676,7 @@ window.MasterManager = (() => {
     ) {
 
       toast(
-        "Standard Member harus berupa angka 0 atau lebih."
+        "Standard Member harus 0 atau lebih."
       );
 
       return;
@@ -700,19 +685,19 @@ window.MasterManager = (() => {
 
 
     const duplicate =
-      s.lines.find(line => {
+      s.lines.find(line => (
 
-        return (
-          String(line.name || "")
-            .trim()
-            .toLowerCase() ===
-          name.toLowerCase() &&
+        String(line.name || "")
+          .trim()
+          .toLowerCase() ===
+        name.toLowerCase()
 
-          String(line.id) !==
-          String(id)
-        );
+        &&
 
-      });
+        String(line.id) !==
+        String(id)
+
+      ));
 
 
     if (duplicate) {
@@ -743,6 +728,7 @@ window.MasterManager = (() => {
 
     const button =
       $("lineSave");
+
 
     if (button) {
       button.disabled = true;
@@ -850,14 +836,14 @@ window.MasterManager = (() => {
     }
 
 
-    const confirmed =
-      window.confirm(
+    if (
+      !window.confirm(
         `Hapus Line "${line.name}"?`
-      );
+      )
+    ) {
 
-
-    if (!confirmed) {
       return;
+
     }
 
 
@@ -897,7 +883,7 @@ window.MasterManager = (() => {
 
 
   /* =====================================================
-     OPEN ADD STATION
+     ADD STATION
      ===================================================== */
 
   function openAddStation() {
@@ -947,7 +933,7 @@ window.MasterManager = (() => {
 
 
   /* =====================================================
-     OPEN EDIT STATION
+     EDIT STATION
      ===================================================== */
 
   function openStationEdit(id) {
@@ -1079,22 +1065,24 @@ window.MasterManager = (() => {
 
 
     const duplicate =
-      s.stations.find(station => {
+      s.stations.find(station => (
 
-        return (
-          String(station.line_id) ===
-          String(lineId) &&
+        String(station.line_id) ===
+        String(lineId)
 
-          String(station.name || "")
-            .trim()
-            .toLowerCase() ===
-          name.toLowerCase() &&
+        &&
 
-          String(station.id) !==
-          String(id)
-        );
+        String(station.name || "")
+          .trim()
+          .toLowerCase() ===
+        name.toLowerCase()
 
-      });
+        &&
+
+        String(station.id) !==
+        String(id)
+
+      ));
 
 
     if (duplicate) {
@@ -1125,6 +1113,7 @@ window.MasterManager = (() => {
 
     const button =
       $("stationSave");
+
 
     if (button) {
       button.disabled = true;
@@ -1213,13 +1202,12 @@ window.MasterManager = (() => {
     }
 
 
-    const confirmed =
-      window.confirm(
-        `Hapus Station "${station.name}"?\n\nData skill yang terkait dengan station ini juga dapat terhapus karena relasi database.`
-      );
+    if (
+      !window.confirm(
+        `Hapus Station "${station.name}"?\n\nPastikan station ini tidak lagi dibutuhkan oleh member skill.`
+      )
+    ) {
 
-
-    if (!confirmed) {
       return;
 
     }
@@ -1261,7 +1249,7 @@ window.MasterManager = (() => {
 
 
   /* =====================================================
-     CLOSE LINE
+     CLOSE MODALS
      ===================================================== */
 
   function closeLineModal() {
@@ -1272,10 +1260,6 @@ window.MasterManager = (() => {
 
   }
 
-
-  /* =====================================================
-     CLOSE STATION
-     ===================================================== */
 
   function closeStationModal() {
 
