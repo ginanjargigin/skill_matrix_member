@@ -1,7 +1,1 @@
-window.APP_CONFIG = {
-  APP_NAME: "Man Power Replacement",
-  JSONBIN_URL: "", // isi endpoint JSONBin Anda saat backend diaktifkan
-  JSONBIN_MASTER_KEY: "", // jangan expose Master Key pada frontend production
-  MAX_PHOTO_KB: 120,
-  DEMO_MODE: true
-};
+window.APP_CONFIG={APP_NAME:"Manpower Management",SUPABASE_URL:"",SUPABASE_ANON_KEY:"",REQUIRE_AUTH:true};

@@ -1,25 +1,18 @@
-# Man Power Replacement — V1
+# Manpower Management V2
 
-Versi awal berbasis HTML/CSS/JavaScript modular untuk validasi UI/UX dan alur replacement.
+Mobile-first manpower replacement + skill monitoring with Supabase.
 
-## Data awal
-Seed data berasal dari `data awal(1).xlsx`:
-- 30 member
-- 4 line: Stamping, Assy, Sub Assy, Molding
-- matriks skill Stamping dan data training yang tersedia pada file
+## 1. Supabase
+Run `supabase/schema.sql` in Supabase SQL Editor. Then create at least one Authentication user.
 
-## Menjalankan
-Bisa dibuka melalui static hosting. Untuk local test, gunakan server sederhana (misalnya Live Server), karena `fetch(data/seed.json)` membutuhkan HTTP.
+## 2. Configure
+Edit `config.js` with the Supabase Project URL and anon/publishable key. Never put the service-role key in frontend code.
 
-## Foto member
-Fitur upload foto sudah tersedia. Pada V1 foto disimpan sebagai data URL di browser (localStorage) untuk validasi UX.
-Untuk production 300+ member, foto **jangan** disimpan sebagai base64 di JSONBin. Gunakan object/image storage terpisah dan simpan hanya `photoUrl` di data member.
+## 3. Demo
+If the Supabase values are empty, the UI runs with synthetic demo data only. No real employee data is included.
 
-## JSONBin
-`config.js` menyediakan tempat konfigurasi, tetapi Master Key tidak boleh ditanam di frontend production.
-Arsitektur production yang aman:
-Browser → backend/proxy → JSONBin
-Browser → image storage → photoUrl
+## 4. Vercel
+Static deployment: repository root, no build command required. For production, configure Supabase and authentication first.
 
-## Catatan CodeIgniter
-Jika deployment final menggunakan CodeIgniter/PHP, frontend V1 ini dapat dijadikan layer UI dan endpoint JSONBin dipindahkan ke Controller/Service PHP. Jangan memaksa CodeIgniter pada Vercel static deployment.
+## 5. Privacy
+Do not commit real names, REG codes, photos, or operational records. Use Supabase + RLS for the real dataset.
