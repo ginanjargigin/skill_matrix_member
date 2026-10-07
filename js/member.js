@@ -1,588 +1,592 @@
-/* =========================================================
-   MEMBER MANAGER
-   ========================================================= */
+window.MemberManager = (() => {
 
-window.MemberManager = {
-
-  editingId: null,
-
-  /* ---------------------------------------------------------
-     GET MEMBER
-     --------------------------------------------------------- */
-
-  getMember(id) {
-    return (AppData.data.members || []).find(
-      member => String(member.id) === String(id)
-    ) || null;
-  },
+  let getState = null;
+  let refresh = null;
 
 
-  /* ---------------------------------------------------------
-     DOM HELPER
-     --------------------------------------------------------- */
-
-  getElement(id) {
-    return document.getElementById(id);
-  },
+  const $ = id =>
+    document.getElementById(id);
 
 
-  /* ---------------------------------------------------------
-     OPEN ADD MODAL
-     --------------------------------------------------------- */
+  /* =====================================================
+     CONFIGURE
+     ===================================================== */
 
-  openAddModal() {
+  function configure(options = {}) {
 
-    this.editingId = null;
+    getState = options.getState || null;
 
-    const title = this.getElement("memberModalTitle");
-    const form = this.getElement("memberForm");
-    const editId = this.getElement("memberEditId");
-    const preview = this.getElement("photoPreview");
-    const modal = this.getElement("memberModal");
+    refresh = options.refresh || null;
 
-    if (!form || !modal) {
-      console.error("Member modal tidak ditemukan.");
+  }
+
+
+  function state() {
+
+    return getState
+      ? getState()
+      : null;
+
+  }
+
+
+  /* =====================================================
+     ESCAPE HTML
+     ===================================================== */
+
+  function esc(value) {
+
+    return String(value ?? "")
+      .replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char]));
+
+  }
+
+
+  /* =====================================================
+     TOAST
+     ===================================================== */
+
+  function toast(message) {
+
+    if (
+      window.App &&
+      typeof window.App.toast === "function"
+    ) {
+
+      window.App.toast(message);
+
+      return;
+
+    }
+
+  }
+
+
+  /* =====================================================
+     POPULATE LINE
+     ===================================================== */
+
+  function populateLines(selected = "") {
+
+    const s = state();
+
+    const select =
+      $("memberHomeLine");
+
+    if (!select) {
       return;
     }
 
-    if (title) {
-      title.textContent = "Tambah Member";
+
+    const lines =
+      (s?.lines || [])
+        .filter(line => line.active !== false);
+
+
+    select.innerHTML =
+      `<option value="">
+        Belum ditentukan
+      </option>` +
+
+      lines.map(line => {
+
+        const area =
+          line.area
+            ? ` — ${esc(line.area)}`
+            : "";
+
+        return `
+          <option value="${esc(line.id)}">
+            ${esc(line.name)}${area}
+          </option>
+        `;
+
+      }).join("");
+
+
+    select.value = selected || "";
+
+  }
+
+
+  /* =====================================================
+     OPEN ADD
+     ===================================================== */
+
+  function openAddModal() {
+
+    const form =
+      $("memberForm");
+
+    if (!form) {
+      return;
     }
+
+
+    $("memberModalTitle").textContent =
+      "Tambah Member";
+
+
+    $("memberModalSubtitle").textContent =
+      "Isi data member baru.";
+
+
+    $("memberEditId").value = "";
+
 
     form.reset();
 
-    if (editId) {
-      editId.value = "";
-    }
 
-    if (preview) {
-      preview.innerHTML = "👤";
-    }
+    populateLines();
 
-    this.renderSkillFields({});
 
-    modal.classList.remove("hidden");
+    $("memberModal")
+      .classList
+      .add("open");
+
 
     setTimeout(() => {
-      const input = this.getElement("newId");
 
-      if (input) {
-        input.focus();
-      }
-    }, 50);
-  },
+      $("memberRegCode")?.focus();
+
+    }, 80);
+
+  }
 
 
-  /* ---------------------------------------------------------
-     OPEN EDIT MODAL
-     --------------------------------------------------------- */
+  /* =====================================================
+     OPEN EDIT
+     ===================================================== */
 
-  openEditModal(id) {
+  function openEditModal(id) {
 
-    const member = this.getMember(id);
+    const s = state();
+
+    const member =
+      s?.members.find(
+        item =>
+          String(item.id) === String(id)
+      );
+
 
     if (!member) {
-      console.warn("Member tidak ditemukan:", id);
-      UI.toast("Data member tidak ditemukan.");
+
+      toast(
+        "Data member tidak ditemukan."
+      );
+
       return;
+
     }
 
-    this.editingId = member.id;
 
-    const title = this.getElement("memberModalTitle");
-    const editId = this.getElement("memberEditId");
-    const newId = this.getElement("newId");
-    const newName = this.getElement("newName");
-    const newStatus = this.getElement("newStatus");
-    const preview = this.getElement("photoPreview");
-    const modal = this.getElement("memberModal");
+    $("memberModalTitle").textContent =
+      "Edit Member";
 
-    if (!modal) {
-      console.error("Element #memberModal tidak ditemukan.");
-      return;
-    }
 
-    if (title) {
-      title.textContent = "Edit Member";
-    }
+    $("memberModalSubtitle").textContent =
+      "Perbarui data identitas member.";
 
-    if (editId) {
-      editId.value = member.id;
-    }
 
-    if (newId) {
-      newId.value = member.id;
-    }
+    $("memberEditId").value =
+      member.id;
 
-    if (newName) {
-      newName.value = member.name || "";
-    }
 
-    if (newStatus) {
-      newStatus.value = member.status || "PERMANENT";
-    }
+    $("memberRegCode").value =
+      member.reg_code || "";
 
-    if (preview) {
 
-      if (member.photoUrl) {
+    $("memberName").value =
+      member.name || "";
 
-        preview.innerHTML = `
-          <img
-            src="${UI.esc(member.photoUrl)}"
-            alt="${UI.esc(member.name || "Member")}"
-          >
-        `;
 
-      } else {
+    $("memberStatus").value =
+      member.status || "PERMANENT";
 
-        preview.textContent = UI.initials(member.name);
 
-      }
-    }
+    $("memberShift").value =
+      member.shift || "";
 
-    this.renderSkillFields(member.skills || {});
 
-    modal.classList.remove("hidden");
+    populateLines(
+      member.home_line_id || ""
+    );
+
+
+    $("memberModal")
+      .classList
+      .add("open");
+
 
     setTimeout(() => {
 
-      const input = this.getElement("newName");
+      $("memberName")?.focus();
 
-      if (input) {
-        input.focus();
-        input.select();
-      }
+      $("memberName")?.select();
 
-    }, 50);
-  },
+    }, 80);
+
+  }
 
 
-  /* ---------------------------------------------------------
-     CLOSE MODAL
-     --------------------------------------------------------- */
+  /* =====================================================
+     CLOSE
+     ===================================================== */
 
-  closeModal() {
+  function closeModal() {
 
-    const modal = this.getElement("memberModal");
+    $("memberModal")
+      ?.classList
+      .remove("open");
 
-    if (modal) {
-      modal.classList.add("hidden");
-    }
-
-    this.editingId = null;
-  },
+  }
 
 
-  /* ---------------------------------------------------------
-     RENDER SKILL FIELDS
-     --------------------------------------------------------- */
+  /* =====================================================
+     NORMALIZE REG
+     ===================================================== */
 
-  renderSkillFields(skills) {
+  function normalizeCode(value) {
 
-    const container = this.getElement("memberSkillFields");
+    return String(value || "")
+      .trim()
+      .toUpperCase();
 
-    if (!container) {
-      console.error("Element #memberSkillFields tidak ditemukan.");
+  }
+
+
+  /* =====================================================
+     SAVE
+     ===================================================== */
+
+  async function save(event) {
+
+    event?.preventDefault();
+
+
+    const s = state();
+
+    if (!s) {
+
+      toast(
+        "State aplikasi belum siap."
+      );
+
       return;
-    }
-
-    const groups = [];
-
-    Object.entries(AppData.data.operations || {}).forEach(
-      ([lineId, operations]) => {
-
-        if (!Array.isArray(operations) || !operations.length) {
-          return;
-        }
-
-        const line = LineManager.getLine(lineId);
-
-        if (!line) {
-          return;
-        }
-
-        groups.push(`
-          <div class="skill-group">
-
-            <div class="skill-group-title">
-
-              <strong>
-                ${UI.esc(line.name)}
-              </strong>
-
-              <span>
-                Update level skill terbaru
-              </span>
-
-            </div>
-
-            <div class="skill-edit-grid">
-
-              ${operations.map(operation => {
-
-                const operationName =
-                  typeof operation === "string"
-                    ? operation
-                    : operation.name;
-
-                const value =
-                  Number(skills[operationName] || 0);
-
-                return `
-                  <label>
-
-                    ${UI.esc(operationName)}
-
-                    <select
-                      class="skill-input"
-                      data-operation="${UI.esc(operationName)}"
-                    >
-
-                      <option
-                        value="0"
-                        ${value === 0 ? "selected" : ""}
-                      >
-                        0 — Belum
-                      </option>
-
-                      <option
-                        value="0.1"
-                        ${value === 0.1 ? "selected" : ""}
-                      >
-                        0.1 — Training
-                      </option>
-
-                      <option
-                        value="0.2"
-                        ${value === 0.2 ? "selected" : ""}
-                      >
-                        0.2 — Training
-                      </option>
-
-                      <option
-                        value="1"
-                        ${value === 1 ? "selected" : ""}
-                      >
-                        1 — Qualified
-                      </option>
-
-                    </select>
-
-                  </label>
-                `;
-
-              }).join("")}
-
-            </div>
-
-          </div>
-        `);
-      }
-    );
-
-    if (groups.length) {
-
-      container.innerHTML = groups.join("");
-
-    } else {
-
-      container.innerHTML = `
-        <div class="ranking-empty">
-
-          <strong>
-            Belum ada operation
-          </strong>
-
-          <span>
-            Skill dapat diedit setelah line memiliki operation.
-          </span>
-
-        </div>
-      `;
 
     }
-  },
 
 
-  /* ---------------------------------------------------------
-     COLLECT SKILLS
-     --------------------------------------------------------- */
-
-  collectSkills() {
-
-    const skills = {};
-
-    document
-      .querySelectorAll(".skill-input")
-      .forEach(input => {
-
-        const operation = input.dataset.operation;
-
-        if (!operation) {
-          return;
-        }
-
-        skills[operation] = Number(input.value);
-
-      });
-
-    return skills;
-  },
+    const editId =
+      $("memberEditId").value || null;
 
 
-  /* ---------------------------------------------------------
-     SAVE MEMBER
-     --------------------------------------------------------- */
+    const regCode =
+      normalizeCode(
+        $("memberRegCode").value
+      );
 
-  save(event) {
-
-    if (event) {
-      event.preventDefault();
-    }
-
-    const idInput = this.getElement("newId");
-    const nameInput = this.getElement("newName");
-    const statusInput = this.getElement("newStatus");
-    const photoInput = this.getElement("photoInput");
-
-    if (!idInput || !nameInput || !statusInput) {
-      console.error("Form member tidak lengkap.");
-      UI.toast("Form member tidak lengkap.");
-      return;
-    }
-
-    const id =
-      idInput.value
-        .trim()
-        .toUpperCase();
 
     const name =
-      nameInput.value
+      $("memberName")
+        .value
         .trim();
 
+
     const status =
-      statusInput.value;
-
-    const file =
-      photoInput?.files?.[0] || null;
+      $("memberStatus").value;
 
 
-    /* -------------------------------------------------------
+    const shift =
+      $("memberShift").value || null;
+
+
+    const homeLineId =
+      $("memberHomeLine").value || null;
+
+
+    /* ===================================================
        VALIDATION
-       ------------------------------------------------------- */
+       =================================================== */
 
-    if (!id || !name) {
+    if (!regCode || !name) {
 
-      UI.toast(
+      toast(
         "No Reg dan nama wajib diisi."
       );
 
       return;
+
     }
 
 
-    /* -------------------------------------------------------
+    /* ===================================================
        DUPLICATE CHECK
-       ------------------------------------------------------- */
+       =================================================== */
 
     const duplicate =
-      AppData.data.members.some(member => {
+      s.members.find(member => {
+
+        const sameCode =
+          normalizeCode(
+            member.reg_code
+          ) === regCode;
+
+
+        const differentMember =
+          String(member.id) !==
+          String(editId);
+
 
         return (
-          String(member.id).toUpperCase() === id &&
-          String(member.id) !== String(this.editingId)
+          sameCode &&
+          differentMember
         );
 
       });
 
+
     if (duplicate) {
 
-      UI.toast(
+      toast(
         "No Reg sudah digunakan."
       );
 
       return;
+
     }
 
 
-    /* -------------------------------------------------------
-       FINISH SAVE
-       ------------------------------------------------------- */
+    /* ===================================================
+       PAYLOAD
+       =================================================== */
 
-    const finish = photo => {
+    const payload = {
 
-      /* =====================================================
-         EDIT MEMBER
-         ===================================================== */
+      reg_code: regCode,
 
-      if (this.editingId !== null) {
+      name,
 
-        const member =
-          this.getMember(this.editingId);
+      status,
 
-        if (!member) {
+      shift,
 
-          console.error(
-            "Member yang sedang diedit tidak ditemukan:",
-            this.editingId
-          );
+      home_line_id: homeLineId,
 
-          UI.toast(
-            "Member tidak ditemukan."
-          );
+      active: true
 
-          return;
-        }
-
-        member.id = id;
-
-        member.name = name;
-
-        member.status = status;
-
-        member.skills =
-          this.collectSkills();
-
-
-        /*
-         * Foto hanya diganti jika user
-         * memilih foto baru.
-         */
-
-        if (photo !== null) {
-
-          member.photoUrl = photo;
-
-        }
-
-        UI.toast(
-          "Data member dan skill berhasil diperbarui."
-        );
-
-
-      /* =====================================================
-         ADD MEMBER
-         ===================================================== */
-
-      } else {
-
-        AppData.data.members.push({
-
-          id,
-
-          name,
-
-          status,
-
-          availability: "available",
-
-          photoUrl: photo || "",
-
-          skills:
-            this.collectSkills()
-
-        });
-
-        UI.toast(
-          "Member berhasil ditambahkan."
-        );
-
-      }
-
-
-      /* -----------------------------------------------------
-         SAVE
-         ----------------------------------------------------- */
-
-      Storage.save();
-
-
-      /* -----------------------------------------------------
-         CLOSE MODAL
-         ----------------------------------------------------- */
-
-      this.closeModal();
-
-
-      /* -----------------------------------------------------
-         RESET FORM
-         ----------------------------------------------------- */
-
-      const form =
-        this.getElement("memberForm");
-
-      if (form) {
-        form.reset();
-      }
-
-      const preview =
-        this.getElement("photoPreview");
-
-      if (preview) {
-        preview.innerHTML = "👤";
-      }
-
-
-      /* -----------------------------------------------------
-         REFRESH UI
-         ----------------------------------------------------- */
-
-      App.renderAll();
     };
 
 
-    /* -------------------------------------------------------
-       PHOTO PROCESSING
-       ------------------------------------------------------- */
+    const button =
+      $("memberSave");
 
-    if (file) {
 
-      if (file.size > 1024 * 1024) {
+    if (button) {
+      button.disabled = true;
+    }
 
-        UI.toast(
-          "Foto maksimal 1 MB sebelum diproses."
-        );
 
-        return;
+    try {
+
+      /* =================================================
+         DEMO
+         ================================================= */
+
+      if (!SupabaseClient.configured()) {
+
+        if (editId) {
+
+          const member =
+            s.members.find(
+              item =>
+                String(item.id) ===
+                String(editId)
+            );
+
+
+          if (member) {
+
+            Object.assign(
+              member,
+              payload
+            );
+
+          }
+
+
+          toast(
+            "Demo: member diperbarui."
+          );
+
+        } else {
+
+          s.members.push({
+
+            id:
+              "demo-member-" +
+              Date.now(),
+
+            ...payload
+
+          });
+
+
+          toast(
+            "Demo: member ditambahkan."
+          );
+
+        }
+
       }
 
-      const reader =
-        new FileReader();
 
-      reader.onload = () => {
+      /* =================================================
+         SUPABASE
+         ================================================= */
 
-        finish(
-          reader.result
-        );
+      else {
 
-      };
+        if (editId) {
 
-      reader.onerror = () => {
+          await DB.update(
+            "members",
+            editId,
+            payload
+          );
 
-        UI.toast(
-          "Gagal membaca file foto."
-        );
 
-      };
+          toast(
+            "Member berhasil diperbarui."
+          );
 
-      reader.readAsDataURL(file);
+        } else {
 
-    } else {
+          await DB.insert(
+            "members",
+            payload
+          );
 
-      /*
-       * Saat edit:
-       * null berarti foto lama dipertahankan.
-       *
-       * Saat tambah:
-       * "" berarti belum ada foto.
-       */
 
-      finish(
-        this.editingId !== null
-          ? null
-          : ""
+          toast(
+            "Member berhasil ditambahkan."
+          );
+
+        }
+
+      }
+
+
+      closeModal();
+
+
+      if (
+        typeof refresh === "function"
+      ) {
+
+        await refresh();
+
+      }
+
+
+    } catch (error) {
+
+      console.error(
+        "Member save error:",
+        error
       );
+
+
+      toast(
+        error?.message ||
+        "Gagal menyimpan member."
+      );
+
+    } finally {
+
+      if (button) {
+        button.disabled = false;
+      }
+
     }
+
   }
 
-};
+
+  /* =====================================================
+     BIND EVENTS
+     ===================================================== */
+
+  function bind() {
+
+    $("addMemberBtn")
+      ?.addEventListener(
+        "click",
+        openAddModal
+      );
+
+
+    $("memberCancel")
+      ?.addEventListener(
+        "click",
+        closeModal
+      );
+
+
+    $("memberCancel2")
+      ?.addEventListener(
+        "click",
+        closeModal
+      );
+
+
+    $("memberForm")
+      ?.addEventListener(
+        "submit",
+        save
+      );
+
+
+    $("memberModal")
+      ?.addEventListener(
+        "click",
+        event => {
+
+          if (
+            event.target ===
+            $("memberModal")
+          ) {
+
+            closeModal();
+
+          }
+
+        }
+      );
+
+  }
+
+
+  return {
+
+    configure,
+
+    bind,
+
+    openAddModal,
+
+    openEditModal,
+
+    closeModal,
+
+    populateLines
+
+  };
+
+})();
