@@ -1,1 +1,1496 @@
-:root{--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#687386;--primary:#1769e0;--border:#e3e8f0;--ok:#16834b;--shadow:0 8px 24px rgba(25,45,80,.08)}*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.app{display:flex;min-height:100vh}.sidebar{width:230px;background:#10213b;color:#fff;padding:20px 14px;position:fixed;inset:0 auto 0 0}.brand{font-size:17px;font-weight:800;padding:10px 12px 26px}.brand small{display:block;color:#aebbd0;margin-top:4px}.nav{display:grid;gap:6px}.nav button{border:0;background:transparent;color:#d8e2f2;text-align:left;padding:12px;border-radius:10px}.nav button.active,.nav button:hover{background:#1d477c;color:#fff}.main{margin-left:230px;width:calc(100% - 230px);padding:24px}.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}.topbar h1{margin:3px 0;font-size:28px}.eyebrow{font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--primary)}.mode{padding:7px 10px;border-radius:999px;background:#e9f3ff;color:var(--primary);font-size:11px;font-weight:800}.page{display:none}.page.active{display:block}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.kpi,.card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)}.kpi{padding:18px}.kpi small{color:var(--muted)}.kpi b{display:block;font-size:28px;margin-top:8px}.layout{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.card{padding:18px}.card h2{margin:0 0 5px;font-size:19px}.card p{margin:0 0 14px;color:var(--muted);font-size:13px}.line-card,.station-card{width:100%;display:flex;align-items:center;gap:12px;border:1px solid var(--border);background:#fff;border-radius:13px;padding:14px;text-align:left;margin:8px 0;color:inherit}.line-card:hover,.station-card:hover{border-color:#9bbef0}.line-card>strong,.station-card>strong{margin-left:auto;font-size:22px;color:var(--muted)}.line-icon{width:38px;height:38px;display:grid;place-items:center;background:#eaf3ff;color:var(--primary);border-radius:10px}.line-card small,.station-card small,.member-card small,.history-card small,.candidate small,.skill-row small{display:block;color:var(--muted);margin-top:3px}.form{display:grid;gap:12px}.form label{display:grid;gap:6px;font-weight:700;font-size:13px}.form input,.form select,.form textarea,.search{width:100%;min-height:46px;border:1px solid var(--border);border-radius:11px;padding:10px 12px;background:#fff;outline:none}.form input:focus,.form select:focus,.form textarea:focus,.search:focus{border-color:var(--primary);box-shadow:0 0 0 3px #dceaff}.actions{display:flex;gap:8px;flex-wrap:wrap}.primary,.secondary{border:0;border-radius:10px;padding:11px 15px;font-weight:800}.primary{background:var(--primary);color:#fff}.secondary{background:#edf2f8;color:#25334a}.small{padding:8px 11px;font-size:12px}.candidate,.member-card,.history-card,.skill-row{display:flex;align-items:center;gap:12px;border:1px solid var(--border);border-radius:12px;padding:13px;margin:8px 0;background:#fff}.candidate>div:first-child,.member-card>div:first-child{flex:1}.skill-badge{min-width:42px;text-align:center;background:#eaf7ef;color:var(--ok);padding:7px;border-radius:8px;font-weight:900}.section-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:14px}.section-head h2{margin:0}.section-head p{color:var(--muted);margin:4px 0}.search{margin-bottom:12px}.empty{padding:24px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:12px}.history-card>div:first-child{flex:1}.history-card>span{font-weight:800;text-align:right}.modal{display:none;position:fixed;inset:0;background:rgba(9,20,38,.55);align-items:center;justify-content:center;padding:18px;z-index:20}.modal.open{display:flex}.modal-box{background:#fff;width:min(560px,100%);max-height:90vh;overflow:auto;border-radius:18px;padding:20px}.modal-box h2{margin-top:0}.close{float:right;border:0;background:#eef2f7;border-radius:8px;width:36px;height:36px}.menu-btn{display:none}@media(max-width:800px){.sidebar{transform:translateX(-100%);transition:.2s;z-index:30}.menu-open .sidebar{transform:translateX(0)}.main{margin-left:0;width:100%;padding:15px}.menu-btn{display:block;border:0;background:#10213b;color:#fff;border-radius:9px;padding:9px 12px}.topbar{gap:10px}.topbar>div:first-of-type{flex:1}.topbar h1{font-size:22px}.grid{grid-template-columns:repeat(2,1fr)}.layout{grid-template-columns:1fr}.card{padding:14px}.candidate,.member-card{align-items:flex-start;flex-wrap:wrap}.candidate button,.member-card button{margin-left:auto}.section-head{align-items:flex-start}.section-head .primary{white-space:nowrap}}@media(max-width:430px){.kpi{padding:13px}.kpi b{font-size:23px}.section-head{display:block}.candidate{display:grid;grid-template-columns:1fr auto}.candidate button{grid-column:1/-1;width:100%}}
+:root {
+
+  --bg: #f4f7fb;
+  --card: #ffffff;
+
+  --text: #172033;
+  --muted: #687386;
+
+  --primary: #1769e0;
+
+  --border: #e3e8f0;
+
+  --ok: #16834b;
+
+  --shadow:
+    0 8px 24px rgba(25, 45, 80, .08);
+
+}
+
+
+* {
+  box-sizing: border-box;
+}
+
+
+html,
+body {
+
+  margin: 0;
+
+  background: var(--bg);
+
+  color: var(--text);
+
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+}
+
+
+body {
+  overflow-x: hidden;
+}
+
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+
+button {
+  cursor: pointer;
+}
+
+
+/* =====================================================
+   APP
+   ===================================================== */
+
+.app {
+
+  display: flex;
+
+  min-height: 100vh;
+
+}
+
+
+/* =====================================================
+   SIDEBAR
+   ===================================================== */
+
+.sidebar {
+
+  width: 230px;
+
+  background: #10213b;
+
+  color: #fff;
+
+  padding: 20px 14px;
+
+  position: fixed;
+
+  inset: 0 auto 0 0;
+
+}
+
+
+.brand {
+
+  font-size: 17px;
+
+  font-weight: 800;
+
+  padding:
+    10px 12px 26px;
+
+}
+
+
+.brand small {
+
+  display: block;
+
+  color: #aebbd0;
+
+  margin-top: 4px;
+
+}
+
+
+.nav {
+
+  display: grid;
+
+  gap: 6px;
+
+}
+
+
+.nav button {
+
+  border: 0;
+
+  background: transparent;
+
+  color: #d8e2f2;
+
+  text-align: left;
+
+  padding: 12px;
+
+  border-radius: 10px;
+
+}
+
+
+.nav button.active,
+.nav button:hover {
+
+  background: #1d477c;
+
+  color: #fff;
+
+}
+
+
+/* =====================================================
+   MAIN
+   ===================================================== */
+
+.main {
+
+  margin-left: 230px;
+
+  width:
+    calc(100% - 230px);
+
+  padding: 24px;
+
+}
+
+
+.topbar {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin-bottom: 22px;
+
+}
+
+
+.topbar h1 {
+
+  margin: 3px 0;
+
+  font-size: 28px;
+
+}
+
+
+.eyebrow {
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: .12em;
+
+  color: var(--primary);
+
+}
+
+
+.mode {
+
+  padding: 7px 10px;
+
+  border-radius: 999px;
+
+  background: #e9f3ff;
+
+  color: var(--primary);
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+}
+
+
+/* =====================================================
+   PAGE
+   ===================================================== */
+
+.page {
+  display: none;
+}
+
+
+.page.active {
+  display: block;
+}
+
+
+/* =====================================================
+   KPI
+   ===================================================== */
+
+.grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 14px;
+
+}
+
+
+.kpi,
+.card {
+
+  background: var(--card);
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 16px;
+
+  box-shadow: var(--shadow);
+
+}
+
+
+.kpi {
+
+  padding: 18px;
+
+}
+
+
+.kpi small {
+
+  color: var(--muted);
+
+}
+
+
+.kpi b {
+
+  display: block;
+
+  font-size: 28px;
+
+  margin-top: 8px;
+
+}
+
+
+/* =====================================================
+   LAYOUT
+   ===================================================== */
+
+.layout {
+
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 18px;
+
+  margin-top: 18px;
+
+}
+
+
+.card {
+
+  padding: 18px;
+
+}
+
+
+.card h2 {
+
+  margin:
+    0 0 5px;
+
+  font-size: 19px;
+
+}
+
+
+.card p {
+
+  margin:
+    0 0 14px;
+
+  color: var(--muted);
+
+  font-size: 13px;
+
+}
+
+
+/* =====================================================
+   WORKFLOW
+   ===================================================== */
+
+.workflow-vertical {
+
+  display: grid;
+
+  gap: 8px;
+
+}
+
+
+.workflow-vertical > div {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 10px 12px;
+
+  background: #f7f9fc;
+
+  border-radius: 10px;
+
+}
+
+
+.workflow-vertical strong {
+
+  width: 28px;
+
+  height: 28px;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: #e9f3ff;
+
+  color: var(--primary);
+
+}
+
+
+/* =====================================================
+   SECTION HEAD
+   ===================================================== */
+
+.section-head {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 14px;
+
+}
+
+
+.section-head h2 {
+  margin: 0;
+}
+
+
+.section-head p {
+
+  color: var(--muted);
+
+  margin:
+    4px 0;
+
+}
+
+
+/* =====================================================
+   REPLACEMENT LAYOUT
+   ===================================================== */
+
+.replacement-layout {
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(260px, .8fr)
+    minmax(320px, 1fr);
+
+  gap: 18px;
+
+}
+
+
+.replacement-layout
+.candidate-section {
+
+  grid-column:
+    1 / -1;
+
+}
+
+
+/* =====================================================
+   STEP TITLE
+   ===================================================== */
+
+.step-title {
+
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 12px;
+
+  margin-bottom: 14px;
+
+}
+
+
+.step-title h2 {
+
+  margin: 0;
+
+}
+
+
+.step-title p {
+
+  margin:
+    4px 0 0;
+
+}
+
+
+.step-number {
+
+  flex:
+    0 0 auto;
+
+  width: 34px;
+
+  height: 34px;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 10px;
+
+  background: #eaf3ff;
+
+  color: var(--primary);
+
+  font-weight: 900;
+
+}
+
+
+/* =====================================================
+   LINE / STATION
+   ===================================================== */
+
+.line-card,
+.station-card {
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  border:
+    1px solid var(--border);
+
+  background: #fff;
+
+  border-radius: 13px;
+
+  padding: 14px;
+
+  text-align: left;
+
+  margin: 8px 0;
+
+  color: inherit;
+
+}
+
+
+.line-card:hover,
+.station-card:hover {
+
+  border-color: #9bbef0;
+
+}
+
+
+.line-card > strong,
+.station-card > strong {
+
+  margin-left: auto;
+
+  font-size: 22px;
+
+  color: var(--muted);
+
+}
+
+
+.line-icon {
+
+  width: 38px;
+
+  height: 38px;
+
+  display: grid;
+
+  place-items: center;
+
+  background: #eaf3ff;
+
+  color: var(--primary);
+
+  border-radius: 10px;
+
+}
+
+
+.line-card small,
+.station-card small {
+
+  display: block;
+
+  color: var(--muted);
+
+  margin-top: 3px;
+
+}
+
+
+/* =====================================================
+   FORM
+   ===================================================== */
+
+.form {
+
+  display: grid;
+
+  gap: 12px;
+
+}
+
+
+.form label {
+
+  display: grid;
+
+  gap: 6px;
+
+  font-weight: 700;
+
+  font-size: 13px;
+
+}
+
+
+.form input,
+.form select,
+.form textarea,
+.search {
+
+  width: 100%;
+
+  min-height: 46px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 11px;
+
+  padding: 10px 12px;
+
+  background: #fff;
+
+  outline: none;
+
+}
+
+
+.form textarea {
+
+  resize: vertical;
+
+}
+
+
+.form input:focus,
+.form select:focus,
+.form textarea:focus,
+.search:focus {
+
+  border-color:
+    var(--primary);
+
+  box-shadow:
+    0 0 0 3px #dceaff;
+
+}
+
+
+/* =====================================================
+   CANDIDATE LIST
+   ===================================================== */
+
+.candidate-list {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 12px;
+
+}
+
+
+/* =====================================================
+   CANDIDATE CARD
+   ===================================================== */
+
+.candidate {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: stretch;
+
+  gap: 12px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 14px;
+
+  padding: 15px;
+
+  margin: 0;
+
+  background: #fff;
+
+  min-width: 0;
+
+}
+
+
+.candidate:hover {
+
+  border-color:
+    #9bbef0;
+
+  box-shadow:
+    0 5px 16px
+    rgba(25, 45, 80, .07);
+
+}
+
+
+.candidate-info {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+
+}
+
+
+.candidate-rank {
+
+  font-size: 10px;
+
+  text-transform: uppercase;
+
+  letter-spacing: .08em;
+
+  color: var(--primary);
+
+  font-weight: 900;
+
+}
+
+
+.candidate-name {
+
+  font-size: 17px;
+
+  margin-top: 2px;
+
+}
+
+
+.candidate-info small {
+
+  color: var(--muted);
+
+  font-size: 12px;
+
+}
+
+
+.candidate-skill {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding:
+    10px 12px;
+
+  background: #eaf7ef;
+
+  border-radius: 10px;
+
+}
+
+
+.candidate-skill span {
+
+  font-size: 12px;
+
+  color: var(--muted);
+
+  font-weight: 700;
+
+}
+
+
+.candidate-skill strong {
+
+  font-size: 20px;
+
+  color: var(--ok);
+
+}
+
+
+.candidate-pick {
+
+  width: 100%;
+
+}
+
+
+/* =====================================================
+   MEMBER
+   ===================================================== */
+
+.member-card {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 12px;
+
+  padding: 13px;
+
+  margin: 8px 0;
+
+  background: #fff;
+
+}
+
+
+.member-info {
+
+  flex: 1;
+
+  min-width: 0;
+
+}
+
+
+.member-info b {
+
+  display: block;
+
+  font-size: 15px;
+
+}
+
+
+.member-info small {
+
+  display: block;
+
+  color: var(--muted);
+
+  margin-top: 3px;
+
+}
+
+
+.member-actions {
+
+  display: flex;
+
+  gap: 7px;
+
+  flex-wrap: wrap;
+
+  justify-content: flex-end;
+
+}
+
+
+/* =====================================================
+   BUTTON
+   ===================================================== */
+
+.primary,
+.secondary {
+
+  border: 0;
+
+  border-radius: 10px;
+
+  padding:
+    11px 15px;
+
+  font-weight: 800;
+
+}
+
+
+.primary {
+
+  background:
+    var(--primary);
+
+  color: #fff;
+
+}
+
+
+.secondary {
+
+  background: #edf2f8;
+
+  color: #25334a;
+
+}
+
+
+.small {
+
+  padding:
+    8px 11px;
+
+  font-size: 12px;
+
+}
+
+
+button:disabled {
+
+  opacity: .6;
+
+  cursor: wait;
+
+}
+
+
+/* =====================================================
+   SKILL
+   ===================================================== */
+
+.skill-row {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 12px;
+
+  padding: 13px;
+
+  margin: 8px 0;
+
+  background: #fff;
+
+}
+
+
+.skill-row span {
+
+  flex: 1;
+
+}
+
+
+.skill-row small {
+
+  display: block;
+
+  color: var(--muted);
+
+  margin-top: 3px;
+
+}
+
+
+.skill-row select {
+
+  min-width: 90px;
+
+  min-height: 42px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 9px;
+
+  padding: 8px;
+
+}
+
+
+/* =====================================================
+   HISTORY
+   ===================================================== */
+
+.history-card {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 12px;
+
+  padding: 13px;
+
+  margin: 8px 0;
+
+  background: #fff;
+
+}
+
+
+.history-card > div:first-child {
+
+  flex: 1;
+
+}
+
+
+.history-card small {
+
+  display: block;
+
+  color: var(--muted);
+
+  margin-top: 3px;
+
+}
+
+
+.history-card > span {
+
+  font-weight: 800;
+
+  text-align: right;
+
+}
+
+
+/* =====================================================
+   EMPTY
+   ===================================================== */
+
+.empty {
+
+  padding: 24px;
+
+  text-align: center;
+
+  color: var(--muted);
+
+  border:
+    1px dashed var(--border);
+
+  border-radius: 12px;
+
+}
+
+
+/* =====================================================
+   MODAL
+   ===================================================== */
+
+.modal {
+
+  display: none;
+
+  position: fixed;
+
+  inset: 0;
+
+  background:
+    rgba(9, 20, 38, .55);
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 18px;
+
+  z-index: 20;
+
+}
+
+
+.modal.open {
+
+  display: flex;
+
+}
+
+
+.modal-box {
+
+  background: #fff;
+
+  width:
+    min(560px, 100%);
+
+  max-height: 90vh;
+
+  overflow: auto;
+
+  border-radius: 18px;
+
+  padding: 20px;
+
+}
+
+
+.modal-box h2 {
+
+  margin-top: 0;
+
+}
+
+
+.modal-box > p {
+
+  color: var(--muted);
+
+  font-size: 13px;
+
+}
+
+
+.close {
+
+  float: right;
+
+  border: 0;
+
+  background: #eef2f7;
+
+  border-radius: 8px;
+
+  width: 36px;
+
+  height: 36px;
+
+}
+
+
+/* =====================================================
+   ACTIONS
+   ===================================================== */
+
+.actions {
+
+  display: flex;
+
+  gap: 8px;
+
+  flex-wrap: wrap;
+
+  margin-top: 12px;
+
+}
+
+
+/* =====================================================
+   TOAST
+   ===================================================== */
+
+.toast {
+
+  position: fixed;
+
+  right: 15px;
+
+  bottom: 15px;
+
+  z-index: 50;
+
+  padding:
+    11px 14px;
+
+  border-radius: 10px;
+
+  background: #172033;
+
+  color: #fff;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  opacity: 0;
+
+  transform:
+    translateY(8px);
+
+  pointer-events: none;
+
+  transition: .2s;
+
+}
+
+
+.toast.show {
+
+  opacity: 1;
+
+  transform:
+    translateY(0);
+
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+.menu-btn {
+
+  display: none;
+
+}
+
+
+@media (max-width: 1000px) {
+
+  .candidate-list {
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+  }
+
+}
+
+
+@media (max-width: 800px) {
+
+  .sidebar {
+
+    transform:
+      translateX(-100%);
+
+    transition: .2s;
+
+    z-index: 30;
+
+  }
+
+
+  .menu-open .sidebar {
+
+    transform:
+      translateX(0);
+
+  }
+
+
+  .main {
+
+    margin-left: 0;
+
+    width: 100%;
+
+    padding: 15px;
+
+  }
+
+
+  .menu-btn {
+
+    display: block;
+
+    border: 0;
+
+    background: #10213b;
+
+    color: #fff;
+
+    border-radius: 9px;
+
+    padding:
+      9px 12px;
+
+  }
+
+
+  .topbar {
+
+    gap: 10px;
+
+  }
+
+
+  .topbar > div:first-of-type {
+
+    flex: 1;
+
+  }
+
+
+  .topbar h1 {
+
+    font-size: 22px;
+
+  }
+
+
+  .grid {
+
+    grid-template-columns:
+      repeat(2, 1fr);
+
+  }
+
+
+  .layout {
+
+    grid-template-columns: 1fr;
+
+  }
+
+
+  .replacement-layout {
+
+    grid-template-columns: 1fr;
+
+  }
+
+
+  .replacement-layout
+  .candidate-section {
+
+    grid-column: auto;
+
+  }
+
+
+  .candidate-list {
+
+    grid-template-columns: 1fr;
+
+  }
+
+
+  .card {
+
+    padding: 14px;
+
+  }
+
+
+  .member-card {
+
+    align-items: flex-start;
+
+    flex-direction: column;
+
+  }
+
+
+  .member-actions {
+
+    width: 100%;
+
+    justify-content: stretch;
+
+  }
+
+
+  .member-actions button {
+
+    flex: 1;
+
+  }
+
+
+  .section-head {
+
+    align-items: flex-start;
+
+  }
+
+
+  .member-section-head {
+
+    align-items: center;
+
+  }
+
+
+  .modal-box {
+
+    padding: 16px;
+
+  }
+
+}
+
+
+@media (max-width: 430px) {
+
+  .kpi {
+
+    padding: 13px;
+
+  }
+
+
+  .kpi b {
+
+    font-size: 23px;
+
+  }
+
+
+  .section-head {
+
+    display: block;
+
+  }
+
+
+  .member-section-head .primary {
+
+    margin-top: 10px;
+
+    width: 100%;
+
+  }
+
+
+  .candidate {
+
+    padding: 14px;
+
+  }
+
+
+  .candidate-name {
+
+    font-size: 16px;
+
+  }
+
+
+  .candidate-pick {
+
+    min-height: 46px;
+
+  }
+
+
+  .member-actions {
+
+    display: grid;
+
+    grid-template-columns:
+      1fr 1fr;
+
+  }
+
+
+  .member-actions button {
+
+    width: 100%;
+
+  }
+
+
+  .actions .primary,
+  .actions .secondary {
+
+    flex: 1;
+
+  }
+
+
+  .modal {
+
+    padding: 10px;
+
+  }
+
+
+  .modal-box {
+
+    border-radius: 15px;
+
+  }
+
+}
