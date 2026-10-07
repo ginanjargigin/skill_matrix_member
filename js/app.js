@@ -258,7 +258,7 @@
         "Member & Skill",
 
       history:
-        "Riwayat"
+        "Riwayat",
 
       master:
   "Master Line & Station"
@@ -284,7 +284,7 @@
   MasterManager.render();
 
   }
-
+}
 
   /* =====================================================
      GET SKILL
