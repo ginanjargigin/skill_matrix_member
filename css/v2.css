@@ -1674,3 +1674,22 @@ button.danger:hover {
   }
 
 }
+
+/* =====================================================
+   SKILL STAR DISPLAY
+   ===================================================== */
+
+.skill-stars {
+  color: #f5b800;
+  font-size: 18px;
+  letter-spacing: 2px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.skill-percent {
+  margin-left: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
+}
