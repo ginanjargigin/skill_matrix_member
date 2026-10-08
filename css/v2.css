@@ -1680,14 +1680,25 @@ button.danger:hover {
    ROYAL PRESTIGE
    ===================================================== */
 
-.skill-stars {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
+.skill-star {
+  display: inline-block;
 
-  white-space: nowrap;
+  font-family: Arial, "Segoe UI Symbol", sans-serif;
+  font-size: 34px;
+  font-weight: 900;
   line-height: 1;
+
+  /* GOLD SOLID */
+  color: #f5b800 !important;
+
+  /* Outline tipis */
+  -webkit-text-stroke: 0.8px #c48700;
+
+  /* Shadow */
+  text-shadow:
+    0 2px 3px rgba(130, 85, 0, 0.22);
+
+  transform: translateY(1px);
 }
 
 
@@ -1731,31 +1742,18 @@ button.danger:hover {
    ROYAL PRESTIGE
    ===================================================== */
 
-.skill-stars.skill-master {
-  gap: 3px;
-}
-
 .skill-stars.skill-master .skill-star {
   font-size: 38px;
 
-  background: linear-gradient(
-    145deg,
-    #fffbd1 0%,
-    #fff08a 15%,
-    #ffd83d 35%,
-    #ffc21c 55%,
-    #f0a900 75%,
-    #d88900 100%
-  );
+  /* GOLD TERANG UNTUK MASTER */
+  color: #ffd21f !important;
 
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  -webkit-text-stroke: 0.9px #b87900;
 
-  filter:
-    drop-shadow(0 0 3px rgba(255, 220, 70, 0.85))
-    drop-shadow(0 0 7px rgba(255, 195, 20, 0.55))
-    drop-shadow(0 3px 3px rgba(130, 85, 0, 0.25));
+  text-shadow:
+    0 0 4px rgba(255, 215, 50, 0.9),
+    0 0 9px rgba(255, 195, 20, 0.6),
+    0 2px 3px rgba(120, 80, 0, 0.25);
 
   animation: royalStarGlow 2.5s ease-in-out infinite;
 }
@@ -1808,21 +1806,23 @@ button.danger:hover {
 @media (max-width: 600px) {
 
   .skill-stars {
-    gap: 1 px;
+    gap: 1px;
   }
 
   .skill-star {
-    font-size: 28 px;
+    font-size: 27px;
   }
 
   .skill-stars.skill-master .skill-star {
-    font-size: 29 px;
+    font-size: 29px;
   }
 
   .skill-percent {
     font-size: 14px;
     margin-left: 9px;
   }
+
+}
 
   /* =====================================================
    SKILL ROW — MOBILE FIX
