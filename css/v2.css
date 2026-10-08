@@ -1680,11 +1680,13 @@ button.danger:hover {
    ===================================================== */
 
 .skill-stars {
-  color: #f5b800;
-  font-size: 18px;
+  color: #ffd000 !important;
+  font-size: 22px;
+  font-weight: 900;
   letter-spacing: 2px;
   line-height: 1;
   white-space: nowrap;
+  display: inline-block;
 }
 
 .skill-percent {
