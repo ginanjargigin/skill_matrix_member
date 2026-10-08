@@ -139,6 +139,8 @@ window.MemberManager = (() => {
 
     $("memberEditId").value = "";
 
+    $("memberDelete").style.display =
+  "none";
 
     form.reset();
 
@@ -197,6 +199,9 @@ window.MemberManager = (() => {
     $("memberEditId").value =
       member.id;
 
+    $("memberDelete").style.display =
+  "inline-flex";
+
 
     $("memberRegCode").value =
       member.reg_code || "";
@@ -234,7 +239,199 @@ window.MemberManager = (() => {
 
   }
 
+   /* =====================================================
+   DELETE MEMBER
+   ===================================================== */
 
+async function removeMember() {
+
+  const s = state();
+
+  if (!s) {
+
+    toast(
+      "State aplikasi belum siap."
+    );
+
+    return;
+
+  }
+
+
+  const memberId =
+    $("memberEditId").value;
+
+
+  if (!memberId) {
+
+    toast(
+      "Member yang akan dihapus belum dipilih."
+    );
+
+    return;
+
+  }
+
+
+  const member =
+    s.members.find(
+      item =>
+        String(item.id) ===
+        String(memberId)
+    );
+
+
+  if (!member) {
+
+    toast(
+      "Data member tidak ditemukan."
+    );
+
+    return;
+
+  }
+
+
+  const confirmed =
+    window.confirm(
+
+      `Hapus member "${member.name}" (${member.reg_code})?\n\n` +
+
+      `Data member dan seluruh skill member ini akan dihapus.\n\n` +
+
+      `Tindakan ini tidak dapat dibatalkan.`
+
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  const button =
+    $("memberDelete");
+
+
+  if (button) {
+    button.disabled = true;
+  }
+
+
+  try {
+
+    /* =================================================
+       DEMO
+       ================================================= */
+
+    if (
+      !SupabaseClient.configured()
+    ) {
+
+      s.members =
+        s.members.filter(
+          item =>
+            String(item.id) !==
+            String(memberId)
+        );
+
+
+      s.skills =
+        s.skills.filter(
+          item =>
+            String(item.member_id) !==
+            String(memberId)
+        );
+
+
+      toast(
+        "Demo: member berhasil dihapus."
+      );
+
+    }
+
+
+    /* =================================================
+       SUPABASE
+       ================================================= */
+
+    else {
+
+      await DB.remove(
+        "members",
+        memberId
+      );
+
+
+      toast(
+        "Member berhasil dihapus."
+      );
+
+    }
+
+
+    closeModal();
+
+
+    if (
+      typeof refresh === "function"
+    ) {
+
+      await refresh();
+
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "Member delete error:",
+      error
+    );
+
+
+    /*
+      Jika member sudah digunakan
+      dalam manpower_changes sebagai
+      replacement_member_id, Supabase
+      dapat menolak DELETE karena FK.
+    */
+
+    const message =
+      String(
+        error?.message ||
+        ""
+      ).toLowerCase();
+
+
+    if (
+      message.includes("foreign key") ||
+      message.includes("manpower_changes")
+    ) {
+
+      toast(
+        "Member tidak dapat dihapus karena sudah digunakan dalam riwayat replacement."
+      );
+
+    } else {
+
+      toast(
+        error?.message ||
+        "Gagal menghapus member."
+      );
+
+    }
+
+  } finally {
+
+    if (button) {
+      button.disabled = false;
+    }
+
+  }
+
+}
+  
   /* =====================================================
      CLOSE
      ===================================================== */
@@ -544,7 +741,12 @@ window.MemberManager = (() => {
         "click",
         closeModal
       );
-
+    
+    $("memberDelete")
+  ?.addEventListener(
+    "click",
+    removeMember
+  );
 
     $("memberForm")
       ?.addEventListener(
@@ -582,6 +784,8 @@ window.MemberManager = (() => {
     openAddModal,
 
     openEditModal,
+
+    removeMember,
 
     closeModal,
 
