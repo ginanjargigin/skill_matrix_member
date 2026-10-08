@@ -1,0 +1,329 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "",
+  "lines": [
+    {
+      "id": "LINE-01",
+      "name": "Stamping",
+      "standardMembers": 2
+    },
+    {
+      "id": "LINE-02",
+      "name": "Assy",
+      "standardMembers": 2
+    },
+    {
+      "id": "LINE-03",
+      "name": "Sub Assy",
+      "standardMembers": 2
+    },
+    {
+      "id": "LINE-04",
+      "name": "Molding",
+      "standardMembers": 2
+    }
+  ],
+  "members": [
+    {
+      "id": "E10",
+      "name": "Rendi",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {
+        "Operation 1": 1.0,
+        "Operation 2": 1.0,
+        "Operation 3": 1.0,
+        "Operation 4": 0.0
+      }
+    },
+    {
+      "id": "E11",
+      "name": "Lukman",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {
+        "Operation 1": 1.0,
+        "Operation 2": 1.0,
+        "Operation 3": 1.0,
+        "Operation 4": 0.0
+      }
+    },
+    {
+      "id": "E12",
+      "name": "Mahendra",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {
+        "Operation 1": 1.0,
+        "Operation 2": 1.0,
+        "Operation 3": 1.0,
+        "Operation 4": 0.0
+      }
+    },
+    {
+      "id": "E13",
+      "name": "Huda",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {
+        "Operation 1": 1.0,
+        "Operation 2": 1.0,
+        "Operation 3": 1.0,
+        "Operation 4": 0.0
+      }
+    },
+    {
+      "id": "E14",
+      "name": "Sidik",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {
+        "Operation 1": 1.0,
+        "Operation 2": 0.1,
+        "Operation 3": 1.0,
+        "Operation 4": 0.0
+      }
+    },
+    {
+      "id": "E15",
+      "name": "Putra",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {
+        "Operation 1": 1.0,
+        "Operation 2": 1.0,
+        "Operation 3": 0.1,
+        "Operation 4": 0.0
+      }
+    },
+    {
+      "id": "E16",
+      "name": "Dzaki",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {
+        "Operation 1": 0.2,
+        "Operation 2": 0.2,
+        "Operation 3": 0.2,
+        "Operation 4": 0.0
+      }
+    },
+    {
+      "id": "E17",
+      "name": "Hilal",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {
+        "Operation 1": 0.2,
+        "Operation 2": 0.2,
+        "Operation 3": 0.2,
+        "Operation 4": 0.0
+      }
+    },
+    {
+      "id": "E18",
+      "name": "Adityo Bagja K",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E19",
+      "name": "Ari Wibowo",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E20",
+      "name": "Agung Dwi Wahyu Utomo",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E21",
+      "name": "Sukendro Utomo",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E22",
+      "name": "Ahmad Fauzan",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E23",
+      "name": "Shadan Nur R",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E24",
+      "name": "Muhamad Hafiz Sugiyanto",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E25",
+      "name": "Aan Purwoko",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E26",
+      "name": "Imam Badrul Arifin",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E27",
+      "name": "Aryo Bagus Satrio",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E28",
+      "name": "Amin Maulana",
+      "status": "PERMANENT",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E29",
+      "name": "Bintang Rifado",
+      "status": "Kontrak",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E30",
+      "name": "Lucky Supriatna",
+      "status": "Kontrak",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E31",
+      "name": "Aditya Pratama",
+      "status": "Kontrak",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E32",
+      "name": "Ilham Nurul Hidayah",
+      "status": "Magang",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E33",
+      "name": "Julius Andrean",
+      "status": "Magang",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E34",
+      "name": "Aldo Widiatmaka Putra",
+      "status": "Magang",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E35",
+      "name": "M Ikbal Fauzi",
+      "status": "Magang",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E36",
+      "name": "Dani Nahroji",
+      "status": "Magang",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E37",
+      "name": "Dhika Cahyo Prabowo",
+      "status": "Magang",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E38",
+      "name": "Rafi Hermawan",
+      "status": "Magang",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    },
+    {
+      "id": "E39",
+      "name": "Abiyyu Musyary Permana Hidayat",
+      "status": "Magang",
+      "availability": "available",
+      "photoUrl": "",
+      "skills": {}
+    }
+  ],
+  "operations": {
+    "LINE-01": [
+      {
+        "id": "OP-01",
+        "name": "Coil Feeder"
+      },
+      {
+        "id": "OP-02",
+        "name": "Dandori Dies"
+      },
+      {
+        "id": "OP-03",
+        "name": "Dandori Coil"
+      },
+      {
+        "id": "OP-04",
+        "name": "Crane"
+      }
+    ]
+  },
+  "assignments": []
+}
