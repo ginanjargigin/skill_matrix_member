@@ -1,1 +1,0 @@
-window.Storage={save(){localStorage.setItem("mpr_data",JSON.stringify(AppData.data));},reset(){localStorage.removeItem("mpr_data");location.reload();},async syncToJsonBin(){if(!window.APP_CONFIG.JSONBIN_URL) throw new Error("JSONBin belum dikonfigurasi.");throw new Error("JSONBin adapter sengaja belum mengirim data agar Master Key tidak ditanam di browser.");}};
