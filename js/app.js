@@ -748,8 +748,8 @@ function getSkillPercent(level) {
               <strong>
             
                <span class="skill-stars ${Number(member.level) === 6 ? "skill-master" : ""}">
-                  ${getSkillStars(member.level)}
-                </span>
+                ${getSkillStars(member.level)}
+              </span>
                             
                 <span class="skill-percent">
                   ${getSkillPercent(member.level)}%
