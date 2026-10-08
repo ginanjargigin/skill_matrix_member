@@ -760,44 +760,6 @@ button {
 }
 
 
-.candidate-skill {
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  padding:
-    10px 12px;
-
-  background: #eaf7ef;
-
-  border-radius: 10px;
-
-}
-
-
-.candidate-skill span {
-
-  font-size: 12px;
-
-  color: var(--muted);
-
-  font-weight: 700;
-
-}
-
-
-.candidate-skill strong {
-
-  font-size: 20px;
-
-  color: var(--ok);
-
-}
-
-
 .candidate-pick {
 
   width: 100%;
@@ -1625,11 +1587,6 @@ button.danger:disabled {
 }
 
 
-button.danger:hover {
-  background: #fef2f2;
-}
-
-
 .checkbox-label {
   display: flex !important;
   flex-direction: row !important;
@@ -1677,109 +1634,108 @@ button.danger:hover {
 
 /* =====================================================
    SKILL STAR DISPLAY
-   ROYAL PRESTIGE
    ===================================================== */
+
+.skill-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+  line-height: 1;
+}
 
 .skill-star {
   display: inline-block;
-
   font-family: Arial, "Segoe UI Symbol", sans-serif;
   font-size: 34px;
   font-weight: 900;
   line-height: 1;
 
-  /* GOLD SOLID */
-  color: #f5b800 !important;
+  color: #f7c600 !important;
 
-  /* Outline tipis */
-  -webkit-text-stroke: 0.8px #c48700;
+  -webkit-text-stroke: 0.7px #b88600;
 
-  /* Shadow */
   text-shadow:
-    0 2px 3px rgba(130, 85, 0, 0.22);
-
-  transform: translateY(1px);
+    0 2px 3px rgba(120, 80, 0, 0.22);
 }
 
 
 /* =====================================================
-   STAR — GOLD PREMIUM
-   ===================================================== */
-
-.skill-star {
-  display: inline-block;
-
-  font-family: Arial, "Segoe UI Symbol", sans-serif;
-  font-size: 34px;
-  font-weight: 900;
-  line-height: 1;
-
-  /* GOLD GRADIENT */
-  background: linear-gradient(
-    145deg,
-    #fff4a3 0%,
-    #ffe45c 18%,
-    #ffc928 42%,
-    #f5ae00 68%,
-    #d98a00 100%
-  );
-
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-
-  /* Shadow lembut */
-  filter:
-    drop-shadow(0 2px 2px rgba(140, 90, 0, 0.25))
-    drop-shadow(0 3px 4px rgba(140, 90, 0, 0.12));
-
-  transform: translateY(1px);
-}
-
-
-/* =====================================================
-   MASTER SKILL — LEVEL 6
-   ROYAL PRESTIGE
+   LEVEL 6 — MASTER / PRESTIGE
    ===================================================== */
 
 .skill-stars.skill-master .skill-star {
   font-size: 38px;
+  color: #ffd21a !important;
 
-  /* GOLD TERANG UNTUK MASTER */
-  color: #ffd21f !important;
-
-  -webkit-text-stroke: 0.9px #b87900;
+  -webkit-text-stroke: 0.8px #a87500;
 
   text-shadow:
-    0 0 4px rgba(255, 215, 50, 0.9),
-    0 0 9px rgba(255, 195, 20, 0.6),
+    0 0 4px rgba(255, 210, 26, 0.85),
+    0 0 9px rgba(255, 195, 20, 0.55),
     0 2px 3px rgba(120, 80, 0, 0.25);
 
-  animation: royalStarGlow 2.5s ease-in-out infinite;
+  animation: masterStarGlow 2.4s ease-in-out infinite;
 }
 
 
-/* =====================================================
-   MASTER SKILL GLOW
-   ===================================================== */
-
-@keyframes royalStarGlow {
+@keyframes masterStarGlow {
 
   0%,
   100% {
     filter:
-      drop-shadow(0 0 3px rgba(255, 220, 70, 0.75))
-      drop-shadow(0 0 7px rgba(255, 195, 20, 0.45))
-      drop-shadow(0 3px 3px rgba(130, 85, 0, 0.25));
+      drop-shadow(0 0 3px rgba(255, 215, 40, 0.65))
+      drop-shadow(0 0 7px rgba(255, 195, 20, 0.35));
   }
 
   50% {
     filter:
-      drop-shadow(0 0 5px rgba(255, 225, 80, 0.95))
-      drop-shadow(0 0 11px rgba(255, 195, 20, 0.65))
-      drop-shadow(0 3px 4px rgba(130, 85, 0, 0.25));
+      drop-shadow(0 0 5px rgba(255, 220, 60, 0.95))
+      drop-shadow(0 0 11px rgba(255, 195, 20, 0.55));
   }
 
+}
+
+
+/* =====================================================
+   SKILL ROW
+   ===================================================== */
+
+.candidate-skill {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+
+  width: 100%;
+  min-width: 0;
+
+  column-gap: 10px;
+  padding: 10px 12px;
+
+  background: #eaf7ef;
+  border-radius: 10px;
+}
+
+.candidate-skill > span:first-child {
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.candidate-skill .skill-stars {
+  min-width: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  flex-wrap: nowrap;
+}
+
+.candidate-skill .skill-percent {
+  margin-left: 0;
+  flex-shrink: 0;
 }
 
 
@@ -1805,72 +1761,8 @@ button.danger:hover {
 
 @media (max-width: 600px) {
 
-  .skill-stars {
-    gap: 1px;
-  }
-
-  .skill-star {
-    font-size: 27px;
-  }
-
-  .skill-stars.skill-master .skill-star {
-    font-size: 29px;
-  }
-
-  .skill-percent {
-    font-size: 14px;
-    margin-left: 9px;
-  }
-
-}
-
-  /* =====================================================
-   SKILL ROW — MOBILE FIX
-   ===================================================== */
-
-.candidate-skill {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  column-gap: 12px;
-
-  width: 100%;
-  min-width: 0;
-}
-
-
-/* Label Skill */
-.candidate-skill > span:first-child {
-  white-space: nowrap;
-}
-
-
-/* Area bintang */
-.candidate-skill .skill-stars {
-  min-width: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: nowrap;
-}
-
-
-/* Persentase */
-.candidate-skill .skill-percent {
-  margin-left: 0;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-
-/* =====================================================
-   MOBILE
-   ===================================================== */
-
-@media (max-width: 600px) {
-
   .candidate-skill {
-    grid-template-columns: 45px minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     column-gap: 6px;
   }
 
@@ -1880,18 +1772,15 @@ button.danger:hover {
   }
 
   .candidate-skill .skill-star {
-    font-size: 30px;
+    font-size: 34px;
+  }
+
+  .candidate-skill .skill-stars.skill-master .skill-star {
+    font-size: 38px;
   }
 
   .candidate-skill .skill-percent {
     font-size: 14px;
-    margin-left: 0;
   }
-
-  .candidate-skill .skill-stars.skill-master .skill-star {
-    font-size: 32px;
-  }
-
-}
 
 }
