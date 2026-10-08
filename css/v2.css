@@ -1680,24 +1680,45 @@ button.danger:hover {
    ===================================================== */
 
 .skill-stars {
-  color: #ffd000 !important;
-
-  font-size: 28px;
+  color: #f5c400 !important;
+  font-family: Arial, "Segoe UI Symbol", sans-serif;
+  font-size: 34px;
   font-weight: 900;
-
-  letter-spacing: 3px;
-
+  letter-spacing: 2px;
   line-height: 1;
-
   white-space: nowrap;
-
   display: inline-flex;
   align-items: center;
-
   text-shadow:
-    0 1px 1px rgba(0, 0, 0, 0.08);
-
+    0 1px 0 #d6a900,
+    0 2px 4px rgba(180, 130, 0, 0.25);
   transform: translateY(1px);
+}
+
+/* =========================================
+   MASTER SKILL — LEVEL 6
+   ========================================= */
+
+.skill-stars.skill-master {
+  color: #ffd000 !important;
+  text-shadow:
+    0 0 4px rgba(255, 208, 0, 0.65),
+    0 0 9px rgba(255, 208, 0, 0.45),
+    0 0 16px rgba(255, 208, 0, 0.30),
+    0 2px 4px rgba(180, 130, 0, 0.25);
+
+  animation: masterSkillGlow 2s ease-in-out infinite;
+}
+
+@keyframes masterSkillGlow {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+
+  50% {
+    filter: brightness(1.18);
+  }
 }
 
 
