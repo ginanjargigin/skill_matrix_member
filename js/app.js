@@ -564,7 +564,41 @@
 
   }
 
+/* =====================================================
+   SKILL DISPLAY
+   ===================================================== */
 
+function getSkillStars(level) {
+
+  const value = Math.max(
+    0,
+    Math.min(6, Number(level) || 0)
+  );
+
+  if (value === 0) {
+    return "—";
+  }
+
+  return "★".repeat(value);
+}
+
+
+function getSkillPercent(level) {
+
+  const percentage = {
+    0: 0,
+    1: 25,
+    2: 50,
+    3: 75,
+    4: 82,
+    5: 92,
+    6: 100
+  };
+
+  return percentage[
+    Number(level)
+  ] ?? 0;
+}
   /* =====================================================
      CANDIDATE
      ===================================================== */
@@ -706,15 +740,23 @@
 
 
             <div class="candidate-skill">
-
+            
               <span>
                 Skill
               </span>
-
+            
               <strong>
-                L${member.level}
+            
+                <span class="skill-stars">
+                  ${getSkillStars(member.level)}
+                </span>
+            
+                <span class="skill-percent">
+                  ${getSkillPercent(member.level)}%
+                </span>
+            
               </strong>
-
+            
             </div>
 
 
