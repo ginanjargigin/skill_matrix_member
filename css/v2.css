@@ -1824,4 +1824,74 @@ button.danger:hover {
     margin-left: 9px;
   }
 
+  /* =====================================================
+   SKILL ROW — MOBILE FIX
+   ===================================================== */
+
+.candidate-skill {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  column-gap: 12px;
+
+  width: 100%;
+  min-width: 0;
+}
+
+
+/* Label Skill */
+.candidate-skill > span:first-child {
+  white-space: nowrap;
+}
+
+
+/* Area bintang */
+.candidate-skill .skill-stars {
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+
+/* Persentase */
+.candidate-skill .skill-percent {
+  margin-left: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+  .candidate-skill {
+    grid-template-columns: 45px minmax(0, 1fr) auto;
+    column-gap: 6px;
+  }
+
+  .candidate-skill .skill-stars {
+    gap: 1px;
+    justify-content: center;
+  }
+
+  .candidate-skill .skill-star {
+    font-size: 30px;
+  }
+
+  .candidate-skill .skill-percent {
+    font-size: 14px;
+    margin-left: 0;
+  }
+
+  .candidate-skill .skill-stars.skill-master .skill-star {
+    font-size: 32px;
+  }
+
+}
+
 }
