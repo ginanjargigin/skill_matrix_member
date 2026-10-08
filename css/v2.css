@@ -1808,15 +1808,15 @@ button.danger:hover {
 @media (max-width: 600px) {
 
   .skill-stars {
-    gap: 2px;
+    gap: 1 px;
   }
 
   .skill-star {
-    font-size: 32px;
+    font-size: 28 px;
   }
 
   .skill-stars.skill-master .skill-star {
-    font-size: 36px;
+    font-size: 29 px;
   }
 
   .skill-percent {
