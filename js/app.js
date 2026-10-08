@@ -567,21 +567,15 @@
 /* =====================================================
    SKILL DISPLAY
    ===================================================== */
-
 function getSkillStars(level) {
+  const value = Math.max(0, Math.min(6, Number(level) || 0));
 
-  const value = Math.max(
-    0,
-    Math.min(6, Number(level) || 0)
-  );
+  if (value === 0) return "—";
 
-  if (value === 0) {
-    return "—";
-  }
-
-  return "★".repeat(value);
+  return Array.from({ length: value }, () => `
+    <span class="skill-star">★</span>
+  `).join("");
 }
-
 
 function getSkillPercent(level) {
 
