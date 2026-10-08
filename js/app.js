@@ -210,80 +210,87 @@
 
   function page(name) {
 
-    document
-      .querySelectorAll(".page")
-      .forEach(element => {
+  document
+    .querySelectorAll(".page")
+    .forEach(element => {
 
-        element.classList.remove(
-          "active"
-        );
-
-      });
-
-
-    const target =
-      $("page-" + name);
-
-
-    if (target) {
-
-      target.classList.add(
+      element.classList.remove(
         "active"
       );
 
-    }
+    });
 
 
-    document
-      .querySelectorAll("[data-page]")
-      .forEach(button => {
-
-        button.classList.toggle(
-          "active",
-          button.dataset.page === name
-        );
-
-      });
+  const target =
+    $("page-" + name);
 
 
-    $("pageTitle").textContent = {
+  if (target) {
 
-      dashboard:
-        "Dashboard",
+    target.classList.add(
+      "active"
+    );
 
-      replacement:
-        "Replacement",
-
-      members:
-        "Member & Skill",
-
-      history:
-        "Riwayat",
-
-      master:
-  "Master Line & Station"
-
-    }[name] || "Dashboard";
+  }
 
 
-    document.body
-      .classList
-      .remove(
-        "menu-open"
+  document
+    .querySelectorAll("[data-page]")
+    .forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.page === name
       );
 
+    });
 
-    if (name === "members") {
 
-      MemberManager.populateLines();
+  const titles = {
 
-    }
+    dashboard:
+      "Dashboard",
+
+    replacement:
+      "Replacement",
+
+    members:
+      "Member & Skill",
+
+    history:
+      "Riwayat",
+
+    master:
+      "Master Line & Station"
+
+  };
+
+
+  $("pageTitle").textContent =
+    titles[name] ||
+    "Dashboard";
+
+
+  document.body
+    .classList
+    .remove(
+      "menu-open"
+    );
+
+
+  if (name === "members") {
+
+    MemberManager.populateLines();
+
+  }
+
 
   if (name === "master") {
 
-  MasterManager.render();
+    MasterManager.render();
 
   }
+
 }
 
   /* =====================================================
@@ -1625,28 +1632,26 @@
       );
 
 
-    /* ===================================================
-       MEMBER MANAGER
-       =================================================== */
+  /* =====================================================
+   MODULE CONFIGURATION
+   ===================================================== */
 
-    MemberManager.configure({
+MemberManager.configure({
 
-      getState: () => s,
+  getState: () => s,
 
-      refresh: async () => {
+  refresh: async () => {
 
-        await load();
+    await load();
 
-        render();
+    render();
 
-      }
+  }
 
-    });
+});
 
 
-    MemberManager.bind();
-
-    MasterManager.configure({
+MasterManager.configure({
 
   getState: () => s,
 
@@ -1662,6 +1667,8 @@
 
 });
 
+
+MemberManager.bind();
 
 MasterManager.bind();
     
