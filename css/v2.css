@@ -1680,7 +1680,7 @@ button.danger:hover {
    ===================================================== */
 
 .skill-stars {
-  color: #ffd21a !important;
+  color: #f4c21d !important;
 
   font-family: Arial, "Segoe UI Symbol", sans-serif;
   font-size: 34px;
@@ -1693,46 +1693,47 @@ button.danger:hover {
   display: inline-flex;
   align-items: center;
 
-  /* OUTLINE */
-  -webkit-text-stroke: 1.3px #a87500;
+  /* Outline tipis — bukan outline tebal */
+  -webkit-text-stroke: 0.6px #d29f00;
 
-  /* Shadow */
+  /* Shadow lembut */
   text-shadow:
-    0 2px 3px rgba(120, 80, 0, 0.28);
+    0 2px 3px rgba(170, 120, 0, 0.20);
 }
 
 
 /* =====================================================
    MASTER SKILL — LEVEL 6
+   ROYAL PRESTIGE
    ===================================================== */
 
 .skill-stars.skill-master {
-  color: #ffd21a !important;
+  color: #ffd52a !important;
 
   font-size: 38px;
   font-weight: 900;
 
   letter-spacing: 1px;
 
-  /* OUTLINE L6 LEBIH TEGAS */
-  -webkit-text-stroke: 1.7px #966900;
+  /* Outline sangat tipis */
+  -webkit-text-stroke: 0.8px #c69200;
 
-  /* GOLD GLOW */
+  /* Royal Gold Glow */
   text-shadow:
-    0 0 4px rgba(255, 210, 26, 0.95),
-    0 0 9px rgba(255, 210, 26, 0.75),
-    0 0 15px rgba(255, 210, 26, 0.45),
-    0 2px 3px rgba(120, 80, 0, 0.30);
+    0 0 3px rgba(255, 215, 60, 0.95),
+    0 0 7px rgba(255, 200, 30, 0.75),
+    0 0 14px rgba(255, 190, 0, 0.45),
+    0 2px 3px rgba(130, 90, 0, 0.20);
 
-  animation: masterSkillGlow 2.2s ease-in-out infinite;
+  animation: royalPrestigeGlow 2.5s ease-in-out infinite;
 }
 
 
 /* =====================================================
-   MASTER SKILL GLOW ANIMATION
+   ROYAL PRESTIGE ANIMATION
    ===================================================== */
 
-@keyframes masterSkillGlow {
+@keyframes royalPrestigeGlow {
 
   0%,
   100% {
@@ -1740,7 +1741,7 @@ button.danger:hover {
   }
 
   50% {
-    filter: brightness(1.18);
+    filter: brightness(1.16);
   }
 
 }
@@ -1775,7 +1776,7 @@ button.danger:hover {
 
   .skill-stars.skill-master {
     font-size: 36px;
-    -webkit-text-stroke: 1.6px #966900;
+    -webkit-text-stroke: 0.8px #c69200;
   }
 
   .skill-percent {
@@ -1783,4 +1784,5 @@ button.danger:hover {
     margin-left: 9px;
   }
 
+}
 }
