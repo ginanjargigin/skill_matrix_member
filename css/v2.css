@@ -1681,9 +1681,9 @@ button.danger:hover {
 
 .skill-stars {
   color: #ffd000 !important;
-  font-size: 22px;
+  font-size: 32px;
   font-weight: 900;
-  letter-spacing: 2px;
+  letter-spacing: 4px;
   line-height: 1;
   white-space: nowrap;
   display: inline-block;
