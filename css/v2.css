@@ -1677,28 +1677,52 @@ button.danger:hover {
 
 /* =====================================================
    SKILL STAR DISPLAY
+   ROYAL PRESTIGE
    ===================================================== */
 
 .skill-stars {
-  color: #f4c21d !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+
+  white-space: nowrap;
+  line-height: 1;
+}
+
+
+/* =====================================================
+   STAR — GOLD PREMIUM
+   ===================================================== */
+
+.skill-star {
+  display: inline-block;
 
   font-family: Arial, "Segoe UI Symbol", sans-serif;
   font-size: 34px;
   font-weight: 900;
-
-  letter-spacing: 1px;
   line-height: 1;
 
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
+  /* GOLD GRADIENT */
+  background: linear-gradient(
+    145deg,
+    #fff4a3 0%,
+    #ffe45c 18%,
+    #ffc928 42%,
+    #f5ae00 68%,
+    #d98a00 100%
+  );
 
-  /* Outline tipis — bukan outline tebal */
-  -webkit-text-stroke: 0.6px #d29f00;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 
   /* Shadow lembut */
-  text-shadow:
-    0 2px 3px rgba(170, 120, 0, 0.20);
+  filter:
+    drop-shadow(0 2px 2px rgba(140, 90, 0, 0.25))
+    drop-shadow(0 3px 4px rgba(140, 90, 0, 0.12));
+
+  transform: translateY(1px);
 }
 
 
@@ -1708,40 +1732,54 @@ button.danger:hover {
    ===================================================== */
 
 .skill-stars.skill-master {
-  color: #ffd52a !important;
+  gap: 3px;
+}
 
+.skill-stars.skill-master .skill-star {
   font-size: 38px;
-  font-weight: 900;
 
-  letter-spacing: 1px;
+  background: linear-gradient(
+    145deg,
+    #fffbd1 0%,
+    #fff08a 15%,
+    #ffd83d 35%,
+    #ffc21c 55%,
+    #f0a900 75%,
+    #d88900 100%
+  );
 
-  /* Outline sangat tipis */
-  -webkit-text-stroke: 0.8px #c69200;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 
-  /* Royal Gold Glow */
-  text-shadow:
-    0 0 3px rgba(255, 215, 60, 0.95),
-    0 0 7px rgba(255, 200, 30, 0.75),
-    0 0 14px rgba(255, 190, 0, 0.45),
-    0 2px 3px rgba(130, 90, 0, 0.20);
+  filter:
+    drop-shadow(0 0 3px rgba(255, 220, 70, 0.85))
+    drop-shadow(0 0 7px rgba(255, 195, 20, 0.55))
+    drop-shadow(0 3px 3px rgba(130, 85, 0, 0.25));
 
-  animation: royalPrestigeGlow 2.5s ease-in-out infinite;
+  animation: royalStarGlow 2.5s ease-in-out infinite;
 }
 
 
 /* =====================================================
-   ROYAL PRESTIGE ANIMATION
+   MASTER SKILL GLOW
    ===================================================== */
 
-@keyframes royalPrestigeGlow {
+@keyframes royalStarGlow {
 
   0%,
   100% {
-    filter: brightness(1);
+    filter:
+      drop-shadow(0 0 3px rgba(255, 220, 70, 0.75))
+      drop-shadow(0 0 7px rgba(255, 195, 20, 0.45))
+      drop-shadow(0 3px 3px rgba(130, 85, 0, 0.25));
   }
 
   50% {
-    filter: brightness(1.16);
+    filter:
+      drop-shadow(0 0 5px rgba(255, 225, 80, 0.95))
+      drop-shadow(0 0 11px rgba(255, 195, 20, 0.65))
+      drop-shadow(0 3px 4px rgba(130, 85, 0, 0.25));
   }
 
 }
@@ -1770,13 +1808,15 @@ button.danger:hover {
 @media (max-width: 600px) {
 
   .skill-stars {
-    font-size: 32px;
-    letter-spacing: 1px;
+    gap: 2px;
   }
 
-  .skill-stars.skill-master {
+  .skill-star {
+    font-size: 32px;
+  }
+
+  .skill-stars.skill-master .skill-star {
     font-size: 36px;
-    -webkit-text-stroke: 0.8px #c69200;
   }
 
   .skill-percent {
@@ -1784,5 +1824,4 @@ button.danger:hover {
     margin-left: 9px;
   }
 
-}
 }
