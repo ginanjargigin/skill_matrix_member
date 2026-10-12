@@ -1749,6 +1749,363 @@ button.danger:disabled {
 
   white-space: nowrap;
 }
+/* =====================================================
+   RIWAYAT REPLACEMENT
+   ===================================================== */
+
+.history-heading {
+  margin-bottom: 18px;
+}
+
+.history-heading h2 {
+  margin: 0 0 6px;
+}
+
+.history-heading p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.history-panel {
+  padding: 18px;
+  min-width: 0;
+}
+
+/* Filter bulan dan pencarian */
+
+.history-toolbar {
+  display: grid;
+  grid-template-columns: minmax(180px, 220px) minmax(220px, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.history-toolbar label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.history-toolbar label > span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.history-toolbar input {
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  padding: 0 12px;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  outline: none;
+}
+
+.history-toolbar input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(23, 105, 224, 0.10);
+}
+
+.history-reset {
+  height: 44px;
+  padding: 0 18px;
+  white-space: nowrap;
+}
+
+.history-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+#historyCount {
+  color: var(--primary);
+  font-weight: 800;
+}
+
+/* Daftar riwayat */
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.history-row {
+  display: grid;
+  grid-template-columns:
+    minmax(150px, 0.85fr)
+    minmax(180px, 1.15fr)
+    minmax(180px, 1.15fr)
+    minmax(190px, 1.15fr);
+  gap: 10px;
+  align-items: stretch;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: #fff;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.history-row:hover {
+  border-color: #cbd8eb;
+  box-shadow: 0 5px 16px rgba(25, 45, 80, 0.06);
+}
+
+.history-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 8px 10px;
+}
+
+.history-line-cell {
+  background: #f1f6ff;
+  border-left: 4px solid var(--primary);
+  border-radius: 9px;
+}
+
+.history-line-name {
+  color: var(--primary);
+  font-size: 16px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.history-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #405572;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.history-shift {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  color: #344865;
+  background: #e4ebf4;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.history-person-name {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.history-detail,
+.history-origin {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.history-detail b {
+  color: #344865;
+}
+
+.history-origin {
+  color: #17603a;
+  background: #e7f7ec;
+  border-radius: 6px;
+  padding: 4px 7px;
+}
+
+.history-origin b {
+  color: #13733e;
+}
+
+.history-mobile-label {
+  display: none;
+}
+
+/* Alasan tidak masuk */
+
+.history-reason-cell {
+  justify-content: center;
+}
+
+.history-reason-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  min-height: 74px;
+  padding: 12px;
+  border-radius: 10px;
+  overflow-wrap: anywhere;
+}
+
+.history-reason-box strong {
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.history-reason-box small {
+  color: inherit;
+  font-size: 11px;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+
+.reason-sakit {
+  color: #c62828;
+  background: #fff0f0;
+}
+
+.reason-izin {
+  color: #a65b00;
+  background: #fff4d8;
+}
+
+.reason-cuti {
+  color: #175ac0;
+  background: #eaf2ff;
+}
+
+.reason-terlambat {
+  color: #14763b;
+  background: #e8f7ec;
+}
+
+.reason-default {
+  color: #344865;
+  background: #edf1f6;
+}
+
+.history-empty {
+  padding: 28px 16px;
+  text-align: center;
+}
+
+.history-empty small {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+}
+
+/* =====================================================
+   TABLET
+   ===================================================== */
+
+@media (max-width: 1100px) {
+  .history-row {
+    grid-template-columns:
+      minmax(130px, 0.8fr)
+      minmax(150px, 1fr)
+      minmax(150px, 1fr)
+      minmax(160px, 1fr);
+    gap: 6px;
+    padding: 7px;
+  }
+
+  .history-cell {
+    padding: 7px;
+  }
+
+  .history-person-name {
+    font-size: 13px;
+  }
+
+  .history-reason-box {
+    padding: 9px;
+  }
+}
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 700px) {
+  .history-panel {
+    padding: 12px;
+  }
+
+  .history-toolbar {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+
+  .history-month-wrap {
+    grid-column: 1 / -1;
+  }
+
+  .history-search-wrap {
+    grid-column: 1;
+  }
+
+  .history-reset {
+    grid-column: 2;
+    align-self: end;
+    padding: 0 12px;
+  }
+
+  .history-summary {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .history-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .history-cell {
+    padding: 10px;
+  }
+
+  .history-mobile-label {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.035em;
+  }
+
+  .history-line-cell {
+    gap: 7px;
+  }
+
+  .history-line-name {
+    font-size: 17px;
+  }
+
+  .history-person-name {
+    font-size: 15px;
+  }
+
+  .history-reason-box {
+    min-height: auto;
+  }
+}
 
 
 /* =====================================================
