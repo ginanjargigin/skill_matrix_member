@@ -1001,54 +1001,6 @@ function renderMembers() {
 
 
 
-    /* ===================================================
-       EDIT MEMBER
-       =================================================== */
-
-    document
-      .querySelectorAll(
-        "[data-edit-member]"
-      )
-      .forEach(button => {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            MemberManager.openEditModal(
-              button.dataset.editMember
-            );
-
-          }
-        );
-
-      });
-
-
-    /* ===================================================
-       EDIT SKILL
-       =================================================== */
-
-    document
-      .querySelectorAll(
-        "[data-edit-skill]"
-      )
-      .forEach(button => {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            openSkills(
-              button.dataset.editSkill
-            );
-
-          }
-        );
-
-      });
-
-  }
 
 
   /* =====================================================
