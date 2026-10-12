@@ -1,11 +1,12 @@
+
 window.MemberManager = (() => {
   let getState = null;
   let refresh = null;
 
   let selectedSkillLineIds = new Set();
   let selectedSkillLineId = "";
-  
   let skillDraft = new Map();
+
   let lineSearchBound = false;
   let skillSearchBound = false;
 
@@ -110,10 +111,6 @@ window.MemberManager = (() => {
 
   /* =====================================================
      LINE ASAL SEARCH
-     index.html IDs:
-     memberHomeLineSearch
-     memberHomeLine
-     memberHomeLineResults
      ===================================================== */
 
   function populateLines(selected = "") {
@@ -157,29 +154,22 @@ window.MemberManager = (() => {
     const hidden = $("memberHomeLine");
     const results = $("memberHomeLineResults");
 
-    if (!search || !hidden || !results) return;
-    if (lineSearchBound) return;
+    if (!search || !hidden || !results || lineSearchBound) return;
 
     lineSearchBound = true;
 
     function renderResults() {
-      const query = search.value
-        .trim()
-        .toLocaleLowerCase("id-ID");
+      const query = search.value.trim().toLocaleLowerCase("id-ID");
 
       const lines = getActiveLines().filter(line =>
-        String(line.name || "")
-          .toLocaleLowerCase("id-ID")
-          .includes(query)
+        String(line.name || "").toLocaleLowerCase("id-ID").includes(query)
       );
 
       results.innerHTML = "";
 
       if (!lines.length) {
         results.innerHTML = `
-          <div class="line-search-empty">
-            Line tidak ditemukan.
-          </div>
+          <div class="line-search-empty">Line tidak ditemukan.</div>
         `;
         results.hidden = false;
         return;
@@ -211,10 +201,7 @@ window.MemberManager = (() => {
     search.addEventListener("focus", renderResults);
 
     document.addEventListener("click", event => {
-      if (
-        !search.contains(event.target) &&
-        !results.contains(event.target)
-      ) {
+      if (!search.contains(event.target) && !results.contains(event.target)) {
         results.hidden = true;
       }
     });
@@ -222,10 +209,7 @@ window.MemberManager = (() => {
 
   /* =====================================================
      SKILL MATRIX LINE SEARCH
-     index.html IDs:
-     memberSkillLineSearch
-     memberSkillLineResults
-     memberSkillEditor
+     Bisa menambahkan beberapa line dalam satu form.
      ===================================================== */
 
   function bindSkillLineSearch() {
@@ -237,14 +221,11 @@ window.MemberManager = (() => {
     skillSearchBound = true;
 
     function renderResults() {
-      const query = search.value
-        .trim()
-        .toLocaleLowerCase("id-ID");
+      const query = search.value.trim().toLocaleLowerCase("id-ID");
 
       const lines = getActiveLines().filter(line =>
-        String(line.name || "")
-          .toLocaleLowerCase("id-ID")
-          .includes(query)
+        String(line.name || "").toLocaleLowerCase("id-ID").includes(query) &&
+        !selectedSkillLineIds.has(String(line.id))
       );
 
       results.innerHTML = "";
@@ -252,7 +233,9 @@ window.MemberManager = (() => {
       if (!lines.length) {
         results.innerHTML = `
           <div class="line-search-empty">
-            Line tidak ditemukan.
+            ${query
+              ? "Line tidak ditemukan atau sudah ditambahkan."
+              : "Semua line yang cocok sudah ditambahkan."}
           </div>
         `;
         results.hidden = false;
@@ -263,16 +246,19 @@ window.MemberManager = (() => {
         const button = document.createElement("button");
         button.type = "button";
         button.className = "line-search-option";
-        button.textContent = line.name;
+        button.textContent = `+ ${line.name}`;
 
         button.addEventListener("click", () => {
           rememberVisibleSkills();
 
+          selectedSkillLineIds.add(String(line.id));
           selectedSkillLineId = String(line.id);
-          search.value = line.name;
+
+          search.value = "";
           results.hidden = true;
 
           renderMemberSkills($("memberEditId")?.value || null);
+          search.focus();
         });
 
         results.appendChild(button);
@@ -281,27 +267,11 @@ window.MemberManager = (() => {
       results.hidden = false;
     }
 
-    search.addEventListener("input", () => {
-      selectedSkillLineId = "";
-      renderResults();
-
-      const container = $("memberSkillEditor");
-      if (container) {
-        container.innerHTML = `
-          <div class="empty">
-            Pilih line dari hasil pencarian untuk melihat station.
-          </div>
-        `;
-      }
-    });
-
+    search.addEventListener("input", renderResults);
     search.addEventListener("focus", renderResults);
 
     document.addEventListener("click", event => {
-      if (
-        !search.contains(event.target) &&
-        !results.contains(event.target)
-      ) {
+      if (!search.contains(event.target) && !results.contains(event.target)) {
         results.hidden = true;
       }
     });
@@ -309,7 +279,7 @@ window.MemberManager = (() => {
 
   /* =====================================================
      RENDER SKILL MATRIX
-     Hanya menampilkan station pada line yang dipilih.
+     Menampilkan seluruh line yang dipilih.
      ===================================================== */
 
   function renderMemberSkills(memberId = null) {
@@ -318,100 +288,134 @@ window.MemberManager = (() => {
 
     if (!s || !container) return;
 
-    if (!selectedSkillLineId) {
-      container.innerHTML = `
-        <div class="empty">
-          Cari dan pilih nama line terlebih dahulu
-          untuk menampilkan station dan Skill Matrix.
-        </div>
-      `;
-      return;
-    }
-
-    const line = (s.lines || []).find(
-      item => String(item.id) === String(selectedSkillLineId)
+    const selectedLines = getActiveLines().filter(line =>
+      selectedSkillLineIds.has(String(line.id))
     );
 
-    if (!line) {
-      container.innerHTML = `
-        <div class="empty">Line tidak ditemukan.</div>
-      `;
-      return;
-    }
-
-    const stations = getActiveStations()
-      .filter(station =>
-        String(station.line_id) === String(selectedSkillLineId)
-      )
-      .sort((a, b) =>
-        String(a.name || "").localeCompare(String(b.name || ""))
-      );
-
-    if (!stations.length) {
+    if (!selectedLines.length) {
       container.innerHTML = `
         <div class="empty">
-          Belum ada station aktif di line
-          ${esc(line.name)}.
+          Cari dan pilih satu atau beberapa line untuk menampilkan
+          station dan Skill Matrix.
         </div>
       `;
       return;
     }
 
-    container.innerHTML = `
-      <div class="member-skill-line-title">
-        <strong>${esc(line.name)}</strong>
-        <small>${stations.length} station</small>
-      </div>
+    container.innerHTML = selectedLines.map(line => {
+      const stations = getActiveStations()
+        .filter(station => String(station.line_id) === String(line.id))
+        .sort((a, b) =>
+          String(a.name || "").localeCompare(String(b.name || ""))
+        );
 
-      ${stations.map(station => {
-        const level = getSkillLevel(memberId, station.id);
-
-        return `
-          <div class="member-skill-row">
-            <div class="member-skill-info">
-              <strong>${esc(station.name)}</strong>
-              <small>${esc(station.position_name || line.name)}</small>
+      return `
+        <section
+          class="member-skill-line-group"
+          data-skill-line="${esc(line.id)}"
+        >
+          <div class="member-skill-line-title">
+            <div>
+              <strong>${esc(line.name)}</strong>
+              <small>${stations.length} station</small>
             </div>
 
-            <label class="member-skill-level">
-              <span>Level</span>
-              <select
-                data-member-skill="${esc(station.id)}"
-                aria-label="Skill ${esc(station.name)}"
-              >
-                <option value="0" ${level === 0 ? "selected" : ""}>
-                  0 — Belum bisa
-                </option>
-                <option value="1" ${level === 1 ? "selected" : ""}>
-                  L1 — 25%
-                </option>
-                <option value="2" ${level === 2 ? "selected" : ""}>
-                  L2 — 50%
-                </option>
-                <option value="3" ${level === 3 ? "selected" : ""}>
-                  L3 — 75%
-                </option>
-                <option value="4" ${level === 4 ? "selected" : ""}>
-                  L4 — 82%
-                </option>
-                <option value="5" ${level === 5 ? "selected" : ""}>
-                  L5 — 92%
-                </option>
-                <option value="6" ${level === 6 ? "selected" : ""}>
-                  L6 — 100%
-                </option>
-              </select>
-            </label>
+            <button
+              type="button"
+              class="secondary small"
+              data-remove-skill-line="${esc(line.id)}"
+              aria-label="Hapus line ${esc(line.name)} dari form"
+            >Hapus Line</button>
           </div>
-        `;
-      }).join("")}
-    `;
+
+          ${
+            stations.length
+              ? stations.map(station => {
+                  const level = getSkillLevel(memberId, station.id);
+
+                  return `
+                    <div class="member-skill-row">
+                      <div class="member-skill-info">
+                        <strong>${esc(station.name)}</strong>
+                        <small>
+                          ${esc(station.position_name || line.name)}
+                        </small>
+                      </div>
+
+                      <label class="member-skill-level">
+                        <span>Level</span>
+                        <select
+                          data-member-skill="${esc(station.id)}"
+                          aria-label="Skill ${esc(station.name)}"
+                        >
+                          <option value="0" ${level === 0 ? "selected" : ""}>
+                            0 — Belum bisa
+                          </option>
+                          <option value="1" ${level === 1 ? "selected" : ""}>
+                            L1 — 25%
+                          </option>
+                          <option value="2" ${level === 2 ? "selected" : ""}>
+                            L2 — 50%
+                          </option>
+                          <option value="3" ${level === 3 ? "selected" : ""}>
+                            L3 — 75%
+                          </option>
+                          <option value="4" ${level === 4 ? "selected" : ""}>
+                            L4 — 82%
+                          </option>
+                          <option value="5" ${level === 5 ? "selected" : ""}>
+                            L5 — 92%
+                          </option>
+                          <option value="6" ${level === 6 ? "selected" : ""}>
+                            L6 — 100%
+                          </option>
+                        </select>
+                      </label>
+                    </div>
+                  `;
+                }).join("")
+              : `
+                <div class="empty">
+                  Belum ada station aktif di line ${esc(line.name)}.
+                </div>
+              `
+          }
+        </section>
+      `;
+    }).join("");
 
     container.querySelectorAll("[data-member-skill]").forEach(select => {
       select.addEventListener("change", () => {
         skillDraft.set(
           getSkillKey(select.dataset.memberSkill),
           Number(select.value) || 0
+        );
+      });
+    });
+
+    container.querySelectorAll("[data-remove-skill-line]").forEach(button => {
+      button.addEventListener("click", () => {
+        rememberVisibleSkills();
+
+        const lineId = String(button.dataset.removeSkillLine);
+        const line = getActiveLines().find(
+          item => String(item.id) === lineId
+        );
+
+        selectedSkillLineIds.delete(lineId);
+
+        if (selectedSkillLineId === lineId) {
+          selectedSkillLineId = "";
+        }
+
+        // Draft tetap disimpan jika line ditambahkan lagi.
+        renderMemberSkills(memberId);
+
+        $("memberSkillLineSearch")?.focus();
+
+        toast(
+          `Line ${line?.name || ""} dihapus dari tampilan form. ` +
+          "Perubahan belum disimpan."
         );
       });
     });
@@ -422,6 +426,7 @@ window.MemberManager = (() => {
      ===================================================== */
 
   function resetSkillSearch() {
+    selectedSkillLineIds = new Set();
     selectedSkillLineId = "";
     skillDraft = new Map();
 
@@ -471,6 +476,7 @@ window.MemberManager = (() => {
 
   /* =====================================================
      OPEN EDIT
+     Tampilkan semua line yang memiliki skill tersimpan.
      ===================================================== */
 
   function openEditModal(id) {
@@ -503,7 +509,28 @@ window.MemberManager = (() => {
 
     populateLines(member.home_line_id || "");
 
-    // Saat edit, cari line terlebih dahulu.
+    const memberSkills = (s.skills || []).filter(skill =>
+      String(skill.member_id) === String(member.id) &&
+      Number(skill.skill_level) > 0
+    );
+
+    const skilledStationIds = new Set(
+      memberSkills.map(skill => String(skill.station_id))
+    );
+
+    getActiveStations().forEach(station => {
+      if (skilledStationIds.has(String(station.id))) {
+        selectedSkillLineIds.add(String(station.line_id));
+      }
+    });
+
+    memberSkills.forEach(skill => {
+      skillDraft.set(
+        getSkillKey(skill.station_id),
+        Number(skill.skill_level) || 0
+      );
+    });
+
     renderMemberSkills(member.id);
 
     $("memberModal").classList.add("open");
@@ -579,7 +606,8 @@ window.MemberManager = (() => {
         message.includes("manpower_changes")
       ) {
         toast(
-          "Member tidak dapat dihapus karena sudah digunakan dalam riwayat replacement."
+          "Member tidak dapat dihapus karena sudah digunakan " +
+          "dalam riwayat replacement."
         );
       } else {
         toast(error?.message || "Gagal menghapus member.");
@@ -643,8 +671,8 @@ window.MemberManager = (() => {
       return;
     }
 
-    // Ambil semua station aktif, bukan hanya station pada line terakhir.
-    // Skill yang tidak diedit tetap dipertahankan.
+    // Ambil semua station aktif.
+    // Skill pada line lain yang tidak diedit tetap dipertahankan.
     const skills = getActiveStations().map(station => {
       const stationId = getSkillKey(station.id);
       const existing = getStoredSkill(editId, station.id);
@@ -661,11 +689,15 @@ window.MemberManager = (() => {
     });
 
     if (!skills.length) {
-      toast("Skill Matrix belum tersedia. Tambahkan station terlebih dahulu.");
+      toast(
+        "Skill Matrix belum tersedia. Tambahkan station terlebih dahulu."
+      );
       return;
     }
 
-    if (!skills.some(skill => skill.skill_level >= 1 && skill.skill_level <= 6)) {
+    if (!skills.some(skill =>
+      skill.skill_level >= 1 && skill.skill_level <= 6
+    )) {
       toast("Isi minimal satu skill dengan level 1–6.");
       return;
     }
@@ -715,11 +747,13 @@ window.MemberManager = (() => {
         memberId = savedMember?.id || editId;
 
         if (!memberId) {
-          throw new Error("ID member tidak ditemukan setelah penyimpanan.");
+          throw new Error(
+            "ID member tidak ditemukan setelah penyimpanan."
+          );
         }
       }
 
-      // Simpan skill semua station agar nilai line lain tidak hilang.
+      // Simpan skill untuk member yang sama.
       for (const skill of skills) {
         const skillPayload = {
           member_id: memberId,
