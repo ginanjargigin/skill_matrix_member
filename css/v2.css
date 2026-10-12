@@ -2374,4 +2374,128 @@ button.danger:disabled {
 .line-search-option:hover {
   background: rgba(59, 130, 246, .12);
 }
+
+/* =========================================
+   MEMBER FORM - LINE SEARCH DROPDOWN
+   ========================================= */
+
+.line-search-wrapper,
+.skill-line-search {
+  position: relative;
+  width: 100%;
+}
+
+.line-search-wrapper input[type="search"],
+.skill-line-search input[type="search"] {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
+  border: 1px solid var(--color-line, #d8dee8);
+  border-radius: 12px;
+  padding: 10px 13px;
+  background: var(--color-panel, #fff);
+  color: inherit;
+  font: inherit;
+  outline: none;
+}
+
+.line-search-wrapper input[type="search"]:focus,
+.skill-line-search input[type="search"]:focus {
+  border-color: #3978c5;
+  box-shadow: 0 0 0 3px rgba(57, 120, 197, 0.12);
+}
+
+/* Dropdown hasil pencarian */
+.line-search-results {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  z-index: 2000;
+
+  max-height: 190px;
+  overflow-y: auto;
+
+  background: var(--color-panel, #fff);
+  color: var(--color-text, #172033);
+  border: 1px solid var(--color-line, #d8dee8);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+}
+
+.line-search-results[hidden] {
+  display: none !important;
+}
+
+/* Setiap pilihan line */
+.line-search-option {
+  display: block;
+  width: 100%;
+  padding: 11px 13px;
+  border: 0;
+  border-bottom: 1px solid var(--color-line, #e5e7eb);
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.line-search-option:last-child {
+  border-bottom: 0;
+}
+
+.line-search-option:hover,
+.line-search-option:focus-visible {
+  background: rgba(57, 120, 197, 0.10);
+  outline: none;
+}
+
+.line-search-empty {
+  padding: 12px;
+  font-size: 13px;
+  color: var(--color-muted, #6b7280);
+}
+
+/* Area pencarian Skill Matrix */
+.skill-line-search {
+  margin-bottom: 14px;
+}
+
+/* Judul line yang dipilih */
+.member-skill-line-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 12px 0;
+  font-weight: 600;
+}
+
+.member-skill-line-title small {
+  color: var(--color-muted, #6b7280);
+  font-weight: 400;
+}
+
+/* Hindari tombol hasil pencarian mengikuti style tombol umum */
+.line-search-results button.line-search-option {
+  appearance: none;
+  -webkit-appearance: none;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Dropdown tetap terbaca di layar kecil */
+@media (max-width: 600px) {
+  .line-search-results {
+    max-height: 160px;
+  }
+
+  .line-search-option {
+    min-height: 42px;
+  }
+}
+
 }
