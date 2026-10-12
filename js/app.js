@@ -634,50 +634,55 @@ const selectedShift =
 const selectedDate =
   $("changeDate").value;
 
-const candidates =
-  s.members
-    .filter(member => {
-      // Hanya member aktif.
-      if (member.active === false) {
-        return false;
-      }
+const selectedShift = $("changeShift").value;
+const selectedDate = $("changeDate").value;
 
-      // Shift member harus sama dengan shift yang dipilih.
-      if (
-        String(member.shift || "").toUpperCase() !==
-        String(selectedShift || "").toUpperCase()
-      ) {
-        return false;
-      }
+function normalizeShift(value) {
+  const shift = String(value || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[_-]/g, " ");
 
-      // Jangan tampilkan member yang sudah ditugaskan
-      // pada tanggal dan shift yang sama.
-      const alreadyAssigned =
-        s.changes.some(change =>
-          String(change.replacement_member_id) ===
-            String(member.id) &&
-          String(change.work_date) === selectedDate &&
-          String(change.shift || "").toUpperCase() ===
-            String(selectedShift || "").toUpperCase()
-        );
+  if (["A", "NON SHIFT", "NONSHIFT"].includes(shift)) return "A";
+  if (["B", "RED"].includes(shift)) return "B";
+  if (["C", "WHITE"].includes(shift)) return "C";
 
-      if (alreadyAssigned) {
-        return false;
-      }
+  return shift;
+}
 
-      // Pencarian nama atau nomor registrasi tetap berfungsi.
-      const name =
-        String(member.name || "").toLowerCase();
+const candidates = s.members
+  .filter(member => {
+    if (member.active === false) return false;
 
-      const reg =
-        String(member.reg_code || "").toLowerCase();
+    if (
+      normalizeShift(member.shift) !==
+      normalizeShift(selectedShift)
+    ) {
+      return false;
+    }
 
-      return (
-        !query ||
-        name.includes(query) ||
-        reg.includes(query)
-      );
-    })
+    const alreadyAssigned = s.changes.some(change =>
+      String(change.replacement_member_id) === String(member.id) &&
+      String(change.work_date).slice(0, 10) === selectedDate &&
+      normalizeShift(change.shift) === normalizeShift(selectedShift)
+    );
+
+    if (alreadyAssigned) return false;
+
+    const name = String(member.name || "").toLowerCase();
+    const reg = String(member.reg_code || "").toLowerCase();
+
+    return !query || name.includes(query) || reg.includes(query);
+  })
+  .map(member => ({
+    ...member,
+    level: getSkill(member.id, stationId)
+  }))
+  .filter(member => member.level > 0)
+  .sort((a, b) =>
+    b.level - a.level ||
+    String(a.name).localeCompare(String(b.name))
+  );
 
 
     /* ===================================================
