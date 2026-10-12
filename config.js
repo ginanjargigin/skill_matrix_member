@@ -5,5 +5,5 @@ window.APP_CONFIG = {
 
   SUPABASE_ANON_KEY: "sb_publishable_1dfIsZf0gxeu2g0rJ-U8ew_w2FUmO9f",
 
-  REQUIRE_AUTH: true
+  REQUIRE_AUTH: false
 };
