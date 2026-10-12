@@ -2,7 +2,8 @@ window.MasterManager = (() => {
 
   let getState = null;
   let refresh = null;
-
+  let lineProcessDraft = [];
+  let lineProcessOriginal = [];
 
   /* =====================================================
      CONFIG
@@ -492,308 +493,316 @@ window.MasterManager = (() => {
 
   }
 
+   
+/* =====================================================
+   LINE PROCESS EDITOR
+   ===================================================== */
+
+function renderLineProcesses() {
+  const container = $("lineStationList");
+  if (!container) return;
+
+  container.innerHTML = lineProcessDraft.length
+    ? lineProcessDraft.map((process, index) => `
+        <div class="line-process-item">
+          <span class="line-process-number">
+            ${index + 1}
+          </span>
+
+          <strong>Proses ${index + 1}</strong>
+
+          <button
+            type="button"
+            class="danger small"
+            data-remove-process="${index}"
+          >
+            Hapus
+          </button>
+        </div>
+      `).join("")
+    : `<div class="empty">Belum ada proses.</div>`;
+
+  container.querySelectorAll("[data-remove-process]")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        const index = Number(button.dataset.removeProcess);
+
+        if (!Number.isInteger(index)) return;
+
+        lineProcessDraft.splice(index, 1);
+        renderLineProcesses();
+      });
+    });
+}
+
+function addLineProcess() {
+  lineProcessDraft.push({
+    id: null,
+    active: true
+  });
+
+  renderLineProcesses();
+}
+
+/* =====================================================
+   SAVE LINE PROCESSES
+   ===================================================== */
+
+async function saveLineProcesses(lineId) {
+  const s = state();
+
+  if (!s || !lineId) {
+    throw new Error("Line belum tersimpan.");
+  }
+
+  const keptIds = new Set(
+    lineProcessDraft
+      .filter(process => process.id)
+      .map(process => String(process.id))
+  );
+
+  const removed = lineProcessOriginal.filter(
+    process => !keptIds.has(String(process.id))
+  );
+
+  // Periksa seluruh referensi sebelum menghapus proses.
+  const skillHistory = await DB.list("skill_history");
+
+  for (const process of removed) {
+    const id = String(process.id);
+
+    const hasSkills = (s.skills || []).some(
+      skill => String(skill.station_id) === id
+    );
+
+    const hasReplacementHistory = (s.changes || []).some(
+      change => String(change.station_id) === id
+    );
+
+    const hasSkillHistory = (skillHistory || []).some(
+      history => String(history.station_id) === id
+    );
+
+    if (hasSkills || hasReplacementHistory || hasSkillHistory) {
+      throw new Error(
+        `"${process.name}" masih memiliki data skill atau riwayat. Proses tersebut tidak dapat dihapus.`
+      );
+    }
+  }
+
+  // Hapus proses yang tidak lagi digunakan.
+  for (const process of removed) {
+    await DB.remove("stations", process.id);
+  }
+
+  // Kosongkan sementara nama proses lama agar tidak terjadi
+  // bentrok nama ketika urutan proses berubah.
+  for (const process of lineProcessDraft) {
+    if (process.id) {
+      await DB.update("stations", process.id, {
+        name: `__TEMP_PROCESS_${process.id}`,
+        position_name: null
+      });
+    }
+  }
+
+  // Simpan nama berdasarkan urutan terbaru.
+  for (let index = 0; index < lineProcessDraft.length; index++) {
+    const process = lineProcessDraft[index];
+
+    const payload = {
+      line_id: lineId,
+      name: `Proses ${index + 1}`,
+      position_name: null,
+      active: process.active !== false
+    };
+
+    if (process.id) {
+      await DB.update("stations", process.id, payload);
+    } else {
+      await DB.insert("stations", payload);
+    }
+  }
+}
+
 
   /* =====================================================
      ADD LINE
      ===================================================== */
 
-  function openAddLine() {
+ 
+function openAddLine() {
+  const form = $("lineForm");
+  if (!form) return;
 
-    const form =
-      $("lineForm");
+  form.reset();
 
-    if (!form) {
-      return;
-    }
+  $("lineEditId").value = "";
+  $("lineModalTitle").textContent = "Tambah Line";
+  $("lineModalSubtitle").textContent =
+    "Isi nama line dan tambahkan proses kerja.";
 
+  $("lineStandardMembers").value = 0;
+  $("lineActive").checked = true;
 
-    form.reset();
+  lineProcessDraft = [];
+  lineProcessOriginal = [];
 
+  renderLineProcesses();
 
-    $("lineEditId").value =
-      "";
+  $("lineModal").classList.add("open");
 
+  setTimeout(() => $("lineName")?.focus(), 80);
+}
 
-    $("lineModalTitle").textContent =
-      "Tambah Line";
-
-
-    $("lineModalSubtitle").textContent =
-      "Tambahkan line produksi baru.";
-
-
-    $("lineStandardMembers").value =
-      0;
-
-
-    $("lineActive").checked =
-      true;
-
-
-    $("lineModal")
-      .classList
-      .add("open");
-
-
-    setTimeout(() => {
-
-      $("lineName")?.focus();
-
-    }, 80);
-
-  }
 
 
   /* =====================================================
      EDIT LINE
      ===================================================== */
 
-  function openLineEdit(id) {
+  
+function openLineEdit(id) {
+  const s = state();
 
-    const s = state();
+  const line = s?.lines.find(
+    item => String(item.id) === String(id)
+  );
 
-    const line =
-      s?.lines.find(
-        item =>
-          String(item.id) ===
-          String(id)
-      );
-
-
-    if (!line) {
-
-      toast(
-        "Line tidak ditemukan."
-      );
-
-      return;
-
-    }
-
-
-    $("lineEditId").value =
-      line.id;
-
-
-    $("lineName").value =
-      line.name || "";
-
-
-    $("lineArea").value =
-      line.area || "";
-
-
-    $("lineStandardMembers").value =
-      Number(
-        line.standard_members || 0
-      );
-
-
-    $("lineActive").checked =
-      line.active !== false;
-
-
-    $("lineModalTitle").textContent =
-      "Edit Line";
-
-
-    $("lineModalSubtitle").textContent =
-      "Perbarui data line.";
-
-
-    $("lineModal")
-      .classList
-      .add("open");
-
-
-    setTimeout(() => {
-
-      $("lineName")?.focus();
-
-    }, 80);
-
+  if (!line) {
+    toast("Line tidak ditemukan.");
+    return;
   }
 
+  $("lineEditId").value = line.id;
+  $("lineName").value = line.name || "";
+
+  $("lineStandardMembers").value =
+    Number(line.standard_members || 0);
+
+  $("lineActive").checked = line.active !== false;
+
+  $("lineModalTitle").textContent = "Edit Line";
+  $("lineModalSubtitle").textContent =
+    "Kelola nama line, proses, dan standard member.";
+
+  lineProcessOriginal = s.stations
+    .filter(
+      station =>
+        String(station.line_id) === String(line.id)
+    )
+    .sort((a, b) =>
+      String(a.name || "").localeCompare(
+        String(b.name || ""),
+        undefined,
+        { numeric: true }
+      )
+    )
+    .map(station => ({ ...station }));
+
+  lineProcessDraft = lineProcessOriginal.map(
+    station => ({ ...station })
+  );
+
+  renderLineProcesses();
+
+  $("lineModal").classList.add("open");
+
+  setTimeout(() => $("lineName")?.focus(), 80);
+}
 
   /* =====================================================
      SAVE LINE
      ===================================================== */
 
-  async function saveLine(event) {
+ 
+async function saveLine(event) {
+  event?.preventDefault();
 
-    event?.preventDefault();
+  const s = state();
+  if (!s) return;
 
+  const id = $("lineEditId").value || null;
+  const name = $("lineName").value.trim();
 
-    const s = state();
+  const standardMembers = Number(
+    $("lineStandardMembers").value || 0
+  );
 
-    if (!s) {
-      return;
-    }
+  const active = $("lineActive").checked;
 
-
-    const id =
-      $("lineEditId").value || null;
-
-
-    const name =
-      $("lineName")
-        .value
-        .trim();
-
-
-    const area =
-      $("lineArea")
-        .value
-        .trim();
-
-
-    const standardMembers =
-      Number(
-        $("lineStandardMembers").value || 0
-      );
-
-
-    const active =
-      $("lineActive").checked;
-
-
-    if (!name) {
-
-      toast(
-        "Nama Line wajib diisi."
-      );
-
-      return;
-
-    }
-
-
-    if (
-      !Number.isInteger(
-        standardMembers
-      ) ||
-      standardMembers < 0
-    ) {
-
-      toast(
-        "Standard Member harus 0 atau lebih."
-      );
-
-      return;
-
-    }
-
-
-    const duplicate =
-      s.lines.find(line => (
-
-        String(line.name || "")
-          .trim()
-          .toLowerCase() ===
-        name.toLowerCase()
-
-        &&
-
-        String(line.id) !==
-        String(id)
-
-      ));
-
-
-    if (duplicate) {
-
-      toast(
-        "Nama Line sudah digunakan."
-      );
-
-      return;
-
-    }
-
-
-    const payload = {
-
-      name,
-
-      area:
-        area || null,
-
-      standard_members:
-        standardMembers,
-
-      active
-
-    };
-
-
-    const button =
-      $("lineSave");
-
-
-    if (button) {
-      button.disabled = true;
-    }
-
-
-    try {
-
-      if (id) {
-
-        await DB.update(
-          "lines",
-          id,
-          payload
-        );
-
-
-        toast(
-          "Line berhasil diperbarui."
-        );
-
-      } else {
-
-        await DB.insert(
-          "lines",
-          payload
-        );
-
-
-        toast(
-          "Line berhasil ditambahkan."
-        );
-
-      }
-
-
-      closeLineModal();
-
-
-      if (refresh) {
-        await refresh();
-      }
-
-    } catch (error) {
-
-      console.error(
-        "Line save error:",
-        error
-      );
-
-
-      toast(
-        error?.message ||
-        "Gagal menyimpan Line."
-      );
-
-    } finally {
-
-      if (button) {
-        button.disabled = false;
-      }
-
-    }
-
+  if (!name) {
+    toast("Nama Line wajib diisi.");
+    return;
   }
+
+  if (
+    !Number.isInteger(standardMembers) ||
+    standardMembers < 0
+  ) {
+    toast("Standard Member harus 0 atau lebih.");
+    return;
+  }
+
+  const duplicate = s.lines.find(line =>
+    String(line.name || "").trim().toLowerCase() ===
+      name.toLowerCase() &&
+    String(line.id) !== String(id)
+  );
+
+  if (duplicate) {
+    toast("Nama Line sudah digunakan.");
+    return;
+  }
+
+  const payload = {
+    name,
+    standard_members: standardMembers,
+    active
+  };
+
+  const button = $("lineSave");
+  if (button) button.disabled = true;
+
+  try {
+    let lineId = id;
+
+    if (id) {
+      await DB.update("lines", id, payload);
+    } else {
+      const created = await DB.insert("lines", payload);
+      lineId = created?.id;
+
+      if (!lineId) {
+        throw new Error(
+          "ID Line tidak ditemukan setelah penyimpanan."
+        );
+      }
+    }
+
+    await saveLineProcesses(lineId);
+
+    toast(
+      id
+        ? "Line dan proses berhasil diperbarui."
+        : "Line dan proses berhasil ditambahkan."
+    );
+
+    closeLineModal();
+
+    if (refresh) {
+      await refresh();
+    }
+  } catch (error) {
+    console.error("Line save error:", error);
+
+    toast(
+      error?.message || "Gagal menyimpan Line."
+    );
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
 
 
   /* =====================================================
@@ -1341,11 +1350,11 @@ window.MasterManager = (() => {
       );
 
 
-    $("addStationBtn")
-      ?.addEventListener(
-        "click",
-        openAddStation
-      );
+ $("lineAddStationBtn")
+  ?.addEventListener(
+    "click",
+    addLineProcess
+  );
 
 
     $("stationCancel")
