@@ -2391,4 +2391,155 @@ button.danger:disabled {
   .line-search-option {
     min-height: 42px;
   }
+
 }
+/* =========================================
+   MEMBER FORM — BLUE ACCENT PANELS
+   ========================================= */
+
+/* Panel Line Asal dan Skill Matrix */
+.line-search-wrapper,
+.skill-line-search {
+  position: relative;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #c8dcfa;
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    #f8fbff 0%,
+    #ffffff 100%
+  );
+  box-shadow: 0 2px 7px rgba(23, 105, 224, 0.05);
+}
+
+/* Input tetap bersih di dalam panel */
+.line-search-wrapper input[type="search"],
+.skill-line-search input[type="search"] {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #d7e3f4;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--text);
+  box-sizing: border-box;
+}
+
+.line-search-wrapper input[type="search"]:focus,
+.skill-line-search input[type="search"]:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(23, 105, 224, 0.12);
+}
+
+/* Dropdown hasil pencarian */
+.line-search-results {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  max-height: 220px;
+  overflow-y: auto;
+  background: #fff;
+  color: var(--text);
+  border: 1px solid #c8dcfa;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(23, 60, 120, 0.14);
+}
+
+.line-search-results[hidden] {
+  display: none !important;
+}
+
+.line-search-option {
+  display: block;
+  width: 100%;
+  min-height: 42px;
+  padding: 11px 13px;
+  border: 0;
+  border-bottom: 1px solid #edf2fa;
+  border-radius: 0;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.line-search-option:last-child {
+  border-bottom: 0;
+}
+
+.line-search-option:hover,
+.line-search-option:focus-visible {
+  background: #edf5ff;
+  outline: none;
+}
+
+.line-search-empty {
+  padding: 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Jarak antarbagian Skill Matrix */
+.skill-line-search {
+  margin-bottom: 14px;
+}
+
+/* Judul line yang dipilih */
+.member-skill-line-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 12px 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--primary);
+  border-radius: 6px;
+  background: #edf5ff;
+  font-weight: 600;
+}
+
+.member-skill-line-title small {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* Panel daftar station dan skill */
+#memberSkillEditor {
+  padding: 10px;
+  border: 1px solid #c8dcfa;
+  border-radius: 12px;
+  background: #f8fbff;
+  display: grid;
+  gap: 8px;
+}
+
+/* Baris skill tetap putih agar mudah dibaca */
+#memberSkillEditor .member-skill-row {
+  border-color: #dce7f6;
+  border-radius: 9px;
+  background: #fff;
+}
+
+/* Penyesuaian HP */
+@media (max-width: 600px) {
+  .line-search-results {
+    max-height: 160px;
+  }
+
+  .line-search-option {
+    min-height: 42px;
+  }
+
+  .line-search-wrapper,
+  .skill-line-search,
+  #memberSkillEditor {
+    padding: 8px;
+  }
+}
+
+
