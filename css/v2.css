@@ -2179,3 +2179,101 @@ button.danger:disabled {
 .history-table-header > div {
   min-width: 0;
 }
+/* =====================================================
+   MEMBER + SKILL MATRIX FORM
+   ===================================================== */
+
+.required {
+  color: #dc2626;
+  font-weight: 800;
+}
+
+.member-skill-section {
+  margin-top: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.member-skill-heading {
+  margin-bottom: 12px;
+}
+
+.member-skill-heading h3 {
+  margin: 0 0 5px;
+  font-size: 16px;
+}
+
+.member-skill-heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+#memberSkillEditor {
+  display: grid;
+  gap: 8px;
+}
+
+.member-skill-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(145px, 0.75fr);
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.member-skill-info {
+  min-width: 0;
+}
+
+.member-skill-info strong {
+  display: block;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.member-skill-info small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.member-skill-level {
+  display: grid;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.member-skill-level select {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text);
+}
+
+.member-skill-level select:focus {
+  outline: 2px solid #dceaff;
+  border-color: var(--primary);
+}
+
+@media (max-width: 480px) {
+  .member-skill-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .member-skill-level {
+    grid-template-columns: 45px minmax(0, 1fr);
+    align-items: center;
+  }
+}
