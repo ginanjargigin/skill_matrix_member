@@ -2,8 +2,9 @@ window.MemberManager = (() => {
   let getState = null;
   let refresh = null;
 
-  let selectedSkillLineId = "";
   let selectedSkillLineIds = new Set();
+  let selectedSkillLineId = "";
+  
   let skillDraft = new Map();
   let lineSearchBound = false;
   let skillSearchBound = false;
