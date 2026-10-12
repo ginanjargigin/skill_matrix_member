@@ -101,21 +101,15 @@ window.DB = (() => {
       return payload;
     }
 
-    const {
-      data,
-      error
-    } = await client()
-      .from(table)
-      .upsert(payload)
-      .select()
-      .single();
+    const options = table === "member_skills"
+  ? { onConflict: "member_id,station_id" }
+  : {};
 
-    if (error) {
-      throw error;
-    }
-
-    return data;
-  }
+  const { data, error } = await client()
+  .from(table)
+  .upsert(payload, options)
+  .select()
+  .single();
 
 
   /* =====================================================
