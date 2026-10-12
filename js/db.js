@@ -1,196 +1,138 @@
+
 window.DB = (() => {
-
   const demo = () => window.DEMO_DATA;
-
   const client = () => SupabaseClient.init();
 
-
-  /* =====================================================
+  /* =========================
      LIST
-     ===================================================== */
+     ========================= */
+  async function list(table, order = "created_at") {
+    if (!SupabaseClient.configured()) {
+      return demo()?.[table] || [];
+    }
 
-async function list(table, order = "created_at") {
-  if (!SupabaseClient.configured()) {
-    return demo()?.[table] || [];
-  }
-
-  try {
     const { data, error } = await client()
       .from(table)
       .select("*")
       .order(order, { ascending: true });
 
     if (error) {
-      console.error("Supabase LIST ERROR:", {
-        table,
-        order,
-        code: error.code,
-        message: error.message,
-        details: error.details,
-        hint: error.hint
-      });
-
-      throw new Error(
-        `Gagal mengambil tabel "${table}": ${error.message}`
-      );
+      console.error("DB.list error:", table, error);
+      throw error;
     }
 
     return data || [];
-  } catch (error) {
-    console.error(`DB.list("${table}") gagal:`, error);
-    throw error;
   }
-}
 
-
-
-  /* =====================================================
+  /* =========================
      INSERT
-     ===================================================== */
-
+     ========================= */
   async function insert(table, payload) {
-
     if (!SupabaseClient.configured()) {
       return payload;
     }
 
-    const {
-      data,
-      error
-    } = await client()
+    const { data, error } = await client()
       .from(table)
       .insert(payload)
       .select()
       .single();
 
-    if (error) {
-      throw error;
-    }
-
+    if (error) throw error;
     return data;
   }
 
-
-  /* =====================================================
+  /* =========================
      UPDATE
-     ===================================================== */
-
+     ========================= */
   async function update(table, id, payload) {
-
     if (!SupabaseClient.configured()) {
-      return {
-        ...payload,
-        id
-      };
+      return { ...payload, id };
     }
 
-    const {
-      data,
-      error
-    } = await client()
+    const { data, error } = await client()
       .from(table)
       .update(payload)
       .eq("id", id)
       .select()
       .single();
 
+    if (error) throw error;
+    return data;
+  }
+
+  /* =========================
+     UPSERT / SAVE
+     ========================= */
+  async function save(table, payload) {
+    if (!SupabaseClient.configured()) {
+      return payload;
+    }
+
+    const options = table === "member_skills"
+      ? { onConflict: "member_id,station_id" }
+      : {};
+
+    const { data, error } = await client()
+      .from(table)
+      .upsert(payload, options)
+      .select()
+      .single();
+
     if (error) {
+      console.error("DB.save error:", table, error);
       throw error;
     }
 
     return data;
   }
 
-
-  /* =====================================================
-     UPSERT
-     ===================================================== */
-
-  async function save(table, payload) {
-
-    if (!SupabaseClient.configured()) {
-      return payload;
-    }
-
-    const options = table === "member_skills"
-  ? { onConflict: "member_id,station_id" }
-  : {};
-
-  const { data, error } = await client()
-  .from(table)
-  .upsert(payload, options)
-  .select()
-  .single();
-
-
-  /* =====================================================
+  /* =========================
      DELETE
-     ===================================================== */
-
+     ========================= */
   async function remove(table, id) {
-
     if (!SupabaseClient.configured()) {
       return true;
     }
 
-    const {
-      error
-    } = await client()
+    const { error } = await client()
       .from(table)
       .delete()
       .eq("id", id);
 
-    if (error) {
-      throw error;
-    }
-
+    if (error) throw error;
     return true;
   }
 
-
-  /* =====================================================
+  /* =========================
      LOGIN
-     ===================================================== */
-
+     ========================= */
   async function signIn(email, password) {
-
-    const {
-      error
-    } = await client()
+    const { error } = await client()
       .auth
-      .signInWithPassword({
-        email,
-        password
-      });
+      .signInWithPassword({ email, password });
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
   }
 
-
-  /* =====================================================
+  /* =========================
      LOGOUT
-     ===================================================== */
-
+     ========================= */
   async function signOut() {
-
     if (!SupabaseClient.configured()) {
       return;
     }
 
-    const {
-      error
-    } = await client()
+    const { error } = await client()
       .auth
       .signOut();
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
   }
 
-
+  /* =========================
+     PUBLIC API
+     ========================= */
   return {
     list,
     insert,
