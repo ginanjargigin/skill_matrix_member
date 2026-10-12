@@ -731,18 +731,26 @@ async function saveLine(event) {
 
   const active = $("lineActive").checked;
 
-  if (!name) {
-    toast("Nama Line wajib diisi.");
-    return;
-  }
+if (!name) {
+  toast("Nama Line wajib diisi.");
+  $("lineName").focus();
+  return;
+}
 
-  if (
-    !Number.isInteger(standardMembers) ||
-    standardMembers < 0
-  ) {
-    toast("Standard Member harus 0 atau lebih.");
-    return;
-  }
+if (
+  !Number.isInteger(standardMembers) ||
+  standardMembers < 1
+) {
+  toast("Standard Manpower wajib diisi minimal 1.");
+  $("lineStandardMembers").focus();
+  return;
+}
+
+if (!lineProcessDraft.length) {
+  toast("Tambahkan minimal satu proses sebelum menyimpan Line.");
+  $("lineAddStationBtn").focus();
+  return;
+}
 
   const duplicate = s.lines.find(line =>
     String(line.name || "").trim().toLowerCase() ===
