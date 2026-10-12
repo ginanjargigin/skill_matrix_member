@@ -297,24 +297,40 @@
      GET SKILL
      ===================================================== */
 
-  function getSkill(
-    memberId,
-    stationId
-  ) {
+function getSkill(memberId, stationId) {
+  const skill = s.skills.find(item =>
+    String(item.member_id) === String(memberId) &&
+    String(item.station_id) === String(stationId)
+  );
 
-    return (
-      s.skills.find(
-        item =>
-          String(item.member_id) ===
-          String(memberId) &&
+  return Number(skill?.skill_level) || 0;
+}
 
-          String(item.station_id) ===
-          String(stationId)
-      )?.skill_level || 0
-    );
+/* =====================================================
+   NORMALIZE SHIFT
+   ===================================================== */
 
+function normalizeShift(value) {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[_-]/g, " ")
+    .replace(/\s+/g, " ");
+
+  if (["a", "ns", "n/s", "non shift", "nonshift"].includes(normalized)) {
+    return "Non Shift";
   }
 
+  if (["b", "red"].includes(normalized)) {
+    return "Red";
+  }
+
+  if (["c", "white"].includes(normalized)) {
+    return "White";
+  }
+
+  return String(value || "").trim();
+}
 
   /* =====================================================
      RENDER ALL
@@ -660,35 +676,18 @@ function getSkillPercent(level) {
 
 const selectedShift = $("changeShift").value;
 const selectedDate = $("changeDate").value;
-
-
-function normalizeShift(value) {
-  const shift = String(value || "")
-    .trim()
-    .toUpperCase()
-    .replace(/[_-]/g, " ")
-    .replace(/\s+/g, " ");
-
-  if (["A", "NS", "N/S", "NON SHIFT", "NONSHIFT"].includes(shift)) {
-    return "A";
-  }
-
-  if (["B", "RED"].includes(shift)) {
-    return "B";
-  }
-
-  if (["C", "WHITE"].includes(shift)) {
-    return "C";
-  }
-
-  return shift;
-}
-
+const absentMemberId = $("absentMember")?.value || "";
 
 const candidates = s.members
   .filter(member => {
     if (member.active === false) return false;
 
+    // Jangan tampilkan member yang sedang digantikan.
+    if (String(member.id) === String(absentMemberId)) {
+      return false;
+    }
+
+    // Shift harus sesuai.
     if (
       normalizeShift(member.shift) !==
       normalizeShift(selectedShift)
@@ -696,15 +695,15 @@ const candidates = s.members
       return false;
     }
 
+    // Jangan tampilkan member yang sudah ditugaskan
+    // pada tanggal dan shift yang sama.
     const alreadyAssigned = s.changes.some(change =>
       String(change.replacement_member_id) === String(member.id) &&
-      String(change.work_date).slice(0, 10) === selectedDate &&
+      String(change.work_date || "").slice(0, 10) === selectedDate &&
       normalizeShift(change.shift) === normalizeShift(selectedShift)
     );
 
-        if (alreadyAssigned) return false;
-
-    return true;
+    return !alreadyAssigned;
   })
   .map(member => ({
     ...member,
@@ -713,10 +712,8 @@ const candidates = s.members
   .filter(member => member.level > 0)
   .sort((a, b) =>
     b.level - a.level ||
-    String(a.name).localeCompare(String(b.name))
+    String(a.name || "").localeCompare(String(b.name || ""))
   );
-
-
     /* ===================================================
        VERTICAL CANDIDATE CARD
        =================================================== */
@@ -940,75 +937,64 @@ const candidates = s.members
 function renderMembers() {
   const query = $("memberSearch").value
     .trim()
-    .toLowerCase();
+    .toLocaleLowerCase("id-ID");
 
   const rows = s.members.filter(member => {
-    const name = String(member.name || "").toLowerCase();
-    return !query || name.includes(query);
+    const line = s.lines.find(
+      item => String(item.id) === String(member.home_line_id)
+    );
+
+    const searchable = [
+      member.name,
+      member.status,
+      normalizeShift(member.shift),
+      line?.name
+    ].join(" ").toLocaleLowerCase("id-ID");
+
+    return !query || searchable.includes(query);
   });
 
-  $("memberList").innerHTML =
-    rows.map(member => {
-      const line = s.lines.find(
-        item => String(item.id) === String(member.home_line_id)
-      );
+  $("memberList").innerHTML = rows.map(member => {
+    const line = s.lines.find(
+      item => String(item.id) === String(member.home_line_id)
+    );
 
-      return `
-        <article class="member-card">
-          <div class="member-info">
-            <b>${esc(member.name)}</b>
+    const skillCount = s.skills.filter(skill =>
+      String(skill.member_id) === String(member.id) &&
+      Number(skill.skill_level) > 0
+    ).length;
 
-            <small>
-              Status: ${esc(member.status || "-")}
-            </small>
-
-            <small>
-              Shift: ${esc(member.shift || "-")}
-            </small>
-
-           <small class="member-origin-line">
-              Line asal: ${esc(line?.name || "-")}
+    return `
+      <article class="member-card">
+        <div class="member-info">
+          <b>${esc(member.name)}</b>
+          <small>Status: ${esc(member.status || "-")}</small>
+          <small>Shift: ${esc(normalizeShift(member.shift) || "-")}</small>
+          <small class="member-origin-line">
+            Line asal: ${esc(line?.name || "-")}
           </small>
-          </div>
+          <small>Skill terisi: ${skillCount}</small>
+        </div>
 
-          <div class="member-actions">
-            <button
-              class="secondary small"
-              data-edit-member="${esc(member.id)}"
-              type="button"
-            >
-              Edit Member
-            </button>
-
-            <button
-              class="secondary small"
-              data-edit-skill="${esc(member.id)}"
-              type="button"
-            >
-              Edit Skill
-            </button>
-          </div>
-        </article>
-      `;
-    }).join("") ||
-    `<div class="empty">Member tidak ditemukan.</div>`;
+        <div class="member-actions">
+          <button
+            class="secondary small"
+            data-edit-member="${esc(member.id)}"
+            type="button"
+          >
+            Edit Member + Skill
+          </button>
+        </div>
+      </article>
+    `;
+  }).join("") || `<div class="empty">Member tidak ditemukan.</div>`;
 
   document.querySelectorAll("[data-edit-member]").forEach(button => {
     button.addEventListener("click", () => {
       MemberManager.openEditModal(button.dataset.editMember);
     });
   });
-
-  document.querySelectorAll("[data-edit-skill]").forEach(button => {
-    button.addEventListener("click", () => {
-      openSkills(button.dataset.editSkill);
-    });
-  });
 }
-
-
-
-
 
   /* =====================================================
      OPEN SKILL EDITOR
@@ -1461,12 +1447,8 @@ function renderMembers() {
 
   function renderDashboard() {
 
-    $("kpiMembers")
-      .textContent =
-      s.members.filter(
-        member =>
-          member.active
-      ).length;
+   $("kpiMembers").textContent =
+  s.members.filter(member => member.active !== false).length;
 
 
     $("kpiLines")
@@ -1655,6 +1637,12 @@ $("changeDate")
         "click",
         saveSkills
       );
+    if ($("absentMember")) {
+  $("absentMember").addEventListener(
+    "change",
+    renderCandidates
+  );
+}
 
 
   /* =====================================================
