@@ -830,12 +830,38 @@
         </select>
       </label>
 
-      <label>
-        Line Asal <span class="required">*</span>
-        <select id="memberHomeLine" required>
-          <option value="">Pilih Line Asal</option>
-        </select>
-      </label>
+    
+      <div class="form-group">
+        <label for="memberHomeLineSearch">
+          Line Asal <span class="required">*</span>
+        </label>
+      
+        <div class="line-search-wrapper">
+          <input
+            type="search"
+            id="memberHomeLineSearch"
+            placeholder="Cari nama line..."
+            autocomplete="off"
+            required
+          />
+      
+          <input
+            type="hidden"
+            id="memberHomeLine"
+            name="home_line_id"
+            required
+          />
+      
+          <div
+            id="memberHomeLineResults"
+            class="line-search-results"
+            hidden
+          ></div>
+        </div>
+      
+        <small>Pilih line dari hasil pencarian.</small>
+      </div>
+
 
       <section class="member-skill-section">
         <div class="member-skill-heading">
@@ -844,7 +870,26 @@
             <p>Isi minimal satu skill dengan level 1–6.</p>
           </div>
         </div>
-        <div id="memberSkillEditor"></div>
+        <div class="skill-line-search">
+  <label for="memberSkillLineSearch">
+    Cari Line untuk Skill
+  </label>
+
+  <input
+    type="search"
+    id="memberSkillLineSearch"
+    placeholder="Ketik nama line..."
+    autocomplete="off"
+  />
+
+  <div
+    id="memberSkillLineResults"
+    class="line-search-results"
+    hidden
+  ></div>
+</div>
+
+<div id="memberSkillEditor"></div>
       </section>
 
       <div class="actions">
