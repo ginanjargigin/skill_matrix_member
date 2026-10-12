@@ -2323,4 +2323,55 @@ button.danger:disabled {
   color: #777;
   font-size: 13px;
 }
+  .skill-line-search {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.skill-line-search input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.member-skill-line-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.member-skill-line-title small {
+  color: var(--color-muted, #6b7280);
+}
+
+.line-search-results {
+  position: absolute;
+  z-index: 1000;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--color-line, #d8dee8);
+  border-radius: 10px;
+  background: var(--color-panel, #fff);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .14);
+}
+
+.line-search-option {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  text-align: left;
+  border: 0;
+  border-bottom: 1px solid var(--color-line, #d8dee8);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.line-search-option:hover {
+  background: rgba(59, 130, 246, .12);
+}
 }
