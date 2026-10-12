@@ -9,28 +9,39 @@ window.DB = (() => {
      LIST
      ===================================================== */
 
-  async function list(table, order = "created_at") {
+async function list(table, order = "created_at") {
+  if (!SupabaseClient.configured()) {
+    return demo()?.[table] || [];
+  }
 
-    if (!SupabaseClient.configured()) {
-      return demo()[table] || [];
-    }
-
-    const {
-      data,
-      error
-    } = await client()
+  try {
+    const { data, error } = await client()
       .from(table)
       .select("*")
-      .order(order, {
-        ascending: true
-      });
+      .order(order, { ascending: true });
 
     if (error) {
-      throw error;
+      console.error("Supabase LIST ERROR:", {
+        table,
+        order,
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint
+      });
+
+      throw new Error(
+        `Gagal mengambil tabel "${table}": ${error.message}`
+      );
     }
 
     return data || [];
+  } catch (error) {
+    console.error(`DB.list("${table}") gagal:`, error);
+    throw error;
   }
+}
+
 
 
   /* =====================================================
