@@ -970,9 +970,9 @@ function renderMembers() {
               Shift: ${esc(member.shift || "-")}
             </small>
 
-            <small>
-              Line: ${esc(line?.name || "-")}
-            </small>
+           <small class="member-origin-line">
+              Line asal: ${esc(line?.name || "-")}
+          </small>
           </div>
 
           <div class="member-actions">
