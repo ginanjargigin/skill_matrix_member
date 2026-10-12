@@ -449,7 +449,42 @@
     $("selectedLine").textContent =
       line?.name ||
       "Pilih line dari dashboard.";
-
+    // Daftar member yang bisa dipilih sebagai member yang diganti.
+    const absentSelect = $("absentMember");
+    
+    if (absentSelect) {
+      const previousValue = absentSelect.value;
+    
+      absentSelect.innerHTML = `
+        <option value="">Pilih member yang tidak masuk</option>
+        ${
+          s.members
+            .filter(member => member.active !== false)
+            .sort((a, b) =>
+              String(a.name || "").localeCompare(
+                String(b.name || "")
+              )
+            )
+            .map(member => `
+              <option value="${esc(member.id)}">
+                ${esc(member.name || "-")}
+              </option>
+            `)
+            .join("")
+        }
+      `;
+    
+      if (
+        previousValue &&
+        s.members.some(
+          member =>
+            String(member.id) === String(previousValue) &&
+            member.active !== false
+        )
+      ) {
+        absentSelect.value = previousValue;
+      }
+    }
 
     const stations =
       s.stations.filter(
@@ -820,119 +855,80 @@ const candidates = s.members
      ===================================================== */
 
   async function saveChange() {
+    const replacementMember = s.members.find(
+      member =>
+        String(member.id) ===
+        String($("confirmModal").dataset.member)
+    );
 
     const payload = {
+      work_date: $("changeDate").value,
+      shift: $("changeShift").value,
 
-      work_date:
-        $("changeDate").value,
+      // Line tujuan yang membutuhkan backup.
+      line_id: s.selectedLine,
 
-      shift:
-        $("changeShift").value,
+      station_id: $("replaceStation").value,
 
-      line_id:
-        s.selectedLine,
+      // Member yang tidak masuk.
+      absent_member_id: $("absentMember")?.value || null,
 
-      station_id:
-        $("replaceStation").value,
-
+      // Member yang melakukan backup.
       replacement_member_id:
-        $("confirmModal")
-          .dataset
-          .member,
+        $("confirmModal").dataset.member,
 
-      reason:
-        $("changeReason").value,
+      // Snapshot line asal pada saat replacement disimpan.
+      origin_line_id:
+        replacementMember?.home_line_id || null,
 
-      notes:
-        $("changeNotes")
-          .value
-          .trim()
-
+      reason: $("changeReason").value,
+      notes: $("changeNotes").value.trim()
     };
 
-
     if (
+      !payload.work_date ||
       !payload.line_id ||
       !payload.station_id ||
-      !payload.replacement_member_id
+      !payload.absent_member_id ||
+      !payload.replacement_member_id ||
+      !payload.reason
     ) {
-
       toast(
-        "Line, station, dan kandidat wajib dipilih."
+        "Lengkapi tanggal, member yang diganti, station, kandidat, dan alasan."
       );
-
       return;
-
     }
 
-
-    /* ===================================================
-       DEMO
-       =================================================== */
-
-    if (
-      !SupabaseClient.configured()
-    ) {
-
+    // DEMO MODE
+    if (!SupabaseClient.configured()) {
       s.changes.push({
-
-        id:
-          "demo-" +
-          Date.now(),
-
+        id: "demo-" + Date.now(),
         ...payload
-
       });
 
-
-      toast(
-        "Demo: replacement dicatat."
-      );
-
-
+      toast("Demo: replacement dicatat.");
       closeModals();
-
       render();
-
       return;
-
     }
 
-
-    /* ===================================================
-       SUPABASE
-       =================================================== */
-
+    // SUPABASE
     try {
+      await DB.insert("manpower_changes", payload);
 
-      await DB.insert(
-        "manpower_changes",
-        payload
-      );
-
-
-      toast(
-        "Replacement berhasil disimpan."
-      );
-
-
+      toast("Replacement berhasil disimpan.");
       closeModals();
 
       await load();
-
       render();
-
     } catch (error) {
-
-      console.error(error);
+      console.error("Gagal menyimpan replacement:", error);
 
       toast(
         error?.message ||
-        "Gagal menyimpan replacement."
+        "Gagal menyimpan replacement. Periksa kolom database dan koneksi."
       );
-
     }
-
   }
 
 
@@ -1269,112 +1265,193 @@ function renderMembers() {
 
 
   /* =====================================================
-     HISTORY
+     HISTORY / RIWAYAT REPLACEMENT
      ===================================================== */
 
   function renderHistory() {
+    const historyList = $("historyList");
+    if (!historyList) return;
 
-    const rows =
-      [...s.changes]
-        .sort(
-          (a, b) =>
-            String(b.work_date)
-              .localeCompare(
-                String(a.work_date)
-              )
+    const monthInput = $("historyMonth");
+    const searchInput = $("historySearch");
+    const countElement = $("historyCount");
+
+    const now = new Date();
+    const currentMonth =
+      `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+    if (monthInput && !monthInput.value) {
+      monthInput.value = currentMonth;
+    }
+
+    const selectedMonth = monthInput?.value || "";
+    const query = String(searchInput?.value || "")
+      .trim()
+      .toLocaleLowerCase("id-ID");
+
+    const getLine = id =>
+      s.lines.find(item => String(item.id) === String(id));
+
+    const getStation = id =>
+      s.stations.find(item => String(item.id) === String(id));
+
+    const getMember = id =>
+      s.members.find(item => String(item.id) === String(id));
+
+    const normalize = value =>
+      String(value ?? "").trim().toLocaleLowerCase("id-ID");
+
+    const formatDate = value => {
+      if (!value) return "-";
+
+      const parts = String(value).slice(0, 10).split("-");
+      if (parts.length !== 3) return String(value);
+
+      const months = [
+        "Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
+        "Jul", "Agu", "Sep", "Okt", "Nov", "Des"
+      ];
+
+      const monthIndex = Number(parts[1]) - 1;
+      return `${parts[2]} ${months[monthIndex] || ""} ${parts[0]}`;
+    };
+
+    const shiftLabels = {
+      A: "Non Shift",
+      B: "Red",
+      C: "White"
+    };
+
+    const reasonClass = reason => {
+      const value = normalize(reason);
+      if (value.includes("sakit")) return "reason-sakit";
+      if (value.includes("izin")) return "reason-izin";
+      if (value.includes("cuti")) return "reason-cuti";
+      if (value.includes("terlambat")) return "reason-terlambat";
+      return "reason-default";
+    };
+
+    const rows = [...s.changes]
+      .filter(change => {
+        const date = String(change.work_date || "").slice(0, 10);
+
+        if (selectedMonth && date.slice(0, 7) !== selectedMonth) {
+          return false;
+        }
+
+        const targetLine = getLine(change.line_id);
+        const station = getStation(change.station_id);
+        const replacement = getMember(change.replacement_member_id);
+        const absent = getMember(change.absent_member_id);
+        const originLine = getLine(
+          change.origin_line_id || replacement?.home_line_id
         );
 
+        const searchableText = [
+          targetLine?.name,
+          originLine?.name,
+          station?.name,
+          station?.position_name,
+          absent?.name,
+          replacement?.name,
+          change.reason,
+          change.notes,
+          shiftLabels[change.shift] || change.shift,
+          change.work_date
+        ].map(normalize).join(" ");
 
-    $("historyList").innerHTML =
+        return !query || searchableText.includes(query);
+      })
+      .sort((a, b) =>
+        String(b.work_date || "").localeCompare(String(a.work_date || ""))
+      );
 
-      rows
-        .map(change => {
+    if (countElement) {
+      countElement.textContent = `${rows.length} riwayat`;
+    }
 
-          const line =
-            s.lines.find(
-              item =>
-                String(item.id) ===
-                String(change.line_id)
-            );
+    historyList.innerHTML = rows.map(change => {
+      const targetLine = getLine(change.line_id);
+      const station = getStation(change.station_id);
+      const replacement = getMember(change.replacement_member_id);
+      const absent = getMember(change.absent_member_id);
 
+      // Untuk data baru, gunakan snapshot. Data lama fallback ke home_line_id.
+      const originLine = getLine(
+        change.origin_line_id || replacement?.home_line_id
+      );
 
-          const station =
-            s.stations.find(
-              item =>
-                String(item.id) ===
-                String(change.station_id)
-            );
+      const reason = change.reason || "Tidak disebutkan";
+      const notes = change.notes || "";
+      const shift = shiftLabels[change.shift] || change.shift || "-";
 
+      return `
+        <article class="history-row">
 
-          const member =
-            s.members.find(
-              item =>
-                String(item.id) ===
-                String(
-                  change.replacement_member_id
-                )
-            );
+          <div class="history-cell history-line-cell">
+            <span class="history-mobile-label">Line &amp; Tanggal</span>
+            <strong class="history-line-name">
+              ${esc(targetLine?.name || "-")}
+            </strong>
+            <span class="history-date">
+              <span aria-hidden="true">▦</span>
+              ${esc(formatDate(change.work_date))}
+            </span>
+            <span class="history-shift">
+              Shift ${esc(shift)}
+            </span>
+          </div>
 
+          <div class="history-cell">
+            <span class="history-mobile-label">Member yang Diganti</span>
+            <strong class="history-person-name">
+              ${esc(absent?.name || "Member belum dicatat")}
+            </strong>
+            <span class="history-detail">
+              Line: <b>${esc(targetLine?.name || "-")}</b>
+            </span>
+            <span class="history-detail">
+              Station: ${esc(station?.name || "-")}
+            </span>
+          </div>
 
-          return `
+          <div class="history-cell">
+            <span class="history-mobile-label">Member Pengganti</span>
+            <strong class="history-person-name">
+              ${esc(replacement?.name || "Member tidak ditemukan")}
+            </strong>
+            <span class="history-origin">
+              Line asal: <b>${esc(originLine?.name || "-")}</b>
+            </span>
+            <span class="history-detail">
+              Station: ${esc(station?.name || "-")}
+            </span>
+          </div>
 
-            <article class="history-card">
+          <div class="history-cell history-reason-cell">
+            <span class="history-mobile-label">Alasan Tidak Masuk</span>
+            <div class="history-reason-box ${reasonClass(reason)}">
+              <strong>${esc(reason)}</strong>
+              <small>
+                ${notes
+                  ? esc(notes)
+                  : "Tidak ada catatan tambahan"}
+              </small>
+            </div>
+          </div>
 
-              <div>
+        </article>
+      `;
+    }).join("");
 
-                <b>
-                  ${esc(
-                    line?.name || "-"
-                  )}
-
-                  ·
-
-                  ${esc(
-                    station?.name || "-"
-                  )}
-                </b>
-
-                <small>
-                  ${esc(
-                    change.work_date
-                  )}
-
-                  · Shift
-                  ${esc(
-                    change.shift || "-"
-                  )}
-                </small>
-
-              </div>
-
-
-              <span>
-
-                ${esc(
-                  member?.name || "-"
-                )}
-
-                <small>
-                  ${esc(
-                    change.reason || ""
-                  )}
-                </small>
-
-              </span>
-
-            </article>
-
-          `;
-
-        })
-        .join("")
-
-      ||
-
-      `<div class="empty">
-        Belum ada histori.
-      </div>`;
-
+    if (!rows.length) {
+      historyList.innerHTML = `
+        <div class="empty history-empty">
+          Tidak ada riwayat yang cocok dengan filter.
+          <small>Coba pilih bulan lain atau ubah kata pencarian.</small>
+        </div>
+      `;
+    }
   }
 
 
@@ -1487,6 +1564,30 @@ function renderMembers() {
         "input",
         renderMembers
       );
+
+
+    // Filter riwayat: bulan, pencarian, dan reset.
+    if ($("historyMonth")) {
+      $("historyMonth").addEventListener("change", renderHistory);
+    }
+
+    if ($("historySearch")) {
+      $("historySearch").addEventListener("input", renderHistory);
+    }
+
+    if ($("historyReset")) {
+      $("historyReset").addEventListener("click", () => {
+        const now = new Date();
+        if ($("historyMonth")) {
+          $("historyMonth").value =
+            `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+        }
+        if ($("historySearch")) {
+          $("historySearch").value = "";
+        }
+        renderHistory();
+      });
+    }
 
 
     $("replaceStation")
