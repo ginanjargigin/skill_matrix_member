@@ -329,27 +329,13 @@
               <select id="absentMember" required>
                 <option value="">Pilih member yang tidak masuk</option>
               </select>
-            </label>
-
-            <label>
-              Shift
-
-              <select id="changeShift">
-
-                <option value="A">
-                  NON SHIFT
-                </option>
-
-                <option value="B">
-                  RED
-                </option>
-
-                <option value="C">
-                  WHITE
-                </option>
-
+            </label>            <label>
+              Shift <span class="required">*</span>
+              <select id="changeShift" required>
+                <option value="Non Shift">Non Shift</option>
+                <option value="Red">Red</option>
+                <option value="White">White</option>
               </select>
-
             </label>
 
 
@@ -454,7 +440,7 @@
           </h2>
 
           <p>
-            Kelola data member dan skill secara terpisah.
+            Kelola identitas member dan Skill Matrix dalam satu form.
           </p>
 
         </div>
@@ -477,7 +463,7 @@
           class="search"
           id="memberSearch"
           type="search"
-          placeholder="Cari nama / REG..."
+          placeholder="Cari nama member..."
           autocomplete="off"
         >
 
@@ -835,44 +821,31 @@
 
 
       <label>
-        Shift
-
-        <select id="memberShift">
-
-          <option value="">
-            Belum ditentukan
-          </option>
-
-          <option value="A">
-            NON SHIFT
-          </option>
-
-          <option value="B">
-            RED
-          </option>
-
-          <option value="C">
-            WHITE
-          </option>
-
+        Shift <span class="required">*</span>
+        <select id="memberShift" required>
+          <option value="">Pilih Shift</option>
+          <option value="Non Shift">Non Shift</option>
+          <option value="Red">Red</option>
+          <option value="White">White</option>
         </select>
-
       </label>
-
 
       <label>
-        Line Utama
-
-        <select id="memberHomeLine">
-
-          <option value="">
-            Belum ditentukan
-          </option>
-
+        Line Asal <span class="required">*</span>
+        <select id="memberHomeLine" required>
+          <option value="">Pilih Line Asal</option>
         </select>
-
       </label>
 
+      <section class="member-skill-section">
+        <div class="member-skill-heading">
+          <div>
+            <h3>Skill Matrix <span class="required">*</span></h3>
+            <p>Isi minimal satu skill dengan level 1–6.</p>
+          </div>
+        </div>
+        <div id="memberSkillEditor"></div>
+      </section>
 
       <div class="actions">
 
@@ -894,12 +867,12 @@
   </button>
 
   <button
-    class="primary"
-    id="memberSave"
-    type="submit"
-  >
-    Simpan Member
-  </button>
+  class="primary"
+  id="memberSave"
+  type="submit"
+>
+  Simpan Member + Skill
+</button>
 
 </div>
 
@@ -988,14 +961,15 @@
 
       <label>
 
-        Standard Member
+        Standard Manpower <span class="required">*</span>
 
         <input
           id="lineStandardMembers"
           type="number"
-          min="0"
+          min="1"
           step="1"
-          value="0"
+          required
+          placeholder="Contoh: 5"
         >
 
       </label>
