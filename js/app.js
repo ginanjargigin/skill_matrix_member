@@ -694,11 +694,7 @@ const candidates = s.members
                 ${esc(member.name)}
               </b>
 
-              <small>
-                REG:
-                ${esc(member.reg_code)}
-              </small>
-
+             
               <small>
                 Status:
                 ${esc(member.status)}
@@ -933,128 +929,76 @@ const candidates = s.members
      MEMBER LIST
      ===================================================== */
 
-  function renderMembers() {
+  
+function renderMembers() {
+  const query = $("memberSearch").value
+    .trim()
+    .toLowerCase();
 
-    const query =
-      $("memberSearch")
-        .value
-        .trim()
-        .toLowerCase();
+  const rows = s.members.filter(member => {
+    const name = String(member.name || "").toLowerCase();
+    return !query || name.includes(query);
+  });
 
-
-    const rows =
-      s.members.filter(
-        member => {
-
-          const name =
-            String(
-              member.name || ""
-            ).toLowerCase();
-
-
-          const reg =
-            String(
-              member.reg_code || ""
-            ).toLowerCase();
-
-
-          return (
-            !query ||
-            name.includes(query) ||
-            reg.includes(query)
-          );
-
-        }
+  $("memberList").innerHTML =
+    rows.map(member => {
+      const line = s.lines.find(
+        item => String(item.id) === String(member.home_line_id)
       );
 
+      return `
+        <article class="member-card">
+          <div class="member-info">
+            <b>${esc(member.name)}</b>
 
-    $("memberList").innerHTML =
+            <small>
+              Status: ${esc(member.status || "-")}
+            </small>
 
-      rows
-        .map(member => {
+            <small>
+              Shift: ${esc(member.shift || "-")}
+            </small>
 
-          const line =
-            s.lines.find(
-              item =>
-                String(item.id) ===
-                String(
-                  member.home_line_id
-                )
-            );
+            <small>
+              Line: ${esc(line?.name || "-")}
+            </small>
+          </div>
 
-
-          return `
-
-            <article
-              class="member-card"
+          <div class="member-actions">
+            <button
+              class="secondary small"
+              data-edit-member="${esc(member.id)}"
+              type="button"
             >
+              Edit Member
+            </button>
 
-              <div class="member-info">
+            <button
+              class="secondary small"
+              data-edit-skill="${esc(member.id)}"
+              type="button"
+            >
+              Edit Skill
+            </button>
+          </div>
+        </article>
+      `;
+    }).join("") ||
+    `<div class="empty">Member tidak ditemukan.</div>`;
 
-                <b>
-                  ${esc(member.name)}
-                </b>
+  document.querySelectorAll("[data-edit-member]").forEach(button => {
+    button.addEventListener("click", () => {
+      MemberManager.openEditModal(button.dataset.editMember);
+    });
+  });
 
-                <small>
-                  REG:
-                  ${esc(member.reg_code)}
-                </small>
+  document.querySelectorAll("[data-edit-skill]").forEach(button => {
+    button.addEventListener("click", () => {
+      openSkills(button.dataset.editSkill);
+    });
+  });
+}
 
-                <small>
-                  Status:
-                  ${esc(member.status)}
-                </small>
-
-                <small>
-                  Shift:
-                  ${esc(
-                    member.shift || "-"
-                  )}
-                </small>
-
-                <small>
-                  Line:
-                  ${esc(
-                    line?.name || "-"
-                  )}
-                </small>
-
-              </div>
-
-
-              <div class="member-actions">
-
-                <button
-                  class="secondary small"
-                  data-edit-member="${esc(member.id)}"
-                  type="button"
-                >
-                  Edit Member
-                </button>
-
-
-                <button
-                  class="secondary small"
-                  data-edit-skill="${esc(member.id)}"
-                  type="button"
-                >
-                  Edit Skill
-                </button>
-
-              </div>
-
-            </article>
-
-          `;
-
-        })
-        .join("")
-
-      ||
-
-      `<div class="empty">
-        Member tidak ditemukan.
-      </div>`;
 
 
     /* ===================================================
@@ -1132,9 +1076,7 @@ const candidates = s.members
     }
 
 
-    $("skillMemberName")
-      .textContent =
-      `${member.name} · ${member.reg_code}`;
+  $("skillMemberName").textContent = member.name || "";
 
 
     $("skillMemberId")
