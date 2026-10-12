@@ -627,69 +627,57 @@ function getSkillPercent(level) {
     }
 
 
-    const candidates =
+    
+const selectedShift =
+  $("changeShift").value;
 
-      s.members
+const selectedDate =
+  $("changeDate").value;
 
-        .filter(member => {
+const candidates =
+  s.members
+    .filter(member => {
+      // Hanya member aktif.
+      if (member.active === false) {
+        return false;
+      }
 
-          if (!member.active) {
-            return false;
-          }
+      // Shift member harus sama dengan shift yang dipilih.
+      if (
+        String(member.shift || "").toUpperCase() !==
+        String(selectedShift || "").toUpperCase()
+      ) {
+        return false;
+      }
 
-
-          const name =
-            String(
-              member.name || ""
-            ).toLowerCase();
-
-
-          const reg =
-            String(
-              member.reg_code || ""
-            ).toLowerCase();
-
-
-          return (
-            !query ||
-            name.includes(query) ||
-            reg.includes(query)
-          );
-
-        })
-
-
-        .map(member => ({
-
-          ...member,
-
-          level:
-            getSkill(
-              member.id,
-              stationId
-            )
-
-        }))
-
-
-        .filter(
-          member =>
-            member.level > 0
-        )
-
-
-        .sort(
-          (a, b) =>
-
-            b.level -
-            a.level ||
-
-            String(
-              a.name
-            ).localeCompare(
-              String(b.name)
-            )
+      // Jangan tampilkan member yang sudah ditugaskan
+      // pada tanggal dan shift yang sama.
+      const alreadyAssigned =
+        s.changes.some(change =>
+          String(change.replacement_member_id) ===
+            String(member.id) &&
+          String(change.work_date) === selectedDate &&
+          String(change.shift || "").toUpperCase() ===
+            String(selectedShift || "").toUpperCase()
         );
+
+      if (alreadyAssigned) {
+        return false;
+      }
+
+      // Pencarian nama atau nomor registrasi tetap berfungsi.
+      const name =
+        String(member.name || "").toLowerCase();
+
+      const reg =
+        String(member.reg_code || "").toLowerCase();
+
+      return (
+        !query ||
+        name.includes(query) ||
+        reg.includes(query)
+      );
+    })
 
 
     /* ===================================================
@@ -1618,6 +1606,17 @@ function getSkillPercent(level) {
         renderCandidates
       );
 
+    $("changeShift")
+  .addEventListener(
+    "change",
+    renderCandidates
+  );
+
+$("changeDate")
+  .addEventListener(
+    "change",
+    renderCandidates
+  );
 
     $("changeDate")
       .value =
