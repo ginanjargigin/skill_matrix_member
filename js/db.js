@@ -192,7 +192,6 @@ async function list(table, order = "created_at") {
 
 
   return {
-
     list,
     insert,
     update,
@@ -200,7 +199,5 @@ async function list(table, order = "created_at") {
     remove,
     signIn,
     signOut
-
   };
-
 })();
