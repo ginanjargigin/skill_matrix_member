@@ -951,57 +951,24 @@
           required
         >
 
-      </label>
-
-
-      <label>
-
-        Area
-
-        <input
-          id="lineArea"
-          type="text"
-          maxlength="100"
-          autocomplete="off"
-          placeholder="Contoh: Area 1"
-        >
-
-      </label>
+      </label>    
       
-<div class="line-station-editor">
-  <h3>Station</h3>
-
-  <label>
-    Nama Station
-
-    <input
-      id="lineStationName"
-      type="text"
-      maxlength="120"
-      placeholder="Contoh: Fine Blanking"
-      autocomplete="off"
+   
+<div class="line-process-editor">
+  <div class="line-process-header">
+    <h3>Station / Proses</h3>
+    <button
+      id="lineAddStationBtn"
+      class="secondary small"
+      type="button"
     >
-  </label>
+      + Tambah Proses
+    </button>
+  </div>
 
-  <label>
-    Position / Job
-
-    <input
-      id="lineStationPosition"
-      type="text"
-      maxlength="120"
-      placeholder="Contoh: Operator"
-      autocomplete="off"
-    >
-  </label>
-
-  <button
-    id="lineAddStationBtn"
-    class="secondary"
-    type="button"
-  >
-    + Tambah Station
-  </button>
+  <p class="line-process-help">
+    Tambahkan proses kerja sesuai kebutuhan line.
+  </p>
 
   <div id="lineStationList" class="line-station-list"></div>
 </div>
