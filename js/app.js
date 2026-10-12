@@ -355,97 +355,74 @@ function normalizeShift(value) {
      DASHBOARD LINE
      ===================================================== */
 
-  function renderLines() {
+ 
+function renderLines() {
+  const lineList = $("lineList");
+  if (!lineList) return;
 
-    $("lineList").innerHTML =
+  const searchInput = $("dashboardLineSearch");
+  const keyword = String(searchInput?.value || "")
+    .trim()
+    .toLocaleLowerCase("id-ID");
 
-      s.lines
-        .filter(
-          line =>
-            line.active !== false
-        )
-        .map(line => `
+  const filteredLines = s.lines
+    .filter(line => line.active !== false)
+    .filter(line =>
+      String(line.name || "")
+        .toLocaleLowerCase("id-ID")
+        .includes(keyword)
+    );
 
-          <button
-            class="line-card"
-            data-line="${esc(line.id)}"
-            type="button"
-          >
+  lineList.innerHTML = filteredLines
+    .map(line => {
+      const stationCount = s.stations.filter(
+        station =>
+          String(station.line_id) === String(line.id)
+      ).length;
 
-            <span class="line-icon">
-              ▦
-            </span>
+      return `
+        <button
+          class="line-card"
+          data-line="${esc(line.id)}"
+          type="button"
+        >
+          <span class="line-icon">▦</span>
 
-            <span>
+          <span>
+            <b>${esc(line.name)}</b>
+            <small>
+              ${esc(line.area || "Area belum diisi")}
+              · ${stationCount} station
+            </small>
+          </span>
 
-              <b>
-                ${esc(line.name)}
-              </b>
+          <strong>›</strong>
+        </button>
+      `;
+    })
+    .join("");
 
-              <small>
-                ${esc(
-                  line.area ||
-                  "Area belum diisi"
-                )}
-
-                ·
-
-                ${
-                  s.stations.filter(
-                    station =>
-                      station.line_id ===
-                      line.id
-                  ).length
-                }
-
-                station
-              </small>
-
-            </span>
-
-            <strong>
-              ›
-            </strong>
-
-          </button>
-
-        `)
-        .join("")
-
-      ||
-
-      `<div class="empty">
-        Belum ada line.
-      </div>`;
-
-
-    document
-      .querySelectorAll(
-        "[data-line]"
-      )
-      .forEach(button => {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            s.selectedLine =
-              button.dataset.line;
-
-
-            page(
-              "replacement"
-            );
-
-
-            renderReplacement();
-
-          }
-        );
-
-      });
-
+  if (!filteredLines.length) {
+    lineList.innerHTML = `
+      <div class="empty">
+        ${
+          keyword
+            ? "Line tidak ditemukan. Coba kata kunci lain."
+            : "Belum ada line aktif."
+        }
+      </div>
+    `;
+    return;
   }
+
+  lineList.querySelectorAll("[data-line]").forEach(button => {
+    button.addEventListener("click", () => {
+      s.selectedLine = button.dataset.line;
+      page("replacement");
+      renderReplacement();
+    });
+  });
+}
 
 
   /* =====================================================
@@ -1546,6 +1523,12 @@ function renderMembers() {
         "input",
         renderMembers
       );
+
+const dashboardLineSearch = $("dashboardLineSearch");
+
+if (dashboardLineSearch) {
+  dashboardLineSearch.addEventListener("input", renderLines);
+}
 
 
     // Filter riwayat: bulan, pencarian, dan reset.
