@@ -2542,4 +2542,45 @@ button.danger:disabled {
   }
 }
 
+/* Dashboard — pencarian line */
+.dashboard-line-search {
+  position: relative;
+  margin: 14px 0 12px;
+}
+
+.dashboard-line-search .search {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px 10px 40px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: #fff;
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.dashboard-line-search .search:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(23, 105, 224, 0.10);
+}
+
+.dashboard-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-52%);
+  color: var(--muted);
+  font-size: 23px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .dashboard-line-search {
+    margin-top: 12px;
+  }
+}
+
 
