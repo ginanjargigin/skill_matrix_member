@@ -573,14 +573,6 @@
       </div>
 
 
-      <button
-        id="addStationBtn"
-        class="primary"
-        type="button"
-      >
-        ＋ Tambah Station
-      </button>
-
     </div>
 
 
@@ -975,6 +967,44 @@
         >
 
       </label>
+      
+<div class="line-station-editor">
+  <h3>Station</h3>
+
+  <label>
+    Nama Station
+
+    <input
+      id="lineStationName"
+      type="text"
+      maxlength="120"
+      placeholder="Contoh: Fine Blanking"
+      autocomplete="off"
+    >
+  </label>
+
+  <label>
+    Position / Job
+
+    <input
+      id="lineStationPosition"
+      type="text"
+      maxlength="120"
+      placeholder="Contoh: Operator"
+      autocomplete="off"
+    >
+  </label>
+
+  <button
+    id="lineAddStationBtn"
+    class="secondary"
+    type="button"
+  >
+    + Tambah Station
+  </button>
+
+  <div id="lineStationList" class="line-station-list"></div>
+</div>
 
 
       <label>
