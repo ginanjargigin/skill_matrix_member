@@ -2009,7 +2009,7 @@ button.danger:disabled {
 }
 
 /* =====================================================
-   TABLET
+   TABLET — HISTORY
    ===================================================== */
 
 @media (max-width: 1100px) {
@@ -2034,10 +2034,21 @@ button.danger:disabled {
   .history-reason-box {
     padding: 9px;
   }
+
+  .history-table-header {
+    grid-template-columns:
+      minmax(130px, 0.8fr)
+      minmax(150px, 1fr)
+      minmax(150px, 1fr)
+      minmax(160px, 1fr);
+    gap: 6px;
+    padding: 12px;
+    font-size: 10px;
+  }
 }
-}
+
 /* =====================================================
-   MOBILE
+   MOBILE — HISTORY
    ===================================================== */
 
 @media (max-width: 700px) {
@@ -2106,13 +2117,17 @@ button.danger:disabled {
     min-height: auto;
   }
 
+  /* Header desktop tidak diperlukan pada tampilan HP */
+  .history-table-header {
+    display: none;
+  }
+}
 
 /* =====================================================
-   MOBILE — SAMA DENGAN DESKTOP
+   MOBILE — SKILL DISPLAY
    ===================================================== */
 
 @media (max-width: 600px) {
-
   .candidate-skill {
     grid-template-columns: auto minmax(0, 1fr) auto;
     column-gap: 6px;
@@ -2134,32 +2149,28 @@ button.danger:disabled {
   .candidate-skill .skill-percent {
     font-size: 14px;
   }
+}
 
 /* =====================================================
-   HEADER KOLOM RIWAYAT REPLACEMENT
+   HEADER KOLOM RIWAYAT REPLACEMENT — DESKTOP
+   Harus berada di luar blok @media lain
    ===================================================== */
 
 .history-table-header {
   display: grid;
-
   grid-template-columns:
     minmax(150px, 0.85fr)
     minmax(180px, 1.15fr)
     minmax(180px, 1.15fr)
     minmax(190px, 1.15fr);
-
   gap: 10px;
   align-items: center;
-
   padding: 13px 18px;
   margin: 0 0 8px;
-
   color: #344865;
   background: #e8edf5;
-
   border: 1px solid #dce4ef;
   border-radius: 10px;
-
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.025em;
@@ -2168,32 +2179,3 @@ button.danger:disabled {
 .history-table-header > div {
   min-width: 0;
 }
-
-/* Tablet */
-@media (min-width: 701px) and (max-width: 1100px) {
-  .history-table-header {
-    grid-template-columns:
-      minmax(130px, 0.8fr)
-      minmax(150px, 1fr)
-      minmax(150px, 1fr)
-      minmax(160px, 1fr);
-
-    gap: 6px;
-    padding: 12px;
-    font-size: 10px;
-  }
-}
-
-/* Mobile */
-@media (max-width: 700px) {
-  .history-table-header {
-    display: none;
-  }
-
-  .history-mobile-label {
-    display: block;
-  }
-}
-
-}
-
