@@ -1577,14 +1577,7 @@ const candidates = s.members
       );
 
 
-    $("candidateSearch")
-      .addEventListener(
-        "input",
-        renderCandidates
-      );
-
-
-    $("memberSearch")
+       $("memberSearch")
       .addEventListener(
         "input",
         renderMembers
