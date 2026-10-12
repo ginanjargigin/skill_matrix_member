@@ -626,18 +626,29 @@ function getSkillPercent(level) {
 const selectedShift = $("changeShift").value;
 const selectedDate = $("changeDate").value;
 
+
 function normalizeShift(value) {
   const shift = String(value || "")
     .trim()
     .toUpperCase()
-    .replace(/[_-]/g, " ");
+    .replace(/[_-]/g, " ")
+    .replace(/\s+/g, " ");
 
-  if (["A", "NON SHIFT", "NONSHIFT"].includes(shift)) return "A";
-  if (["B", "RED"].includes(shift)) return "B";
-  if (["C", "WHITE"].includes(shift)) return "C";
+  if (["A", "NS", "N/S", "NON SHIFT", "NONSHIFT"].includes(shift)) {
+    return "A";
+  }
+
+  if (["B", "RED"].includes(shift)) {
+    return "B";
+  }
+
+  if (["C", "WHITE"].includes(shift)) {
+    return "C";
+  }
 
   return shift;
 }
+
 
 const candidates = s.members
   .filter(member => {
