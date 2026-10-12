@@ -628,11 +628,7 @@ function getSkillPercent(level) {
 
 
     
-const selectedShift =
-  $("changeShift").value;
 
-const selectedDate =
-  $("changeDate").value;
 
 const selectedShift = $("changeShift").value;
 const selectedDate = $("changeDate").value;
