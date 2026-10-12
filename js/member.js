@@ -155,7 +155,7 @@ window.MemberManager = (() => {
 
     setTimeout(() => {
 
-      $("memberRegCode")?.focus();
+     $("memberName")?.focus();
 
     }, 80);
 
@@ -201,10 +201,6 @@ window.MemberManager = (() => {
 
     $("memberDelete").style.display =
   "inline-flex";
-
-
-    $("memberRegCode").value =
-      member.reg_code || "";
 
 
     $("memberName").value =
@@ -292,16 +288,11 @@ async function removeMember() {
   }
 
 
-  const confirmed =
-    window.confirm(
-
-      `Hapus member "${member.name}" (${member.reg_code})?\n\n` +
-
-      `Data member dan seluruh skill member ini akan dihapus.\n\n` +
-
-      `Tindakan ini tidak dapat dibatalkan.`
-
-    );
+ const confirmed = window.confirm(
+  `Hapus member "${member.name}"?\n\n` +
+  `Data member dan seluruh skill member ini akan dihapus.\n\n` +
+  `Tindakan ini tidak dapat dibatalkan.`
+);
 
 
   if (!confirmed) {
@@ -445,275 +436,98 @@ async function removeMember() {
   }
 
 
-  /* =====================================================
-     NORMALIZE REG
-     ===================================================== */
-
-  function normalizeCode(value) {
-
-    return String(value || "")
-      .trim()
-      .toUpperCase();
-
-  }
 
 
   /* =====================================================
      SAVE
      ===================================================== */
 
-  async function save(event) {
+ 
+async function save(event) {
+  event?.preventDefault();
 
-    event?.preventDefault();
+  const s = state();
 
+  if (!s) {
+    toast("State aplikasi belum siap.");
+    return;
+  }
 
-    const s = state();
+  const editId = $("memberEditId").value || null;
+  const name = $("memberName").value.trim();
+  const status = $("memberStatus").value;
+  const shift = $("memberShift").value || null;
+  const homeLineId = $("memberHomeLine").value || null;
 
-    if (!s) {
+  // VALIDASI
+  if (!name) {
+    toast("Nama member wajib diisi.");
+    $("memberName").focus();
+    return;
+  }
 
-      toast(
-        "State aplikasi belum siap."
-      );
+  // PAYLOAD: tanpa No Reg
+  const payload = {
+    name,
+    status,
+    shift,
+    home_line_id: homeLineId,
+    active: true
+  };
 
-      return;
+  const button = $("memberSave");
 
-    }
+  if (button) button.disabled = true;
 
-
-    const editId =
-      $("memberEditId").value || null;
-
-
-    const regCode =
-      normalizeCode(
-        $("memberRegCode").value
-      );
-
-
-    const name =
-      $("memberName")
-        .value
-        .trim();
-
-
-    const status =
-      $("memberStatus").value;
-
-
-    const shift =
-      $("memberShift").value || null;
-
-
-    const homeLineId =
-      $("memberHomeLine").value || null;
-
-
-    /* ===================================================
-       VALIDATION
-       =================================================== */
-
-    if (!regCode || !name) {
-
-      toast(
-        "No Reg dan nama wajib diisi."
-      );
-
-      return;
-
-    }
-
-
-    /* ===================================================
-       DUPLICATE CHECK
-       =================================================== */
-
-    const duplicate =
-      s.members.find(member => {
-
-        const sameCode =
-          normalizeCode(
-            member.reg_code
-          ) === regCode;
-
-
-        const differentMember =
-          String(member.id) !==
-          String(editId);
-
-
-        return (
-          sameCode &&
-          differentMember
+  try {
+    if (!SupabaseClient.configured()) {
+      // MODE DEMO
+      if (editId) {
+        const member = s.members.find(
+          item => String(item.id) === String(editId)
         );
 
-      });
-
-
-    if (duplicate) {
-
-      toast(
-        "No Reg sudah digunakan."
-      );
-
-      return;
-
-    }
-
-
-    /* ===================================================
-       PAYLOAD
-       =================================================== */
-
-    const payload = {
-
-      reg_code: regCode,
-
-      name,
-
-      status,
-
-      shift,
-
-      home_line_id: homeLineId,
-
-      active: true
-
-    };
-
-
-    const button =
-      $("memberSave");
-
-
-    if (button) {
-      button.disabled = true;
-    }
-
-
-    try {
-
-      /* =================================================
-         DEMO
-         ================================================= */
-
-      if (!SupabaseClient.configured()) {
-
-        if (editId) {
-
-          const member =
-            s.members.find(
-              item =>
-                String(item.id) ===
-                String(editId)
-            );
-
-
-          if (member) {
-
-            Object.assign(
-              member,
-              payload
-            );
-
-          }
-
-
-          toast(
-            "Demo: member diperbarui."
-          );
-
-        } else {
-
-          s.members.push({
-
-            id:
-              "demo-member-" +
-              Date.now(),
-
-            ...payload
-
-          });
-
-
-          toast(
-            "Demo: member ditambahkan."
-          );
-
+        if (member) {
+          Object.assign(member, payload);
+          delete member.reg_code;
         }
 
+        toast("Demo: member diperbarui.");
+      } else {
+        s.members.push({
+          id: "demo-member-" + Date.now(),
+          ...payload
+        });
+
+        toast("Demo: member ditambahkan.");
       }
-
-
-      /* =================================================
-         SUPABASE
-         ================================================= */
-
-      else {
-
-        if (editId) {
-
-          await DB.update(
-            "members",
-            editId,
-            payload
-          );
-
-
-          toast(
-            "Member berhasil diperbarui."
-          );
-
-        } else {
-
-          await DB.insert(
-            "members",
-            payload
-          );
-
-
-          toast(
-            "Member berhasil ditambahkan."
-          );
-
-        }
-
+    } else {
+      // SUPABASE
+      if (editId) {
+        await DB.update("members", editId, payload);
+        toast("Member berhasil diperbarui.");
+      } else {
+        await DB.insert("members", payload);
+        toast("Member berhasil ditambahkan.");
       }
-
-
-      closeModal();
-
-
-      if (
-        typeof refresh === "function"
-      ) {
-
-        await refresh();
-
-      }
-
-
-    } catch (error) {
-
-      console.error(
-        "Member save error:",
-        error
-      );
-
-
-      toast(
-        error?.message ||
-        "Gagal menyimpan member."
-      );
-
-    } finally {
-
-      if (button) {
-        button.disabled = false;
-      }
-
     }
 
+    closeModal();
+
+    if (typeof refresh === "function") {
+      await refresh();
+    }
+  } catch (error) {
+    console.error("Member save error:", error);
+
+    toast(
+      error?.message ||
+      "Gagal menyimpan member."
+    );
+  } finally {
+    if (button) button.disabled = false;
   }
+}
 
 
   /* =====================================================
