@@ -114,126 +114,149 @@ window.MemberManager = (() => {
 
   }
 
+  function renderMemberSkills(memberId = null) {
+  const s = state();
+  const container = $("memberSkillEditor");
+
+  if (!s || !container) return;
+
+  const activeStations = s.stations
+    .filter(station => station.active !== false)
+    .sort((a, b) => {
+      const lineA = s.lines.find(
+        line => String(line.id) === String(a.line_id)
+      )?.name || "";
+
+      const lineB = s.lines.find(
+        line => String(line.id) === String(b.line_id)
+      )?.name || "";
+
+      return lineA.localeCompare(lineB) ||
+        String(a.name).localeCompare(String(b.name));
+    });
+
+  if (!activeStations.length) {
+    container.innerHTML = `
+      <div class="empty">
+        Belum ada station aktif. Buat station terlebih dahulu
+        di menu Master Line & Station.
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = activeStations.map(station => {
+    const line = s.lines.find(
+      item => String(item.id) === String(station.line_id)
+    );
+
+    const skill = s.skills.find(item =>
+      String(item.member_id) === String(memberId) &&
+      String(item.station_id) === String(station.id)
+    );
+
+    const level = Number(skill?.skill_level || 0);
+
+    return `
+      <div class="member-skill-row">
+        <div class="member-skill-info">
+          <strong>${esc(station.name)}</strong>
+          <small>${esc(line?.name || "-")}</small>
+        </div>
+
+        <label class="member-skill-level">
+          <span>Level</span>
+          <select
+            data-member-skill="${esc(station.id)}"
+            aria-label="Skill ${esc(station.name)}"
+          >
+            <option value="0" ${level === 0 ? "selected" : ""}>
+              0 — Belum bisa
+            </option>
+            <option value="1" ${level === 1 ? "selected" : ""}>L1 — 25%</option>
+            <option value="2" ${level === 2 ? "selected" : ""}>L2 — 50%</option>
+            <option value="3" ${level === 3 ? "selected" : ""}>L3 — 75%</option>
+            <option value="4" ${level === 4 ? "selected" : ""}>L4 — 82%</option>
+            <option value="5" ${level === 5 ? "selected" : ""}>L5 — 92%</option>
+            <option value="6" ${level === 6 ? "selected" : ""}>L6 — 100%</option>
+          </select>
+        </label>
+      </div>
+    `;
+  }).join("");
+}
 
   /* =====================================================
      OPEN ADD
      ===================================================== */
 
-  function openAddModal() {
+function openAddModal() {
+  const form = $("memberForm");
+  if (!form) return;
 
-    const form =
-      $("memberForm");
+  form.reset();
 
-    if (!form) {
-      return;
-    }
+  $("memberModalTitle").textContent = "Tambah Member + Skill";
+  $("memberModalSubtitle").textContent =
+    "Lengkapi identitas, line asal, shift, dan skill member.";
 
+  $("memberEditId").value = "";
+  $("memberDelete").style.display = "none";
 
-    $("memberModalTitle").textContent =
-      "Tambah Member";
+  populateLines();
+  renderMemberSkills();
 
-
-    $("memberModalSubtitle").textContent =
-      "Isi data member baru.";
-
-
-    $("memberEditId").value = "";
-
-    $("memberDelete").style.display =
-  "none";
-
-    form.reset();
-
-
-    populateLines();
-
-
-    $("memberModal")
-      .classList
-      .add("open");
-
-
-    setTimeout(() => {
-
-     $("memberName")?.focus();
-
-    }, 80);
-
-  }
-
+  $("memberModal").classList.add("open");
+  setTimeout(() => $("memberName")?.focus(), 80);
+}
 
   /* =====================================================
      OPEN EDIT
      ===================================================== */
+function normalizeShift(value) {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[_-]/g, " ")
+    .replace(/\s+/g, " ");
 
-  function openEditModal(id) {
-
-    const s = state();
-
-    const member =
-      s?.members.find(
-        item =>
-          String(item.id) === String(id)
-      );
-
-
-    if (!member) {
-
-      toast(
-        "Data member tidak ditemukan."
-      );
-
-      return;
-
-    }
-
-
-    $("memberModalTitle").textContent =
-      "Edit Member";
-
-
-    $("memberModalSubtitle").textContent =
-      "Perbarui data identitas member.";
-
-
-    $("memberEditId").value =
-      member.id;
-
-    $("memberDelete").style.display =
-  "inline-flex";
-
-
-    $("memberName").value =
-      member.name || "";
-
-
-    $("memberStatus").value =
-      member.status || "PERMANENT";
-
-
-    $("memberShift").value =
-      member.shift || "";
-
-
-    populateLines(
-      member.home_line_id || ""
-    );
-
-
-    $("memberModal")
-      .classList
-      .add("open");
-
-
-    setTimeout(() => {
-
-      $("memberName")?.focus();
-
-      $("memberName")?.select();
-
-    }, 80);
-
+  if (["a", "ns", "n/s", "non shift", "nonshift"].includes(normalized)) {
+    return "Non Shift";
   }
+
+  if (["b", "red"].includes(normalized)) return "Red";
+  if (["c", "white"].includes(normalized)) return "White";
+
+  return value || "";
+}
+  function openEditModal(id) {
+  const s = state();
+
+  const member = s?.members.find(
+    item => String(item.id) === String(id)
+  );
+
+  if (!member) {
+    toast("Data member tidak ditemukan.");
+    return;
+  }
+
+  $("memberModalTitle").textContent = "Edit Member + Skill";
+  $("memberModalSubtitle").textContent =
+    "Perbarui data member dan Skill Matrix dalam satu form.";
+
+  $("memberEditId").value = member.id;
+  $("memberDelete").style.display = "inline-flex";
+
+  $("memberName").value = member.name || "";
+  $("memberStatus").value = member.status || "PERMANENT";
+  $("memberShift").value = normalizeShift(member.shift);
+
+  populateLines(member.home_line_id || "");
+  renderMemberSkills(member.id);
+
+  $("memberModal").classList.add("open");
+}
 
    /* =====================================================
    DELETE MEMBER
@@ -447,7 +470,6 @@ async function save(event) {
   event?.preventDefault();
 
   const s = state();
-
   if (!s) {
     toast("State aplikasi belum siap.");
     return;
@@ -456,30 +478,67 @@ async function save(event) {
   const editId = $("memberEditId").value || null;
   const name = $("memberName").value.trim();
   const status = $("memberStatus").value;
-  const shift = $("memberShift").value || null;
-  const homeLineId = $("memberHomeLine").value || null;
+  const shift = normalizeShift($("memberShift").value);
+  const homeLineId = $("memberHomeLine").value;
 
-  // VALIDASI
+  const skillSelects = [
+    ...document.querySelectorAll("[data-member-skill]")
+  ];
+
+  const skills = skillSelects.map(select => ({
+    station_id: select.dataset.memberSkill,
+    skill_level: Number(select.value),
+    certified: Number(select.value) >= 4
+  }));
+
   if (!name) {
     toast("Nama member wajib diisi.");
     $("memberName").focus();
     return;
   }
 
-  // PAYLOAD: tanpa No Reg
-  const payload = {
-    name,
-    status,
-    shift,
-    home_line_id: homeLineId,
-    active: true
-  };
+  if (!status) {
+    toast("Status member wajib dipilih.");
+    $("memberStatus").focus();
+    return;
+  }
+
+  if (!["Non Shift", "Red", "White"].includes(shift)) {
+    toast("Shift wajib dipilih.");
+    $("memberShift").focus();
+    return;
+  }
+
+  if (!homeLineId) {
+    toast("Line asal wajib dipilih.");
+    $("memberHomeLine").focus();
+    return;
+  }
+
+  if (!skills.length) {
+    toast("Skill Matrix belum tersedia. Tambahkan station terlebih dahulu.");
+    return;
+  }
+
+  if (!skills.some(skill => skill.skill_level >= 1 && skill.skill_level <= 6)) {
+    toast("Isi minimal satu skill dengan level 1–6.");
+    return;
+  }
 
   const button = $("memberSave");
-
   if (button) button.disabled = true;
 
   try {
+    const payload = {
+      name,
+      status,
+      shift,
+      home_line_id: homeLineId,
+      active: true
+    };
+
+    let memberId = editId;
+
     if (!SupabaseClient.configured()) {
       // MODE DEMO
       if (editId) {
@@ -487,30 +546,67 @@ async function save(event) {
           item => String(item.id) === String(editId)
         );
 
-        if (member) {
-          Object.assign(member, payload);
-          delete member.reg_code;
-        }
+        if (!member) throw new Error("Member tidak ditemukan.");
 
-        toast("Demo: member diperbarui.");
+        Object.assign(member, payload);
       } else {
+        memberId = "demo-member-" + Date.now();
+
         s.members.push({
-          id: "demo-member-" + Date.now(),
+          id: memberId,
           ...payload
         });
-
-        toast("Demo: member ditambahkan.");
       }
     } else {
-      // SUPABASE
+      // SIMPAN IDENTITAS MEMBER TERLEBIH DAHULU
+      let savedMember;
+
       if (editId) {
-        await DB.update("members", editId, payload);
-        toast("Member berhasil diperbarui.");
+        savedMember = await DB.update("members", editId, payload);
       } else {
-        await DB.insert("members", payload);
-        toast("Member berhasil ditambahkan.");
+        savedMember = await DB.insert("members", payload);
+      }
+
+      memberId = savedMember?.id || editId;
+
+      if (!memberId) {
+        throw new Error("ID member tidak ditemukan setelah penyimpanan.");
       }
     }
+
+    // Simpan Skill Matrix untuk member yang sama.
+    for (const skill of skills) {
+      const skillPayload = {
+        member_id: memberId,
+        station_id: skill.station_id,
+        skill_level: skill.skill_level,
+        certified: skill.certified
+      };
+
+      if (!SupabaseClient.configured()) {
+        const existing = s.skills.find(item =>
+          String(item.member_id) === String(memberId) &&
+          String(item.station_id) === String(skill.station_id)
+        );
+
+        if (existing) {
+          Object.assign(existing, skillPayload);
+        } else {
+          s.skills.push({
+            id: "demo-skill-" + Date.now() + "-" + skill.station_id,
+            ...skillPayload
+          });
+        }
+      } else {
+        await DB.save("member_skills", skillPayload);
+      }
+    }
+
+    toast(
+      editId
+        ? "Data member dan Skill Matrix berhasil diperbarui."
+        : "Member dan Skill Matrix berhasil ditambahkan."
+    );
 
     closeModal();
 
@@ -518,11 +614,11 @@ async function save(event) {
       await refresh();
     }
   } catch (error) {
-    console.error("Member save error:", error);
+    console.error("Member + Skill save error:", error);
 
     toast(
       error?.message ||
-      "Gagal menyimpan member."
+      "Gagal menyimpan member dan Skill Matrix."
     );
   } finally {
     if (button) button.disabled = false;
