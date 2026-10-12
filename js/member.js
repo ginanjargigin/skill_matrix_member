@@ -3,6 +3,7 @@ window.MemberManager = (() => {
   let refresh = null;
 
   let selectedSkillLineId = "";
+  let selectedSkillLineIds = new Set();
   let skillDraft = new Map();
   let lineSearchBound = false;
   let skillSearchBound = false;
