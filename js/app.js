@@ -603,14 +603,7 @@ function getSkillPercent(level) {
       $("replaceStation").value;
 
 
-    const query =
-      $("candidateSearch")
-        .value
-        .trim()
-        .toLowerCase();
-
-
-    if (!stationId) {
+      if (!stationId) {
 
       $("candidateList").innerHTML = `
 
@@ -663,12 +656,9 @@ const candidates = s.members
       normalizeShift(change.shift) === normalizeShift(selectedShift)
     );
 
-    if (alreadyAssigned) return false;
+        if (alreadyAssigned) return false;
 
-    const name = String(member.name || "").toLowerCase();
-    const reg = String(member.reg_code || "").toLowerCase();
-
-    return !query || name.includes(query) || reg.includes(query);
+    return true;
   })
   .map(member => ({
     ...member,
