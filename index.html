@@ -323,6 +323,13 @@
 
             </label>
 
+            <label>
+              Member yang Diganti
+            
+              <select id="absentMember" required>
+                <option value="">Pilih member yang tidak masuk</option>
+              </select>
+            </label>
 
             <label>
               Shift
@@ -354,26 +361,20 @@
             </label>
 
 
-            <label>
-              Alasan
-
-              <select id="changeReason">
-
-                <option>
-                  Member tidak masuk
-                </option>
-
-                <option>
-                  Back up sementara
-                </option>
-
-                <option>
-                  Kebutuhan tambahan
-                </option>
-
-              </select>
-
-            </label>
+           <label>
+            Alasan Tidak Masuk
+          
+            <select id="changeReason" required>
+              <option value="">Pilih alasan</option>
+              <option value="Sakit">Sakit</option>
+              <option value="Izin">Izin</option>
+              <option value="Cuti">Cuti</option>
+              <option value="Keperluan Pribadi">Keperluan Pribadi</option>
+              <option value="Terlambat">Terlambat</option>
+              <option value="Tanpa Keterangan">Tanpa Keterangan</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+          </label>
 
 
             <label>
@@ -586,44 +587,63 @@
 </section>
 
     <!-- ===================================================
-         HISTORY
-         =================================================== -->
+     HISTORY / RIWAYAT REPLACEMENT
+     =================================================== -->
 
-    <section
-      class="page"
-      id="page-history"
-    >
+<section class="page" id="page-history">
 
-      <div class="section-head">
+  <div class="section-head history-heading">
+    <div>
+      <h2>Riwayat Replacement</h2>
+      <p>Daftar histori penggantian manpower.</p>
+    </div>
+  </div>
 
-        <div>
+  <section class="card history-panel">
 
-          <h2>
-            Riwayat Manpower Change
-          </h2>
+    <div class="history-toolbar">
 
-          <p>
-            Melihat histori pergantian manpower.
-          </p>
+      <label class="history-month-wrap">
+        <span>Bulan riwayat</span>
+        <input
+          id="historyMonth"
+          type="month"
+          aria-label="Filter bulan riwayat"
+        >
+      </label>
 
-        </div>
+      <label class="history-search-wrap">
+        <span>Pencarian</span>
+        <input
+          id="historySearch"
+          type="search"
+          placeholder="Cari nama, line, station, alasan..."
+          autocomplete="off"
+        >
+      </label>
 
-      </div>
+      <button
+        type="button"
+        id="historyReset"
+        class="secondary history-reset"
+      >
+        Reset
+      </button>
 
+    </div>
 
-      <section class="card">
+    <div class="history-summary">
+      <span id="historyCount">0 riwayat</span>
+      <span>Line asal dan line tujuan ditampilkan terpisah</span>
+    </div>
 
-        <div id="historyList"></div>
+    <div id="historyList" class="history-list"></div>
 
-      </section>
+  </section>
 
-    </section>
+</section>
 
-  </main>
-
-</div>
-
-
+    
 <!-- =======================================================
      MODAL REPLACEMENT
      ======================================================= -->
