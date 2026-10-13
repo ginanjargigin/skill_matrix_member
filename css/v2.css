@@ -17,11 +17,9 @@
 
 }
 
-
 * {
   box-sizing: border-box;
 }
-
 
 html,
 body {
@@ -42,11 +40,9 @@ body {
 
 }
 
-
 body {
   overflow-x: hidden;
 }
-
 
 button,
 input,
@@ -55,11 +51,9 @@ textarea {
   font: inherit;
 }
 
-
 button {
   cursor: pointer;
 }
-
 
 /* =====================================================
    APP
@@ -72,7 +66,6 @@ button {
   min-height: 100vh;
 
 }
-
 
 /* =====================================================
    SIDEBAR
@@ -94,7 +87,6 @@ button {
 
 }
 
-
 .brand {
 
   font-size: 17px;
@@ -106,7 +98,6 @@ button {
 
 }
 
-
 .brand small {
 
   display: block;
@@ -117,7 +108,6 @@ button {
 
 }
 
-
 .nav {
 
   display: grid;
@@ -125,7 +115,6 @@ button {
   gap: 6px;
 
 }
-
 
 .nav button {
 
@@ -143,7 +132,6 @@ button {
 
 }
 
-
 .nav button.active,
 .nav button:hover {
 
@@ -152,7 +140,6 @@ button {
   color: #fff;
 
 }
-
 
 /* =====================================================
    MAIN
@@ -169,7 +156,6 @@ button {
 
 }
 
-
 .topbar {
 
   display: flex;
@@ -182,7 +168,6 @@ button {
 
 }
 
-
 .topbar h1 {
 
   margin: 3px 0;
@@ -190,7 +175,6 @@ button {
   font-size: 28px;
 
 }
-
 
 .eyebrow {
 
@@ -203,7 +187,6 @@ button {
   color: var(--primary);
 
 }
-
 
 .mode {
 
@@ -221,7 +204,6 @@ button {
 
 }
 
-
 /* =====================================================
    PAGE
    ===================================================== */
@@ -230,163 +212,139 @@ button {
   display: none;
 }
 
-
 .page.active {
   display: block;
 }
-
 
 /* =====================================================
    KPI
    ===================================================== */
 
-.grid {
+/* =====================================================
+   KPI — DASHBOARD
+   ===================================================== */
 
+#page-dashboard > .grid {
   display: grid;
-
-  grid-template-columns:
-    repeat(4, 1fr);
-
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
-
 }
 
-
-.kpi,
-.card {
-
-  background: var(--card);
-
-  border:
-    1px solid var(--border);
-
+#page-dashboard .kpi {
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
+  border: 1px solid rgba(59, 130, 246, 0.13);
   border-radius: 16px;
-
-  box-shadow: var(--shadow);
-
+  background: linear-gradient(
+    145deg,
+    rgba(219, 234, 254, 0.65),
+    rgba(255, 255, 255, 0.96) 70%
+  );
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-
-.kpi {
-
-  padding: 18px;
-
+#page-dashboard .kpi:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.10);
 }
 
-
-.kpi small {
-
-  color: var(--muted);
-
+#page-dashboard .kpi small {
+  color: #526783;
+  font-size: 12px;
 }
 
-
-.kpi b {
-
+#page-dashboard .kpi b {
   display: block;
-
-  font-size: 28px;
-
-  margin-top: 8px;
-
+  margin-top: 10px;
+  color: #173b70;
+  font-size: 30px;
+  line-height: 1.1;
+  font-weight: 800;
 }
-
 
 /* =====================================================
    LAYOUT
    ===================================================== */
 
-.layout {
+/* =====================================================
+   DASHBOARD LAYOUT
+   ===================================================== */
 
+#page-dashboard > .layout {
   display: grid;
-
-  grid-template-columns:
-    1fr 1fr;
-
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 18px;
-
   margin-top: 18px;
-
 }
 
-
-.card {
-
-  padding: 18px;
-
+#page-dashboard > .layout > .card {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid rgba(59, 130, 246, 0.13);
+  border-radius: 17px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 24px rgba(30, 64, 120, 0.05);
 }
 
-
-.card h2 {
-
-  margin:
-    0 0 5px;
-
+#page-dashboard > .layout > .card h2 {
+  margin: 0 0 6px;
+  color: #17365f;
   font-size: 19px;
-
 }
 
-
-.card p {
-
-  margin:
-    0 0 14px;
-
-  color: var(--muted);
-
+#page-dashboard > .layout > .card p {
+  margin: 0 0 15px;
+  color: #6b7d95;
   font-size: 13px;
-
+  line-height: 1.5;
 }
-
 
 /* =====================================================
    WORKFLOW
    ===================================================== */
 
-.workflow-vertical {
+/* =====================================================
+   DASHBOARD — ALUR REPLACEMENT
+   ===================================================== */
 
+#page-dashboard .workflow-vertical {
   display: grid;
-
-  gap: 8px;
-
+  gap: 9px;
 }
 
-
-.workflow-vertical > div {
-
+#page-dashboard .workflow-vertical > div {
   display: flex;
-
   align-items: center;
-
   gap: 12px;
-
   padding: 10px 12px;
-
-  background: #f7f9fc;
-
-  border-radius: 10px;
-
+  border: 1px solid rgba(59, 130, 246, 0.07);
+  border-radius: 11px;
+  background: linear-gradient(
+    100deg,
+    rgba(219, 234, 254, 0.48),
+    rgba(248, 250, 252, 0.92)
+  );
+  transition: background 0.2s, border-color 0.2s;
 }
 
+#page-dashboard .workflow-vertical > div:hover {
+  border-color: rgba(59, 130, 246, 0.25);
+  background: rgba(219, 234, 254, 0.75);
+}
 
-.workflow-vertical strong {
-
-  width: 28px;
-
-  height: 28px;
-
+#page-dashboard .workflow-vertical strong {
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
   display: grid;
-
   place-items: center;
-
-  border-radius: 50%;
-
-  background: #e9f3ff;
-
-  color: var(--primary);
-
+  border-radius: 10px;
+  background: rgba(59, 130, 246, 0.13);
+  color: #1d4ed8;
+  font-size: 13px;
 }
-
 
 /* =====================================================
    SECTION HEAD
@@ -406,11 +364,9 @@ button {
 
 }
 
-
 .section-head h2 {
   margin: 0;
 }
-
 
 .section-head p {
 
@@ -420,7 +376,6 @@ button {
     4px 0;
 
 }
-
 
 /* =====================================================
    REPLACEMENT LAYOUT
@@ -438,7 +393,6 @@ button {
 
 }
 
-
 .replacement-layout
 .candidate-section {
 
@@ -446,7 +400,6 @@ button {
     1 / -1;
 
 }
-
 
 /* =====================================================
    STEP TITLE
@@ -464,13 +417,11 @@ button {
 
 }
 
-
 .step-title h2 {
 
   margin: 0;
 
 }
-
 
 .step-title p {
 
@@ -478,7 +429,6 @@ button {
     4px 0 0;
 
 }
-
 
 .step-number {
 
@@ -502,7 +452,6 @@ button {
   font-weight: 900;
 
 }
-
 
 /* =====================================================
    LINE / STATION
@@ -536,14 +485,11 @@ button {
 
 }
 
-
 .line-card:hover,
 .station-card:hover {
-
-  border-color: #9bbef0;
-
+  border-color: rgba(37, 99, 235, 0.42);
+  background: rgba(239, 246, 255, 0.75);
 }
-
 
 .line-card > strong,
 .station-card > strong {
@@ -556,25 +502,11 @@ button {
 
 }
 
-
 .line-icon {
-
-  width: 38px;
-
-  height: 38px;
-
-  display: grid;
-
-  place-items: center;
-
-  background: #eaf3ff;
-
-  color: var(--primary);
-
-  border-radius: 10px;
-
+  background: rgba(59, 130, 246, 0.11);
+  color: #2563eb;
+  border-radius: 11px;
 }
-
 
 .line-card small,
 .station-card small {
@@ -586,7 +518,6 @@ button {
   margin-top: 3px;
 
 }
-
 
 /* =====================================================
    FORM
@@ -600,7 +531,6 @@ button {
 
 }
 
-
 .form label {
 
   display: grid;
@@ -612,7 +542,6 @@ button {
   font-size: 13px;
 
 }
-
 
 .form input,
 .form select,
@@ -636,27 +565,20 @@ button {
 
 }
 
-
 .form textarea {
 
   resize: vertical;
 
 }
 
-
 .form input:focus,
 .form select:focus,
 .form textarea:focus,
 .search:focus {
-
-  border-color:
-    var(--primary);
-
-  box-shadow:
-    0 0 0 3px #dceaff;
-
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.14);
+  outline: none;
 }
-
 
 /* =====================================================
    CANDIDATE LIST
@@ -672,7 +594,6 @@ button {
   gap: 12px;
 
 }
-
 
 /* =====================================================
    CANDIDATE CARD
@@ -703,7 +624,6 @@ button {
 
 }
 
-
 .candidate:hover {
 
   border-color:
@@ -715,7 +635,6 @@ button {
 
 }
 
-
 .candidate-info {
 
   display: flex;
@@ -725,7 +644,6 @@ button {
   gap: 3px;
 
 }
-
 
 .candidate-rank {
 
@@ -741,7 +659,6 @@ button {
 
 }
 
-
 .candidate-name {
 
   font-size: 17px;
@@ -749,7 +666,6 @@ button {
   margin-top: 2px;
 
 }
-
 
 .candidate-info small {
 
@@ -759,18 +675,15 @@ button {
 
 }
 
-
 .candidate-pick {
 
   width: 100%;
 
 }
 
-
 /* =====================================================
    MEMBER
    ===================================================== */
-
 
 /* =====================================================
    MEMBER & SKILL — GREEN GLASS
@@ -945,8 +858,8 @@ button {
     padding: 8px;
     font-size: 10px;
   }
-}
 
+}
 
 /* =====================================================
    BUTTON
@@ -966,7 +879,6 @@ button {
 
 }
 
-
 .primary {
 
   background:
@@ -976,7 +888,6 @@ button {
 
 }
 
-
 .secondary {
 
   background: #edf2f8;
@@ -984,7 +895,6 @@ button {
   color: #25334a;
 
 }
-
 
 .small {
 
@@ -995,7 +905,6 @@ button {
 
 }
 
-
 button:disabled {
 
   opacity: .6;
@@ -1003,7 +912,6 @@ button:disabled {
   cursor: wait;
 
 }
-
 
 /* =====================================================
    SKILL
@@ -1032,13 +940,11 @@ button:disabled {
 
 }
 
-
 .skill-row span {
 
   flex: 1;
 
 }
-
 
 .skill-row small {
 
@@ -1049,7 +955,6 @@ button:disabled {
   margin-top: 3px;
 
 }
-
 
 .skill-row select {
 
@@ -1065,7 +970,6 @@ button:disabled {
   padding: 8px;
 
 }
-
 
 /* =====================================================
    HISTORY
@@ -1092,13 +996,11 @@ button:disabled {
 
 }
 
-
 .history-card > div:first-child {
 
   flex: 1;
 
 }
-
 
 .history-card small {
 
@@ -1110,7 +1012,6 @@ button:disabled {
 
 }
 
-
 .history-card > span {
 
   font-weight: 800;
@@ -1118,7 +1019,6 @@ button:disabled {
   text-align: right;
 
 }
-
 
 /* =====================================================
    EMPTY
@@ -1138,7 +1038,6 @@ button:disabled {
   border-radius: 12px;
 
 }
-
 
 /* =====================================================
    MODAL
@@ -1165,13 +1064,11 @@ button:disabled {
 
 }
 
-
 .modal.open {
 
   display: flex;
 
 }
-
 
 .modal-box {
 
@@ -1190,13 +1087,11 @@ button:disabled {
 
 }
 
-
 .modal-box h2 {
 
   margin-top: 0;
 
 }
-
 
 .modal-box > p {
 
@@ -1205,7 +1100,6 @@ button:disabled {
   font-size: 13px;
 
 }
-
 
 .close {
 
@@ -1223,7 +1117,6 @@ button:disabled {
 
 }
 
-
 /* =====================================================
    ACTIONS
    ===================================================== */
@@ -1239,7 +1132,6 @@ button:disabled {
   margin-top: 12px;
 
 }
-
 
 /* =====================================================
    TOAST
@@ -1279,7 +1171,6 @@ button:disabled {
 
 }
 
-
 .toast.show {
 
   opacity: 1;
@@ -1288,7 +1179,6 @@ button:disabled {
     translateY(0);
 
 }
-
 
 /* =====================================================
    MOBILE
@@ -1300,7 +1190,6 @@ button:disabled {
 
 }
 
-
 @media (max-width: 1000px) {
 
   .candidate-list {
@@ -1311,7 +1200,6 @@ button:disabled {
   }
 
 }
-
 
 @media (max-width: 800px) {
 
@@ -1326,14 +1214,12 @@ button:disabled {
 
   }
 
-
   .menu-open .sidebar {
 
     transform:
       translateX(0);
 
   }
-
 
   .main {
 
@@ -1344,7 +1230,6 @@ button:disabled {
     padding: 15px;
 
   }
-
 
   .menu-btn {
 
@@ -1363,13 +1248,11 @@ button:disabled {
 
   }
 
-
   .topbar {
 
     gap: 10px;
 
   }
-
 
   .topbar > div:first-of-type {
 
@@ -1377,13 +1260,11 @@ button:disabled {
 
   }
 
-
   .topbar h1 {
 
     font-size: 22px;
 
   }
-
 
   .grid {
 
@@ -1392,20 +1273,17 @@ button:disabled {
 
   }
 
-
   .layout {
 
     grid-template-columns: 1fr;
 
   }
 
-
   .replacement-layout {
 
     grid-template-columns: 1fr;
 
   }
-
 
   .replacement-layout
   .candidate-section {
@@ -1414,20 +1292,17 @@ button:disabled {
 
   }
 
-
   .candidate-list {
 
     grid-template-columns: 1fr;
 
   }
 
-
   .card {
 
     padding: 14px;
 
   }
-
 
   .member-card {
 
@@ -1437,7 +1312,6 @@ button:disabled {
 
   }
 
-
   .member-actions {
 
     width: 100%;
@@ -1446,13 +1320,11 @@ button:disabled {
 
   }
 
-
   .member-actions button {
 
     flex: 1;
 
   }
-
 
   .section-head {
 
@@ -1460,13 +1332,11 @@ button:disabled {
 
   }
 
-
   .member-section-head {
 
     align-items: center;
 
   }
-
 
   .modal-box {
 
@@ -1476,7 +1346,6 @@ button:disabled {
 
 }
 
-
 @media (max-width: 430px) {
 
   .kpi {
@@ -1485,20 +1354,17 @@ button:disabled {
 
   }
 
-
   .kpi b {
 
     font-size: 23px;
 
   }
 
-
   .section-head {
 
     display: block;
 
   }
-
 
   .member-section-head .primary {
 
@@ -1508,13 +1374,11 @@ button:disabled {
 
   }
 
-
   .candidate {
 
     padding: 14px;
 
   }
-
 
   .candidate-name {
 
@@ -1522,13 +1386,11 @@ button:disabled {
 
   }
 
-
   .candidate-pick {
 
     min-height: 46px;
 
   }
-
 
   .member-actions {
 
@@ -1539,13 +1401,11 @@ button:disabled {
 
   }
 
-
   .member-actions button {
 
     width: 100%;
 
   }
-
 
   .actions .primary,
   .actions .secondary {
@@ -1554,13 +1414,11 @@ button:disabled {
 
   }
 
-
   .modal {
 
     padding: 10px;
 
   }
-
 
   .modal-box {
 
@@ -1578,7 +1436,6 @@ button:disabled {
   margin-bottom: 20px;
 }
 
-
 .master-header {
   display: flex;
   align-items: center;
@@ -1587,23 +1444,19 @@ button:disabled {
   margin-bottom: 18px;
 }
 
-
 .master-header h2 {
   margin: 0 0 4px;
 }
 
-
 .master-header p {
   margin: 0;
 }
-
 
 .master-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-
 
 .master-item {
   display: flex;
@@ -1619,7 +1472,6 @@ button:disabled {
   background: #fff;
 }
 
-
 .master-item-info {
   min-width: 0;
 
@@ -1628,7 +1480,6 @@ button:disabled {
   gap: 4px;
 }
 
-
 .master-item-title {
   display: flex;
   align-items: center;
@@ -1636,16 +1487,13 @@ button:disabled {
   flex-wrap: wrap;
 }
 
-
 .master-item-title strong {
   font-size: 16px;
 }
 
-
 .master-item-info small {
   color: #64748b;
 }
-
 
 .master-actions {
   display: flex;
@@ -1653,7 +1501,6 @@ button:disabled {
   gap: 8px;
   flex-shrink: 0;
 }
-
 
 .status-badge {
   display: inline-flex;
@@ -1667,18 +1514,15 @@ button:disabled {
   font-weight: 700;
 }
 
-
 .status-badge.active {
   background: #e8f7ee;
   color: #16834b;
 }
 
-
 .status-badge.inactive {
   background: #f1f3f5;
   color: #6b7280;
 }
-
 
 button.danger {
   border: 1px solid #ef4444;
@@ -1687,18 +1531,15 @@ button.danger {
   font-weight: 800;
 }
 
-
 button.danger:hover {
   background: #fef2f2;
   border-color: #dc2626;
 }
 
-
 button.danger:disabled {
   opacity: .55;
   cursor: wait;
 }
-
 
 .checkbox-label {
   display: flex !important;
@@ -1707,13 +1548,11 @@ button.danger:disabled {
   gap: 9px;
 }
 
-
 .checkbox-label input[type="checkbox"] {
   width: 18px;
   height: 18px;
   margin: 0;
 }
-
 
 @media (max-width: 700px) {
 
@@ -1722,22 +1561,18 @@ button.danger:disabled {
     flex-direction: column;
   }
 
-
   .master-header .primary {
     width: 100%;
   }
-
 
   .master-item {
     align-items: stretch;
     flex-direction: column;
   }
 
-
   .master-actions {
     width: 100%;
   }
-
 
   .master-actions button {
     flex: 1;
@@ -1782,7 +1617,6 @@ button.danger:disabled {
   transform: translateY(1px);
 }
 
-
 /* =====================================================
    LEVEL 6 — CLEAN GOLD MASTER
    ===================================================== */
@@ -1798,7 +1632,6 @@ button.danger:disabled {
 
   animation: none;
 }
-
 
 /* =====================================================
    SKILL ROW
@@ -1840,7 +1673,6 @@ button.danger:disabled {
   margin-left: 0;
   flex-shrink: 0;
 }
-
 
 /* =====================================================
    SKILL PERCENTAGE
@@ -2120,6 +1952,7 @@ button.danger:disabled {
    ===================================================== */
 
 @media (max-width: 1100px) {
+
   .history-row {
     grid-template-columns:
       minmax(130px, 0.8fr)
@@ -2159,6 +1992,7 @@ button.danger:disabled {
    ===================================================== */
 
 @media (max-width: 700px) {
+
   .history-panel {
     padding: 12px;
   }
@@ -2235,6 +2069,7 @@ button.danger:disabled {
    ===================================================== */
 
 @media (max-width: 600px) {
+
   .candidate-skill {
     grid-template-columns: auto minmax(0, 1fr) auto;
     column-gap: 6px;
@@ -2374,6 +2209,7 @@ button.danger:disabled {
 }
 
 @media (max-width: 480px) {
+
   .member-skill-row {
     grid-template-columns: minmax(0, 1fr);
     gap: 10px;
@@ -2491,6 +2327,7 @@ button.danger:disabled {
 /* Penyesuaian layar kecil */
 
 @media (max-width: 600px) {
+
   .line-search-results {
     max-height: 160px;
   }
@@ -2635,6 +2472,7 @@ button.danger:disabled {
 
 /* Penyesuaian HP */
 @media (max-width: 600px) {
+
   .line-search-results {
     max-height: 160px;
   }
@@ -2686,12 +2524,11 @@ button.danger:disabled {
 }
 
 @media (max-width: 600px) {
+
   .dashboard-line-search {
     margin-top: 12px;
   }
 }
-
-
 
 /* =====================================================
    MASTER LINE & STATION — BLUE GLASS UI
@@ -2914,6 +2751,7 @@ button.danger:disabled {
 
 /* Tampilan HP */
 @media (max-width: 640px) {
+
   #page-master .master-card {
     padding: 15px;
     border-radius: 14px;
@@ -2948,7 +2786,6 @@ button.danger:disabled {
     flex: 1;
   }
 }
-
 
 /* =====================================================
    BACKUPMEMBER - MASTER LINE & STATION
@@ -3140,6 +2977,7 @@ button.danger:disabled {
 
 /* Responsif untuk HP */
 @media (max-width: 600px) {
+
   #page-master .master-line-list {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -3159,5 +2997,36 @@ button.danger:disabled {
 
   #page-master .master-process-row {
     align-items: flex-start;
+  }
+}
+
+/* =====================================================
+   DASHBOARD RESPONSIVE — SATU BLOK SAJA
+   ===================================================== */
+@media (max-width: 800px) {
+  #page-dashboard > .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #page-dashboard > .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  #page-dashboard > .grid {
+    gap: 9px;
+  }
+
+  #page-dashboard .kpi {
+    padding: 14px;
+  }
+
+  #page-dashboard .kpi b {
+    font-size: 25px;
+  }
+
+  #page-dashboard > .layout > .card {
+    padding: 15px;
   }
 }
