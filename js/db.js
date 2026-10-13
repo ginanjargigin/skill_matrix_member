@@ -1,6 +1,37 @@
+
 window.DB = (() => {
   const demo = () => window.DEMO_DATA;
-  const client = () => SupabaseClient.init();
+
+  const client = () => {
+    const instance = window.SupabaseClient.init();
+
+    if (!instance) {
+      throw new Error(
+        "Supabase belum dikonfigurasi."
+      );
+    }
+
+    return instance;
+  };
+
+  async function requireSession() {
+    const supabase = client();
+
+    const { data, error } =
+      await supabase.auth.getSession();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data.session) {
+      throw new Error(
+        "Sesi login tidak ditemukan. Silakan login kembali."
+      );
+    }
+
+    return supabase;
+  }
 
   /* =========================
      LIST
@@ -10,7 +41,9 @@ window.DB = (() => {
       return demo()?.[table] || [];
     }
 
-    const { data, error } = await client()
+    const supabase = await requireSession();
+
+    const { data, error } = await supabase
       .from(table)
       .select("*")
       .order(order, { ascending: true });
@@ -31,13 +64,18 @@ window.DB = (() => {
       return payload;
     }
 
-    const { data, error } = await client()
+    const supabase = await requireSession();
+
+    const { data, error } = await supabase
       .from(table)
       .insert(payload)
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
+
     return data;
   }
 
@@ -49,31 +87,37 @@ window.DB = (() => {
       return { ...payload, id };
     }
 
-    const { data, error } = await client()
+    const supabase = await requireSession();
+
+    const { data, error } = await supabase
       .from(table)
       .update(payload)
       .eq("id", id)
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
+
     return data;
   }
 
   /* =========================
      SAVE / UPSERT SINGLE
-     Tetap tersedia untuk kode lama.
      ========================= */
   async function save(table, payload) {
     if (!SupabaseClient.configured()) {
       return payload;
     }
 
+    const supabase = await requireSession();
+
     const options = table === "member_skills"
       ? { onConflict: "member_id,station_id" }
       : {};
 
-    const { data, error } = await client()
+    const { data, error } = await supabase
       .from(table)
       .upsert(payload, options)
       .select()
@@ -89,12 +133,12 @@ window.DB = (() => {
 
   /* =========================
      SAVE MANY / BATCH UPSERT
-     Untuk menyimpan banyak skill
-     dalam satu permintaan.
      ========================= */
   async function saveMany(table, payloads) {
     if (!Array.isArray(payloads)) {
-      throw new TypeError("saveMany membutuhkan array data.");
+      throw new TypeError(
+        "saveMany membutuhkan array data."
+      );
     }
 
     if (payloads.length === 0) {
@@ -105,11 +149,13 @@ window.DB = (() => {
       return payloads;
     }
 
+    const supabase = await requireSession();
+
     const options = table === "member_skills"
       ? { onConflict: "member_id,station_id" }
       : {};
 
-    const { data, error } = await client()
+    const { data, error } = await supabase
       .from(table)
       .upsert(payloads, options)
       .select();
@@ -130,12 +176,17 @@ window.DB = (() => {
       return true;
     }
 
-    const { error } = await client()
+    const supabase = await requireSession();
+
+    const { error } = await supabase
       .from(table)
       .delete()
       .eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
+
     return true;
   }
 
@@ -143,11 +194,25 @@ window.DB = (() => {
      LOGIN
      ========================= */
   async function signIn(email, password) {
-    const { error } = await client()
-      .auth
-      .signInWithPassword({ email, password });
+    const supabase = client();
 
-    if (error) throw error;
+    const { data, error } = await supabase.auth
+      .signInWithPassword({
+        email: email.trim(),
+        password
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data.session) {
+      throw new Error(
+        "Login tidak menghasilkan sesi yang valid."
+      );
+    }
+
+    return data.session;
   }
 
   /* =========================
@@ -158,11 +223,32 @@ window.DB = (() => {
       return;
     }
 
-    const { error } = await client()
-      .auth
-      .signOut();
+    const supabase = client();
 
-    if (error) throw error;
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      throw error;
+    }
+  }
+
+  /* =========================
+     AUTH SESSION
+     ========================= */
+  async function getSession() {
+    if (!SupabaseClient.configured()) {
+      return null;
+    }
+
+    const { data, error } = await client()
+      .auth
+      .getSession();
+
+    if (error) {
+      throw error;
+    }
+
+    return data.session || null;
   }
 
   /* =========================
@@ -176,6 +262,7 @@ window.DB = (() => {
     saveMany,
     remove,
     signIn,
-    signOut
+    signOut,
+    getSession
   };
 })();
