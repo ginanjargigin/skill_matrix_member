@@ -67,9 +67,8 @@ window.MasterManager = (() => {
      ===================================================== */
 
   function render() {
-
     renderLines();
-    renderStations();
+
 
   }
 
@@ -78,102 +77,85 @@ window.MasterManager = (() => {
      RENDER LINE
      ===================================================== */
 
-  function renderLines() {
+ function renderLines() {
+  const s = state();
+  const container = $("masterLineList");
+  const search = $("masterLineSearch");
 
-    const s = state();
+  if (!s || !container) return;
 
-    const container =
-      $("masterLineList");
+  const keyword = String(search?.value || "")
+    .trim()
+    .toLowerCase();
 
-    if (!s || !container) {
-      return;
-    }
+  const lines = [...(s.lines || [])]
+    .sort((a, b) =>
+      String(a.name || "").localeCompare(
+        String(b.name || ""),
+        undefined,
+        { numeric: true }
+      )
+    )
+    .filter(line =>
+      String(line.name || "")
+        .toLowerCase()
+        .includes(keyword)
+    );
 
+  if (!lines.length) {
+    container.innerHTML = `
+      <div class="empty">
+        ${keyword
+          ? "Line tidak ditemukan."
+          : "Belum ada Line."}
+      </div>
+    `;
+    return;
+  }
 
-    const lines =
-      [...s.lines].sort(
-        (a, b) =>
-          String(a.name || "")
-            .localeCompare(
-              String(b.name || "")
+  container.innerHTML = `
+    <div class="master-line-list">
+      ${lines.map(line => {
+        const stations = (s.stations || [])
+          .filter(station =>
+            String(station.line_id) === String(line.id)
+          )
+          .sort((a, b) =>
+            String(a.name || "").localeCompare(
+              String(b.name || ""),
+              undefined,
+              { numeric: true }
             )
-      );
+          );
 
+        return `
+          <article class="master-line-group">
 
-    container.innerHTML =
+            <div class="master-line-summary">
 
-      lines
-        .map(line => {
-
-          const stationCount =
-            s.stations.filter(
-              station =>
-                String(station.line_id) ===
-                String(line.id)
-            ).length;
-
-
-          return `
-
-            <article class="master-item">
-
-              <div class="master-item-info">
-
-                <div class="master-item-title">
-
-                  <strong>
+              <div class="master-line-toggle">
+                <div>
+                  <span class="master-line-name">
                     ${esc(line.name)}
-                  </strong>
-
-                  <span
-                    class="status-badge ${
-                      line.active !== false
-                        ? "active"
-                        : "inactive"
-                    }"
-                  >
-                    ${
-                      line.active !== false
-                        ? "AKTIF"
-                        : "NONAKTIF"
-                    }
                   </span>
 
+                  <span class="master-line-meta">
+                    Standard Manpower:
+                    ${Number(line.standard_members || 0)}
+                    &nbsp;·&nbsp;
+                    ${stations.length} proses
+                  </span>
                 </div>
-
-
-                <small>
-                  Area:
-                  ${esc(line.area || "-")}
-                </small>
-
-
-                <small>
-                  Standard Member:
-                  ${Number(
-                    line.standard_members || 0
-                  )}
-                </small>
-
-
-                <small>
-                  Station:
-                  ${stationCount}
-                </small>
-
               </div>
 
-
-              <div class="master-actions">
-
+              <div class="master-line-actions">
                 <button
                   class="secondary small"
                   type="button"
                   data-edit-line="${esc(line.id)}"
                 >
-                  Edit
+                  Edit Line
                 </button>
-
 
                 <button
                   class="danger small"
@@ -182,67 +164,87 @@ window.MasterManager = (() => {
                 >
                   Hapus
                 </button>
-
               </div>
 
-            </article>
+            </div>
 
-          `;
+            <div class="master-process-list">
+              ${stations.length
+                ? stations.map(station => `
+                    <div class="master-process-row">
 
-        })
-        .join("")
+                      <div>
+                        <div class="master-process-name">
+                          ${esc(station.name)}
+                        </div>
 
+                        <small class="master-process-meta">
+                          ${esc(station.position_name || "Tanpa keterangan")}
+                        </small>
+                      </div>
 
-      ||
+                      <div class="master-process-actions">
+                        <button
+                          class="secondary small"
+                          type="button"
+                          data-edit-station="${esc(station.id)}"
+                        >
+                          Edit
+                        </button>
 
-      `
-        <div class="empty">
-          Belum ada Line.
-        </div>
-      `;
+                        <button
+                          class="danger small"
+                          type="button"
+                          data-delete-station="${esc(station.id)}"
+                        >
+                          Hapus
+                        </button>
+                      </div>
 
+                    </div>
+                  `).join("")
+                : `
+                    <div class="empty">
+                      Belum ada proses pada Line ini.
+                    </div>
+                  `
+              }
+            </div>
 
-    container
-      .querySelectorAll(
-        "[data-edit-line]"
-      )
-      .forEach(button => {
+          </article>
+        `;
+      }).join("")}
+    </div>
+  `;
 
-        button.addEventListener(
-          "click",
-          () => {
-
-            openLineEdit(
-              button.dataset.editLine
-            );
-
-          }
-        );
-
+  container.querySelectorAll("[data-edit-line]")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        openLineEdit(button.dataset.editLine);
       });
+    });
 
-
-    container
-      .querySelectorAll(
-        "[data-delete-line]"
-      )
-      .forEach(button => {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            deleteLine(
-              button.dataset.deleteLine
-            );
-
-          }
-        );
-
+  container.querySelectorAll("[data-delete-line]")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        deleteLine(button.dataset.deleteLine);
       });
+    });
 
-  }
+  container.querySelectorAll("[data-edit-station]")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        openStationEdit(button.dataset.editStation);
+      });
+    });
 
+  container.querySelectorAll("[data-delete-station]")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        deleteStation(button.dataset.deleteStation);
+      });
+    });
+}
 
   /* =====================================================
      RENDER STATION
@@ -1329,6 +1331,16 @@ if (!lineProcessDraft.length) {
      ===================================================== */
 
   function bind() {
+
+  const searchInput = $("masterLineSearch");
+
+if (searchInput && !searchInput.dataset.bound) {
+  searchInput.dataset.bound = "true";
+
+  searchInput.addEventListener("input", () => {
+    renderLines();
+  });
+}
 
     $("addLineBtn")
       ?.addEventListener(
