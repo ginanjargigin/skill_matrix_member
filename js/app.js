@@ -1672,119 +1672,117 @@ MasterManager.bind();
        LOGIN
        =================================================== */
 
-    $("loginForm")
-      .addEventListener(
-        "submit",
-        async event => {
+  
+    $("loginForm").addEventListener(
+      "submit",
+      async event => {
+        event.preventDefault();
 
-          event.preventDefault();
+        const form = $("loginForm");
+        const submitButton = form.querySelector(
+          'button[type="submit"]'
+        );
 
+        if (submitButton) {
+          submitButton.disabled = true;
+        }
 
-          try {
+        try {
+          await DB.signIn(
+            $("loginEmail").value,
+            $("loginPassword").value
+          );
 
-            await DB.signIn(
-              $("loginEmail").value,
-              $("loginPassword").value
+          // Pastikan sesi sudah tersimpan dan dapat dibaca.
+          const session = await DB.getSession();
+
+          if (!session) {
+            throw new Error(
+              "Login berhasil, tetapi sesi belum tersedia. Coba login kembali."
             );
-
-
-            $("loginModal")
-              .classList
-              .remove("open");
-
-
-            toast(
-              "Login berhasil."
-            );
-
-
-            await load();
-
-            render();
-
-          } catch (error) {
-
-            toast(
-              error?.message ||
-              "Login gagal."
-            );
-
           }
 
-        }
-      );
+          $("loginModal").classList.remove("open");
 
-  }
+          toast("Login berhasil.");
+
+          await load();
+          render();
+
+          form.reset();
+        } catch (error) {
+          console.error("Login atau pemuatan data gagal:", error);
+
+          toast(
+            error?.message ||
+            "Login gagal. Periksa email, password, dan koneksi."
+          );
+        } finally {
+          if (submitButton) {
+            submitButton.disabled = false;
+          }
+        }
+      }
+    );
+
 
 
   /* =====================================================
      AUTH
      ===================================================== */
 
+ 
   async function auth() {
-
-    if (
-      !SupabaseClient.configured() ||
-      !APP_CONFIG.REQUIRE_AUTH
-    ) {
-
-      return;
-
+    // Tanpa konfigurasi Supabase, aplikasi tetap menggunakan mode demo.
+    if (!SupabaseClient.configured()) {
+      $("loginModal").classList.remove("open");
+      return true;
     }
 
+    // Pada mode Supabase, sesi harus valid sebelum data dimuat.
+    const session = await DB.getSession();
 
-    const {
-      data
-    } =
-      await SupabaseClient
-        .init()
-        .auth
-        .getSession();
-
-
-    if (!data.session) {
-
-      $("loginModal")
-        .classList
-        .add("open");
-
+    if (!session) {
+      $("loginModal").classList.add("open");
+      return false;
     }
 
+    $("loginModal").classList.remove("open");
+    return true;
   }
+
 
 
   /* =====================================================
      START
      ===================================================== */
 
+ 
   window.addEventListener(
     "DOMContentLoaded",
     async () => {
-
       bind();
 
-
-      await auth();
-
-
       try {
+        const authenticated = await auth();
+
+        // Jangan memanggil load() sebelum sesi tersedia.
+        if (!authenticated) {
+          return;
+        }
 
         await load();
-
         render();
-
       } catch (error) {
-
-        console.error(error);
+        console.error(
+          "Gagal memulai aplikasi:",
+          error
+        );
 
         toast(
           error?.message ||
-          "Gagal memuat data."
+          "Gagal memuat aplikasi. Periksa koneksi dan sesi login."
         );
-
       }
-
     }
   );
-
-})();
