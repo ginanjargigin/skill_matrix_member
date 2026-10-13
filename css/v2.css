@@ -771,73 +771,180 @@ button {
    MEMBER
    ===================================================== */
 
-.member-card {
 
-  display: flex;
+/* =====================================================
+   MEMBER & SKILL — GREEN GLASS
+   Menggantikan blok MEMBER lama
+   ===================================================== */
 
+#page-members .member-section-head h2 {
+  display: none;
+}
+
+#page-members .member-section-head {
   align-items: center;
-
-  gap: 14px;
-
-  border:
-    1px solid var(--border);
-
-  border-radius: 12px;
-
-  padding: 13px;
-
-  margin: 8px 0;
-
-  background: #fff;
-
+  margin-bottom: 18px;
 }
 
-
-.member-info {
-
-  flex: 1;
-
-  min-width: 0;
-
+#page-members .member-section-head p {
+  margin: 4px 0;
+  color: #64748b;
+  font-size: 13px;
 }
 
+/* Kartu daftar member */
+#page-members > .card {
+  padding: 18px;
+  border: 1px solid rgba(22, 163, 74, 0.16);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 6px 22px rgba(22, 163, 74, 0.05);
+}
 
-.member-info b {
-
+/* Pencarian member */
+#page-members #memberSearch {
   display: block;
-
-  font-size: 15px;
-
+  width: 100%;
+  min-height: 46px;
+  margin-bottom: 14px;
+  padding: 11px 14px;
+  border: 1px solid rgba(22, 163, 74, 0.24);
+  border-radius: 10px;
+  background: rgba(240, 253, 244, 0.78);
+  color: #163323;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s,
+    background 0.2s;
 }
 
-
-.member-info small {
-
-  display: block;
-
-  color: var(--muted);
-
-  margin-top: 3px;
-
+#page-members #memberSearch::placeholder {
+  color: #789182;
 }
 
+#page-members #memberSearch:focus {
+  border-color: #16a34a;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.13);
+}
 
-.member-actions {
+/* Daftar member */
+#page-members #memberList {
+  display: grid;
+  gap: 10px;
+}
 
+/* Kartu tiap member */
+#page-members .member-card {
   display: flex;
-
-  gap: 7px;
-
-  flex-wrap: wrap;
-
-  justify-content: flex-end;
-
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid rgba(22, 163, 74, 0.15);
+  border-radius: 12px;
+  background: linear-gradient(
+    110deg,
+    rgba(220, 252, 231, 0.48),
+    rgba(255, 255, 255, 0.94) 62%
+  );
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
-.member-origin-line {
+
+#page-members .member-card:hover {
+  border-color: rgba(22, 163, 74, 0.38);
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.07);
+}
+
+/* Informasi member lebih ringkas */
+#page-members .member-info {
+  flex: 1;
+  min-width: 0;
+}
+
+#page-members .member-info b {
   display: block;
-  font-size: 11px;
-  opacity: 0.75;
+  margin-bottom: 5px;
+  color: #14532d;
+  font-size: 15px;
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+
+#page-members .member-info small {
+  display: block;
   margin-top: 2px;
+  color: #64786b;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* Line asal tetap terbaca, tetapi tidak dominan */
+#page-members .member-info .member-origin-line {
+  margin-top: 3px;
+  color: #718477;
+  font-size: 10px;
+}
+
+/* Tombol edit */
+#page-members .member-actions {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 7px;
+}
+
+#page-members .member-actions button {
+  border: 1px solid rgba(22, 163, 74, 0.16);
+  border-radius: 8px;
+  background: rgba(22, 163, 74, 0.09);
+  color: #166534;
+  padding: 9px 12px;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+#page-members .member-actions button:hover {
+  background: rgba(22, 163, 74, 0.16);
+}
+
+/* Tombol tambah member */
+#page-members #addMemberBtn {
+  border-radius: 10px;
+  background: #15803d;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.16);
+}
+
+#page-members #addMemberBtn:hover {
+  background: #166534;
+}
+
+/* Tampilan HP */
+@media (max-width: 600px) {
+  #page-members > .card {
+    padding: 12px;
+  }
+
+  #page-members .member-card {
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  #page-members .member-info b {
+    font-size: 14px;
+  }
+
+  #page-members .member-info small {
+    font-size: 10px;
+  }
+
+  #page-members .member-actions button {
+    padding: 8px;
+    font-size: 10px;
+  }
 }
 
 
