@@ -488,45 +488,10 @@
 
     </section>
 
-    <!-- ===================================================
-     MASTER LINE & STATION
-     =================================================== -->
-    
-<!-- Master Line & Station Toolbar -->
-<div class="master-toolbar">
-  <div>
-    <h2>Master Line & Station</h2>
-    <p>
-      Kelola line, proses, dan kebutuhan manpower.
-    </p>
-  </div>
 
-  <label class="master-search">
-    <span>Cari nama Line</span>
-    <input
-      id="masterLineSearch"
-      type="search"
-      placeholder="Contoh: PSV, Tandem..."
-      autocomplete="off"
-    >
-  </label>
-</div>
-
-<div class="master-search">
-  <label for="masterLineSearch">Cari Line</label>
-  <input
-    id="masterLineSearch"
-    type="search"
-    placeholder="Cari nama Line..."
-    autocomplete="off"
-  />
-</div>
-
-<div id="masterLineList"></div>
 
 <!-- Daftar Line dan Proses -->
-<div id="masterLineStationList"></div>
-    
+
 <section
   class="page"
   id="page-master"
@@ -580,6 +545,17 @@
 
     </div>
 
+
+    <!-- Pencarian Line: hanya satu kolom -->
+    <div class="master-search">
+      <label for="masterLineSearch">Cari nama Line</label>
+      <input
+        id="masterLineSearch"
+        type="search"
+        placeholder="Contoh: PSV, Tandem..."
+        autocomplete="off"
+      >
+    </div>
 
     <div
       id="masterLineList"
