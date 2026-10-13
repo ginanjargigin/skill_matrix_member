@@ -2763,3 +2763,48 @@ button.danger:disabled {
   }
 }
 
+/* Master Line & Station - Search */
+.master-search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0 20px;
+  max-width: 560px;
+}
+
+.master-search label {
+  flex-shrink: 0;
+  font-weight: 600;
+  color: #334155;
+}
+
+.master-search input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid #d6deea;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.master-search input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+@media (max-width: 600px) {
+  .master-search {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .master-search input {
+    box-sizing: border-box;
+  }
+}
