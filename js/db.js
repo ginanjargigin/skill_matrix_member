@@ -1,4 +1,3 @@
-
 window.DB = (() => {
   const demo = () => window.DEMO_DATA;
   const client = () => SupabaseClient.init();
@@ -62,7 +61,8 @@ window.DB = (() => {
   }
 
   /* =========================
-     UPSERT / SAVE
+     SAVE / UPSERT SINGLE
+     Tetap tersedia untuk kode lama.
      ========================= */
   async function save(table, payload) {
     if (!SupabaseClient.configured()) {
@@ -85,6 +85,41 @@ window.DB = (() => {
     }
 
     return data;
+  }
+
+  /* =========================
+     SAVE MANY / BATCH UPSERT
+     Untuk menyimpan banyak skill
+     dalam satu permintaan.
+     ========================= */
+  async function saveMany(table, payloads) {
+    if (!Array.isArray(payloads)) {
+      throw new TypeError("saveMany membutuhkan array data.");
+    }
+
+    if (payloads.length === 0) {
+      return [];
+    }
+
+    if (!SupabaseClient.configured()) {
+      return payloads;
+    }
+
+    const options = table === "member_skills"
+      ? { onConflict: "member_id,station_id" }
+      : {};
+
+    const { data, error } = await client()
+      .from(table)
+      .upsert(payloads, options)
+      .select();
+
+    if (error) {
+      console.error("DB.saveMany error:", table, error);
+      throw error;
+    }
+
+    return data || [];
   }
 
   /* =========================
@@ -138,6 +173,7 @@ window.DB = (() => {
     insert,
     update,
     save,
+    saveMany,
     remove,
     signIn,
     signOut
