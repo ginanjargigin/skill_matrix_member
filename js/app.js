@@ -1786,3 +1786,5 @@ MasterManager.bind();
       }
     }
   );
+
+})();
