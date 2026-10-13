@@ -629,180 +629,198 @@ window.MemberManager = (() => {
      SAVE MEMBER + SKILL MATRIX
      ===================================================== */
 
-  async function save(event) {
-    event?.preventDefault();
+async function save(event) {
+  event?.preventDefault();
 
-    const s = state();
+  const s = state();
 
-    if (!s) {
-      toast("State aplikasi belum siap.");
-      return;
+  if (!s) {
+    toast("State aplikasi belum siap.");
+    return;
+  }
+
+  rememberVisibleSkills();
+
+  const editId = $("memberEditId").value || null;
+  const name = $("memberName").value.trim();
+  const status = $("memberStatus").value;
+  const shift = normalizeShift($("memberShift").value);
+  const homeLineId = $("memberHomeLine").value;
+
+  /* =========================
+     VALIDASI MEMBER
+     ========================= */
+  if (!name) {
+    toast("Nama member wajib diisi.");
+    $("memberName").focus();
+    return;
+  }
+
+  if (!status) {
+    toast("Status member wajib dipilih.");
+    $("memberStatus").focus();
+    return;
+  }
+
+  if (!["Non Shift", "Red", "White"].includes(shift)) {
+    toast("Shift wajib dipilih.");
+    $("memberShift").focus();
+    return;
+  }
+
+  if (!homeLineId) {
+    toast("Line asal wajib dipilih.");
+    $("memberHomeLineSearch")?.focus();
+    return;
+  }
+
+  /* =========================
+     SIAPKAN SELURUH SKILL
+     Pertahankan skill line lain.
+     ========================= */
+  const skills = getActiveStations().map(station => {
+    const stationId = getSkillKey(station.id);
+    const existing = getStoredSkill(editId, station.id);
+
+    const level = skillDraft.has(stationId)
+      ? Number(skillDraft.get(stationId)) || 0
+      : Number(existing?.skill_level || 0);
+
+    return {
+      station_id: station.id,
+      skill_level: level,
+      certified: level >= 4
+    };
+  });
+
+  if (!skills.length) {
+    toast(
+      "Skill Matrix belum tersedia. Tambahkan station terlebih dahulu."
+    );
+    return;
+  }
+
+  if (!skills.some(skill =>
+    skill.skill_level >= 1 && skill.skill_level <= 6
+  )) {
+    toast("Isi minimal satu skill dengan level 1–6.");
+    return;
+  }
+
+  const button = $("memberSave");
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Menyimpan...";
+  }
+
+  try {
+    const payload = {
+      name,
+      status,
+      shift,
+      home_line_id: homeLineId,
+      active: true
+    };
+
+    let memberId = editId;
+
+    /* =========================
+       1. SIMPAN DATA MEMBER
+       ========================= */
+    if (!SupabaseClient.configured()) {
+      if (editId) {
+        const member = (s.members || []).find(
+          item => String(item.id) === String(editId)
+        );
+
+        if (!member) {
+          throw new Error("Member tidak ditemukan.");
+        }
+
+        Object.assign(member, payload);
+      } else {
+        memberId = "demo-member-" + Date.now();
+
+        s.members.push({
+          id: memberId,
+          ...payload
+        });
+      }
+    } else {
+      const savedMember = editId
+        ? await DB.update("members", editId, payload)
+        : await DB.insert("members", payload);
+
+      memberId = savedMember?.id || editId;
+
+      if (!memberId) {
+        throw new Error(
+          "ID member tidak ditemukan setelah penyimpanan."
+        );
+      }
     }
 
-    rememberVisibleSkills();
+    /* =========================
+       2. SIAPKAN PAYLOAD BATCH
+       ========================= */
+    const skillPayloads = skills.map(skill => ({
+      member_id: memberId,
+      station_id: skill.station_id,
+      skill_level: skill.skill_level,
+      certified: skill.certified
+    }));
 
-    const editId = $("memberEditId").value || null;
-    const name = $("memberName").value.trim();
-    const status = $("memberStatus").value;
-    const shift = normalizeShift($("memberShift").value);
-    const homeLineId = $("memberHomeLine").value;
+    /* =========================
+       3. SIMPAN SEMUA SKILL
+       ========================= */
+    if (!SupabaseClient.configured()) {
+      // Mode demo: perbarui record yang ada,
+      // tambahkan record baru bila belum ada.
+      for (const skill of skillPayloads) {
+        const existing = (s.skills || []).find(item =>
+          String(item.member_id) === String(memberId) &&
+          String(item.station_id) === String(skill.station_id)
+        );
 
-    if (!name) {
-      toast("Nama member wajib diisi.");
-      $("memberName").focus();
-      return;
-    }
-
-    if (!status) {
-      toast("Status member wajib dipilih.");
-      $("memberStatus").focus();
-      return;
-    }
-
-    if (!["Non Shift", "Red", "White"].includes(shift)) {
-      toast("Shift wajib dipilih.");
-      $("memberShift").focus();
-      return;
-    }
-
-    if (!homeLineId) {
-      toast("Line asal wajib dipilih.");
-      $("memberHomeLineSearch")?.focus();
-      return;
-    }
-
-    // Ambil semua station aktif.
-    // Skill pada line lain yang tidak diedit tetap dipertahankan.
-    const skills = getActiveStations().map(station => {
-      const stationId = getSkillKey(station.id);
-      const existing = getStoredSkill(editId, station.id);
-
-      const level = skillDraft.has(stationId)
-        ? Number(skillDraft.get(stationId)) || 0
-        : Number(existing?.skill_level || 0);
-
-      return {
-        station_id: station.id,
-        skill_level: level,
-        certified: level >= 4
-      };
-    });
-
-    if (!skills.length) {
-      toast(
-        "Skill Matrix belum tersedia. Tambahkan station terlebih dahulu."
-      );
-      return;
-    }
-
-    if (!skills.some(skill =>
-      skill.skill_level >= 1 && skill.skill_level <= 6
-    )) {
-      toast("Isi minimal satu skill dengan level 1–6.");
-      return;
-    }
-
-    const button = $("memberSave");
-    if (button) button.disabled = true;
-
-    try {
-      const payload = {
-        name,
-        status,
-        shift,
-        home_line_id: homeLineId,
-        active: true
-      };
-
-      let memberId = editId;
-
-      if (!SupabaseClient.configured()) {
-        if (editId) {
-          const member = s.members.find(
-            item => String(item.id) === String(editId)
-          );
-
-          if (!member) {
-            throw new Error("Member tidak ditemukan.");
-          }
-
-          Object.assign(member, payload);
+        if (existing) {
+          Object.assign(existing, skill);
         } else {
-          memberId = "demo-member-" + Date.now();
-
-          s.members.push({
-            id: memberId,
-            ...payload
+          s.skills.push({
+            id: "demo-skill-" + Date.now() + "-" + skill.station_id,
+            ...skill
           });
         }
-      } else {
-        let savedMember;
-
-        if (editId) {
-          savedMember = await DB.update("members", editId, payload);
-        } else {
-          savedMember = await DB.insert("members", payload);
-        }
-
-        memberId = savedMember?.id || editId;
-
-        if (!memberId) {
-          throw new Error(
-            "ID member tidak ditemukan setelah penyimpanan."
-          );
-        }
       }
+    } else {
+      // Satu permintaan untuk seluruh station.
+      await DB.saveMany("member_skills", skillPayloads);
+    }
 
-      // Simpan skill untuk member yang sama.
-      for (const skill of skills) {
-        const skillPayload = {
-          member_id: memberId,
-          station_id: skill.station_id,
-          skill_level: skill.skill_level,
-          certified: skill.certified
-        };
+    toast(
+      editId
+        ? "Data member dan Skill Matrix berhasil diperbarui."
+        : "Member dan Skill Matrix berhasil ditambahkan."
+    );
 
-        if (!SupabaseClient.configured()) {
-          const existing = s.skills.find(item =>
-            String(item.member_id) === String(memberId) &&
-            String(item.station_id) === String(skill.station_id)
-          );
+    closeModal();
 
-          if (existing) {
-            Object.assign(existing, skillPayload);
-          } else {
-            s.skills.push({
-              id: "demo-skill-" + Date.now() + "-" + skill.station_id,
-              ...skillPayload
-            });
-          }
-        } else {
-          await DB.save("member_skills", skillPayload);
-        }
-      }
+    if (typeof refresh === "function") {
+      await refresh();
+    }
+  } catch (error) {
+    console.error("Member + Skill save error:", error);
 
-      toast(
-        editId
-          ? "Data member dan Skill Matrix berhasil diperbarui."
-          : "Member dan Skill Matrix berhasil ditambahkan."
-      );
-
-      closeModal();
-
-      if (typeof refresh === "function") {
-        await refresh();
-      }
-    } catch (error) {
-      console.error("Member + Skill save error:", error);
-
-      toast(
-        error?.message ||
-        "Gagal menyimpan member dan Skill Matrix."
-      );
-    } finally {
-      if (button) button.disabled = false;
+    toast(
+      error?.message ||
+      "Gagal menyimpan member dan Skill Matrix."
+    );
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Simpan Member";
     }
   }
+}
 
   /* =====================================================
      BIND EVENTS
