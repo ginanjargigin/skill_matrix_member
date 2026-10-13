@@ -3030,3 +3030,32 @@ button.danger:disabled {
     padding: 15px;
   }
 }
+
+
+/* Memperjelas kolom pencarian Line di Dashboard */
+#dashboardLineSearch {
+  font-size: 16px;
+  font-weight: 500;
+  color: #10213b;
+  background-color: #ffffff;
+  border: 1.5px solid #9bb8df;
+  border-radius: 10px;
+  min-height: 44px;
+  padding: 10px 14px;
+}
+
+/* Placeholder lebih kontras dan mudah dibaca */
+#dashboardLineSearch::placeholder {
+  color: #526783;
+  opacity: 1;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Border lebih jelas saat kolom dipilih */
+#dashboardLineSearch:focus {
+  border-color: #2563eb;
+  outline: 2px solid rgba(37, 99, 235, 0.15);
+  outline-offset: 1px;
+}
+
