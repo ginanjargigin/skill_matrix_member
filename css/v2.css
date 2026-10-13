@@ -2808,3 +2808,260 @@ button.danger:disabled {
     box-sizing: border-box;
   }
 }
+
+
+/* =====================================================
+   MASTER LINE & STATION — BLUE GLASS UI
+   Tempel di bagian paling bawah css/v2.css
+   ===================================================== */
+
+#page-master {
+  --master-blue: #2563eb;
+  --master-blue-dark: #1d4ed8;
+  --master-blue-soft: rgba(37, 99, 235, 0.08);
+  --master-blue-border: rgba(37, 99, 235, 0.18);
+  --master-text: #10213b;
+}
+
+/* Hilangkan judul kedua yang mengulang judul halaman */
+#page-master > .section-head {
+  display: none;
+}
+
+/* Kartu utama */
+#page-master .master-card {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid var(--master-blue-border);
+  border-radius: 18px;
+  padding: 22px;
+  margin: 18px 0;
+  box-shadow: 0 8px 28px rgba(37, 99, 235, 0.07);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Header kartu */
+#page-master .master-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--master-blue-border);
+}
+
+#page-master .master-header h2 {
+  margin: 0 0 6px;
+  color: var(--master-text);
+  font-size: 19px;
+  font-weight: 750;
+}
+
+#page-master .master-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Tombol tambah */
+#page-master #addLineBtn {
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  border-radius: 10px;
+  background: linear-gradient(
+    135deg,
+    #3b82f6,
+    #1d4ed8
+  );
+  color: white;
+  padding: 11px 17px;
+  font-weight: 700;
+  box-shadow: 0 5px 14px rgba(37, 99, 235, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#page-master #addLineBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.28);
+}
+
+/* Kolom pencarian Line */
+#page-master #masterLineSearch {
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+  padding: 12px 15px;
+  border: 1px solid rgba(37, 99, 235, 0.25);
+  border-radius: 10px;
+  background: rgba(239, 246, 255, 0.75);
+  color: #10213b;
+  font: inherit;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#page-master #masterLineSearch:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+}
+
+/* Daftar Line dan Station */
+#page-master .master-list {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* Kartu item Line atau Station */
+#page-master .master-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 17px;
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  border-radius: 13px;
+  background: linear-gradient(
+    120deg,
+    rgba(219, 234, 254, 0.55),
+    rgba(255, 255, 255, 0.88)
+  );
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#page-master .master-item:hover {
+  border-color: rgba(37, 99, 235, 0.4);
+  box-shadow: 0 5px 16px rgba(37, 99, 235, 0.08);
+}
+
+#page-master .master-item-info {
+  flex: 1 1 240px;
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+}
+
+#page-master .master-item-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#page-master .master-item-title strong {
+  color: #10213b;
+  font-size: 16px;
+  font-weight: 750;
+}
+
+#page-master .master-item-info small {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Label status */
+#page-master .status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+#page-master .status-badge.active {
+  color: #1d4ed8;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+#page-master .status-badge.inactive {
+  color: #64748b;
+  background: rgba(148, 163, 184, 0.14);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+}
+
+/* Tombol Edit dan Hapus */
+#page-master .master-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#page-master .master-actions button {
+  min-height: 36px;
+  padding: 8px 13px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#page-master .master-actions .secondary {
+  background: rgba(59, 130, 246, 0.1);
+  color: #1d4ed8;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+#page-master .master-actions .danger {
+  background: rgba(239, 68, 68, 0.06);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+#page-master .master-actions button:hover {
+  filter: brightness(0.97);
+}
+
+/* Pesan ketika data kosong */
+#page-master .empty {
+  padding: 22px;
+  text-align: center;
+  color: #64748b;
+  background: rgba(239, 246, 255, 0.55);
+  border: 1px dashed rgba(37, 99, 235, 0.22);
+  border-radius: 12px;
+  line-height: 1.6;
+}
+
+/* Tampilan HP */
+@media (max-width: 640px) {
+  #page-master .master-card {
+    padding: 15px;
+    border-radius: 14px;
+  }
+
+  #page-master .master-header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #page-master #addLineBtn {
+    width: 100%;
+  }
+
+  #page-master #masterLineSearch {
+    max-width: none;
+  }
+
+  #page-master .master-item {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 13px;
+    padding: 14px;
+  }
+
+  #page-master .master-actions {
+    width: 100%;
+  }
+
+  #page-master .master-actions button {
+    flex: 1;
+  }
+}
