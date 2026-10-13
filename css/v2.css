@@ -3032,19 +3032,44 @@ button.danger:disabled {
 }
 
 
-/* Memperjelas kolom pencarian Line di Dashboard */
-#dashboardLineSearch {
-  font-size: 16px;
-  font-weight: 500;
-  color: #10213b;
-  background-color: #ffffff;
-  border: 1.5px solid #9bb8df;
-  border-radius: 10px;
-  min-height: 44px;
-  padding: 10px 14px;
+
+/* =====================================================
+   DASHBOARD — PENCARIAN LINE SEBAGAI FOKUS UTAMA
+   ===================================================== */
+
+.dashboard-line-search {
+  position: relative;
+  margin: 18px 0 16px;
+  padding: 8px;
+  border: 1px solid #c8dcff;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #eaf2ff, #f5f8ff);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);
 }
 
-/* Placeholder lebih kontras dan mudah dibaca */
+/* Area input dibuat lebih tinggi dan lega */
+#dashboardLineSearch {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 58px;
+  padding: 14px 16px 14px 54px;
+  border: 2px solid #8bb5ff;
+  border-radius: 11px;
+  background: #ffffff;
+  color: #10213b;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+  box-shadow: 0 2px 5px rgba(16, 33, 59, 0.04);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+/* Placeholder lebih tegas */
 #dashboardLineSearch::placeholder {
   color: #526783;
   opacity: 1;
@@ -3052,10 +3077,54 @@ button.danger:disabled {
   font-weight: 500;
 }
 
-/* Border lebih jelas saat kolom dipilih */
+/* Ikon terpisah dari teks, tidak bertumpuk */
+.dashboard-search-icon {
+  position: absolute;
+  z-index: 1;
+  left: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #2563eb;
+  font-size: 22px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* Efek fokus biru yang mudah terlihat */
 #dashboardLineSearch:focus {
   border-color: #2563eb;
-  outline: 2px solid rgba(37, 99, 235, 0.15);
-  outline-offset: 1px;
+  outline: none;
+  background: #ffffff;
+  box-shadow:
+    0 0 0 4px rgba(37, 99, 235, 0.16),
+    0 4px 12px rgba(37, 99, 235, 0.10);
 }
+
+/* Efek saat mouse diarahkan ke kolom */
+#dashboardLineSearch:hover {
+  border-color: #4f86ef;
+}
+
+@media (max-width: 600px) {
+  .dashboard-line-search {
+    margin: 16px 0 14px;
+    padding: 6px;
+  }
+
+  #dashboardLineSearch {
+    min-height: 54px;
+    padding: 12px 12px 12px 48px;
+    font-size: 16px;
+  }
+
+  #dashboardLineSearch::placeholder {
+    font-size: 15px;
+  }
+
+  .dashboard-search-icon {
+    left: 20px;
+    font-size: 21px;
+  }
+}
+
 
