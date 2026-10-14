@@ -415,77 +415,187 @@ function renderLines() {
     return;
   }
 
+
   lineList.querySelectorAll("[data-line]").forEach(button => {
+    button.classList.toggle(
+      "is-selected",
+      String(button.dataset.line) === String(s.selectedLine)
+    );
+
     button.addEventListener("click", () => {
       s.selectedLine = button.dataset.line;
-      page("replacement");
+
+      // Tetap berada di Dashboard.
+      renderLines();
       renderReplacement();
+
+      // Tampilkan area kerja replacement.
+      $("dashboardReplacementSection")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
     });
   });
-}
 
 
   /* =====================================================
      REPLACEMENT
      ===================================================== */
 
-  function renderReplacement() {
+ 
+function renderReplacement() {
+  const section = $("dashboardReplacementSection");
+  const selectedLineElement = $("selectedLine");
+  const stationList = $("stationList");
+  const stationSelect = $("replaceStation");
+  const candidateList = $("candidateList");
 
-    const line =
-      s.lines.find(
-        item =>
-          String(item.id) ===
-          String(s.selectedLine)
-      );
+  if (
+    !section ||
+    !selectedLineElement ||
+    !stationList ||
+    !stationSelect ||
+    !candidateList
+  ) {
+    return;
+  }
 
+  const line = s.lines.find(
+    item => String(item.id) === String(s.selectedLine)
+  );
 
-    $("selectedLine").textContent =
-      line?.name ||
-      "Pilih line dari dashboard.";
-    // Daftar member yang bisa dipilih sebagai member yang diganti.
-    const absentSelect = $("absentMember");
-    
-    if (absentSelect) {
-      const previousValue = absentSelect.value;
-    
-      absentSelect.innerHTML = `
-        <option value="">Pilih member yang tidak masuk</option>
-        ${
-          s.members
-            .filter(member => member.active !== false)
-            .sort((a, b) =>
-              String(a.name || "").localeCompare(
-                String(b.name || "")
-              )
-            )
-            .map(member => `
-              <option value="${esc(member.id)}">
-                ${esc(member.name || "-")}
-              </option>
-            `)
-            .join("")
-        }
-      `;
-    
-      if (
-        previousValue &&
-        s.members.some(
-          member =>
-            String(member.id) === String(previousValue) &&
-            member.active !== false
+  // Sembunyikan form sampai pengguna memilih line.
+  if (!line) {
+    section.hidden = true;
+    selectedLineElement.textContent =
+      "Pilih line untuk memulai replacement";
+
+    stationList.innerHTML = "";
+    stationSelect.innerHTML =
+      '<option value="">Pilih station</option>';
+    candidateList.innerHTML = `
+      <div class="empty">
+        Pilih line terlebih dahulu.
+      </div>
+    `;
+
+    return;
+  }
+
+  section.hidden = false;
+  selectedLineElement.textContent = line.name;
+
+  // Isi pilihan member yang tidak masuk.
+  const absentSelect = $("absentMember");
+
+  if (absentSelect) {
+    const previousValue = absentSelect.value;
+
+    absentSelect.innerHTML = `
+      <option value="">Pilih member yang tidak masuk</option>
+      ${s.members
+        .filter(member => member.active !== false)
+        .sort((a, b) =>
+          String(a.name || "").localeCompare(
+            String(b.name || "")
+          )
         )
-      ) {
-        absentSelect.value = previousValue;
-      }
+        .map(member => `
+          <option value="${esc(member.id)}">
+            ${esc(member.name || "-")}
+          </option>
+        `)
+        .join("")}
+    `;
+
+    if (
+      previousValue &&
+      s.members.some(member =>
+        String(member.id) === String(previousValue) &&
+        member.active !== false
+      )
+    ) {
+      absentSelect.value = previousValue;
     }
+  }
 
-    const stations =
-      s.stations.filter(
-        station =>
-          String(station.line_id) ===
-          String(s.selectedLine)
-      );
+  // Ambil station milik line yang dipilih.
+  const stations = s.stations.filter(
+    station => String(station.line_id) === String(line.id)
+  );
 
+  const previousStation = stationSelect.value;
+
+  // Daftar station yang bisa dipilih.
+  stationList.innerHTML = stations.length
+    ? stations.map(station => `
+        <button
+          class="station-card ${
+            String(station.id) === String(previousStation)
+              ? "is-selected"
+              : ""
+          }"
+          data-station="${esc(station.id)}"
+          type="button"
+        >
+          <span>
+            <b>${esc(station.name)}</b>
+            <small>${esc(station.position_name || "")}</small>
+          </span>
+          <strong>›</strong>
+        </button>
+      `).join("")
+    : `
+        <div class="empty">
+          Belum ada station untuk line ini.
+        </div>
+      `;
+
+  // Dropdown station menggunakan data line yang sama.
+  stationSelect.innerHTML = `
+    <option value="">Pilih station</option>
+    ${stations.map(station => `
+      <option value="${esc(station.id)}">
+        ${esc(station.name)}${
+          station.position_name
+            ? " — " + esc(station.position_name)
+            : ""
+        }
+      </option>
+    `).join("")}
+  `;
+
+  // Pertahankan station sebelumnya jika masih ada.
+  if (
+    previousStation &&
+    stations.some(
+      station => String(station.id) === String(previousStation)
+    )
+  ) {
+    stationSelect.value = previousStation;
+  } else if (stations.length === 1) {
+    // Jika hanya ada satu station, pilih otomatis.
+    stationSelect.value = String(stations[0].id);
+  }
+
+  // Klik kartu station memperbarui dropdown dan kandidat.
+  stationList.querySelectorAll("[data-station]").forEach(button => {
+    button.addEventListener("click", () => {
+      stationSelect.value = button.dataset.station;
+
+      stationList.querySelectorAll("[data-station]").forEach(item => {
+        item.classList.toggle(
+          "is-selected",
+          item.dataset.station === stationSelect.value
+        );
+      });
+
+      renderCandidates();
+    });
+  });
+
+  renderCandidates();
+}
 
     /* ===================================================
        STATION LIST
