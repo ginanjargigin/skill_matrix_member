@@ -488,18 +488,35 @@ function renderReplacement() {
   // Isi pilihan member yang tidak masuk.
   const absentSelect = $("absentMember");
 
+  
   if (absentSelect) {
     const previousValue = absentSelect.value;
 
+    const searchKeyword = String(
+      $("absentMemberSearch")?.value || ""
+    )
+      .trim()
+      .toLocaleLowerCase("id-ID");
+
+    const activeMembers = s.members
+      .filter(member => member.active !== false)
+      .sort((a, b) =>
+        String(a.name || "").localeCompare(
+          String(b.name || ""),
+          "id-ID",
+          { sensitivity: "base" }
+        )
+      );
+
+    const filteredMembers = activeMembers.filter(member =>
+      String(member.name || "")
+        .toLocaleLowerCase("id-ID")
+        .includes(searchKeyword)
+    );
+
     absentSelect.innerHTML = `
       <option value="">Pilih member yang tidak masuk</option>
-      ${s.members
-        .filter(member => member.active !== false)
-        .sort((a, b) =>
-          String(a.name || "").localeCompare(
-            String(b.name || "")
-          )
-        )
+      ${filteredMembers
         .map(member => `
           <option value="${esc(member.id)}">
             ${esc(member.name || "-")}
@@ -510,12 +527,13 @@ function renderReplacement() {
 
     if (
       previousValue &&
-      s.members.some(member =>
-        String(member.id) === String(previousValue) &&
-        member.active !== false
+      filteredMembers.some(member =>
+        String(member.id) === String(previousValue)
       )
     ) {
       absentSelect.value = previousValue;
+    } else {
+      absentSelect.value = "";
     }
   }
 
@@ -1978,6 +1996,21 @@ $("changeDate")
     renderCandidates
   );
 }
+  
+    if ($("absentMemberSearch")) {
+      $("absentMemberSearch").addEventListener(
+        "input",
+        () => {
+          const absentSelect = $("absentMember");
+
+          if (absentSelect) {
+            absentSelect.value = "";
+          }
+
+          renderReplacement();
+        }
+      );
+    }
 
     // Simpan durasi backup dari setiap kartu Riwayat.
     if ($("historyList")) {
