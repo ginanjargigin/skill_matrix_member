@@ -3242,3 +3242,119 @@ button.danger:disabled {
   }
 }
 
+/* =====================================================
+   RIWAYAT — PANEL DURASI BACKUP
+   ===================================================== */
+
+#page-history .history-duration-panel {
+  grid-column: 1 / -1;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #c8dcff;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f0f6ff, #ffffff);
+}
+
+#page-history .history-duration-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: #16366b;
+}
+
+#page-history .history-duration-status {
+  padding: 4px 8px;
+  border-radius: 20px;
+  background: #edf2f8;
+  color: #526783;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+#page-history .history-duration-status.is-saved {
+  background: #dcfce7;
+  color: #166534;
+}
+
+#page-history .history-duration-form {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#page-history .history-duration-form label {
+  display: grid;
+  flex: 1 1 180px;
+  min-width: 0;
+  gap: 6px;
+  color: #526783;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+#page-history .history-duration-form input {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #b8cbea;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #10213b;
+  font: inherit;
+  font-size: 15px;
+}
+
+#page-history .history-duration-form input:focus {
+  border-color: #2563eb;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+}
+
+#page-history .history-duration-form button {
+  min-height: 42px;
+  white-space: nowrap;
+}
+
+#page-history .history-duration-form button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+#page-history .history-duration-converted,
+#page-history .history-duration-help {
+  display: block;
+  margin-top: 9px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+#page-history .history-duration-converted {
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+@media (max-width: 700px) {
+  #page-history .history-duration-panel {
+    padding: 12px;
+  }
+
+  #page-history .history-duration-form {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  #page-history .history-duration-form label {
+    flex-basis: auto;
+  }
+
+  #page-history .history-duration-form button {
+    width: 100%;
+  }
+}
