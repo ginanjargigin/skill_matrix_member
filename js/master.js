@@ -567,37 +567,15 @@ async function saveLineProcesses(lineId) {
     process => !keptIds.has(String(process.id))
   );
 
-  // Periksa seluruh referensi sebelum menghapus proses.
-  const skillHistory = await DB.list("skill_history");
-
+ 
+  // Proses yang dikeluarkan dari daftar akan diarsipkan,
+  // bukan dihapus, agar skill dan riwayat tetap terhubung.
   for (const process of removed) {
-    const id = String(process.id);
-
-    const hasSkills = (s.skills || []).some(
-      skill => String(skill.station_id) === id
-    );
-
-    const hasReplacementHistory = (s.changes || []).some(
-      change => String(change.station_id) === id
-    );
-
-    const hasSkillHistory = (skillHistory || []).some(
-      history => String(history.station_id) === id
-    );
-
-    if (hasSkills || hasReplacementHistory || hasSkillHistory) {
-      throw new Error(
-        `"${process.name}" masih memiliki data skill atau riwayat. Proses tersebut tidak dapat dihapus.`
-      );
-    }
+    await DB.update("stations", process.id, {
+      active: false
+    });
   }
 
-  // Hapus proses yang tidak lagi digunakan.
-  for (const process of removed) {
-    await DB.remove("stations", process.id);
-  }
-
-  // Kosongkan sementara nama proses lama agar tidak terjadi
   // bentrok nama ketika urutan proses berubah.
   for (const process of lineProcessDraft) {
     if (process.id) {
@@ -688,11 +666,12 @@ function openLineEdit(id) {
   $("lineModalSubtitle").textContent =
     "Kelola nama line, proses, dan standard member.";
 
-  lineProcessOriginal = s.stations
-    .filter(
-      station =>
-        String(station.line_id) === String(line.id)
-    )
+ lineProcessOriginal = s.stations
+  .filter(
+    station =>
+      String(station.line_id) === String(line.id) &&
+      station.active !== false
+  )
     .sort((a, b) =>
       String(a.name || "").localeCompare(
         String(b.name || ""),
@@ -819,86 +798,62 @@ if (!lineProcessDraft.length) {
      DELETE LINE
      ===================================================== */
 
-  async function deleteLine(id) {
+ 
+async function deleteLine(id) {
+  const s = state();
 
-    const s = state();
+  const line = s?.lines.find(
+    item => String(item.id) === String(id)
+  );
 
-    const line =
-      s?.lines.find(
-        item =>
-          String(item.id) ===
-          String(id)
-      );
-
-
-    if (!line) {
-      return;
-    }
-
-
-    const stationCount =
-      s.stations.filter(
-        station =>
-          String(station.line_id) ===
-          String(id)
-      ).length;
-
-
-    if (stationCount > 0) {
-
-      toast(
-        `Line "${line.name}" masih memiliki ${stationCount} station. Hapus station terlebih dahulu.`
-      );
-
-      return;
-
-    }
-
-
-    if (
-      !window.confirm(
-        `Hapus Line "${line.name}"?`
-      )
-    ) {
-
-      return;
-
-    }
-
-
-    try {
-
-      await DB.remove(
-        "lines",
-        id
-      );
-
-
-      toast(
-        "Line berhasil dihapus."
-      );
-
-
-      if (refresh) {
-        await refresh();
-      }
-
-    } catch (error) {
-
-      console.error(
-        "Line delete error:",
-        error
-      );
-
-
-      toast(
-        error?.message ||
-        "Gagal menghapus Line."
-      );
-
-    }
-
+  if (!line) {
+    toast("Line tidak ditemukan.");
+    return;
   }
+
+  if (line.active === false) {
+    toast("Line ini sudah diarsipkan.");
+    return;
+  }
+
+  const lineStations = (s.stations || []).filter(
+    station => String(station.line_id) === String(id)
+  );
+
+  if (!window.confirm(
+    `Arsipkan line "${line.name}"?\n\n` +
+    "Line dan seluruh prosesnya akan dinonaktifkan. " +
+    "Data skill dan riwayat tetap dipertahankan."
+  )) {
+    return;
+  }
+
+  try {
+    // Nonaktifkan line terlebih dahulu.
+    await DB.update("lines", id, {
+      active: false
+    });
+
+    // Nonaktifkan semua proses pada line.
+    for (const station of lineStations) {
+      if (station.active !== false) {
+        await DB.update("stations", station.id, {
+          active: false
+        });
+      }
+    }
+
+    toast("Line dan prosesnya berhasil diarsipkan.");
+
+    if (refresh) await refresh();
+  } catch (error) {
+    console.error("Line archive error:", error);
+    toast(
+      error?.message ||
+      "Pengarsipan gagal. Periksa status line dan prosesnya."
+    );
+  }
+}
 
 
   /* =====================================================
@@ -1204,28 +1159,45 @@ if (!lineProcessDraft.length) {
      DELETE STATION
      ===================================================== */
 
- async function deleteStation(id) {
 
+async function deleteStation(id) {
   const s = state();
 
-  const station =
-    s?.stations.find(
-      item =>
-        String(item.id) ===
-        String(id)
-    );
-
+  const station = s?.stations.find(
+    item => String(item.id) === String(id)
+  );
 
   if (!station) {
-
-    toast(
-      "Station tidak ditemukan."
-    );
-
+    toast("Station tidak ditemukan.");
     return;
-
   }
 
+  if (station.active === false) {
+    toast("Station ini sudah diarsipkan.");
+    return;
+  }
+
+  if (!window.confirm(
+    `Arsipkan "${station.name}"?\n\n` +
+    "Data skill dan riwayat akan tetap disimpan. " +
+    "Station tidak lagi digunakan untuk pekerjaan baru."
+  )) {
+    return;
+  }
+
+  try {
+    await DB.update("stations", id, {
+      active: false
+    });
+
+    toast("Station berhasil diarsipkan.");
+
+    if (refresh) await refresh();
+  } catch (error) {
+    console.error("Station archive error:", error);
+    toast(error?.message || "Gagal mengarsipkan station.");
+  }
+}
 
   /* ===================================================
      CEK DATA SKILL
