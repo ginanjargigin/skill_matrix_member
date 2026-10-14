@@ -1518,13 +1518,23 @@ if (SupabaseClient.configured()) {
       countElement.textContent = `${rows.length} riwayat`;
     }
 
-    historyList.innerHTML = rows.map(change => {
+   
+const grouped = rows.reduce((groups, change) => {
+  const date = String(change.work_date || "").slice(0, 10);
+  if (!groups[date]) groups[date] = [];
+  groups[date].push(change);
+  return groups;
+}, {});
+
+const photoJobs = [];
+
+historyList.innerHTML = Object.entries(grouped)
+  .map(([date, changes]) => {
+    const entries = changes.map(change => {
       const targetLine = getLine(change.line_id);
       const station = getStation(change.station_id);
       const replacement = getMember(change.replacement_member_id);
       const absent = getMember(change.absent_member_id);
-
-      // Untuk data baru, gunakan snapshot. Data lama fallback ke home_line_id.
       const originLine = getLine(
         change.origin_line_id || replacement?.home_line_id
       );
@@ -1533,118 +1543,150 @@ if (SupabaseClient.configured()) {
       const notes = change.notes || "";
       const shift = shiftLabels[change.shift] || change.shift || "-";
 
+      const personPhoto = (member, role) => {
+        const initial = String(member?.name || "?")
+          .trim()
+          .charAt(0)
+          .toUpperCase();
+
+        if (!member?.photo_path) {
+          return `<div class="history-avatar">${esc(initial)}</div>`;
+        }
+
+        const token = `${role}-${String(change.id)}-${String(member.id)}`;
+
+        photoJobs.push({
+          token,
+          path: member.photo_path
+        });
+
+        return `
+          <div class="history-avatar">
+            <span>${esc(initial)}</span>
+            <img data-history-photo="${esc(token)}"
+                 alt="Foto ${esc(member.name || "member")}"
+                 loading="lazy">
+          </div>
+        `;
+      };
+
+      const duration = change.backup_duration_minutes;
+      const durationText = duration != null
+        ? `${Math.floor(Number(duration) / 60)} jam ${
+            Number(duration) % 60
+          } menit`
+        : "Belum diisi";
+
       return `
-        <article class="history-row">
-
-          <div class="history-cell history-line-cell">
-            <span class="history-mobile-label">Line &amp; Tanggal</span>
-            <strong class="history-line-name">
-              ${esc(targetLine?.name || "-")}
-            </strong>
-            <span class="history-date">
-              <span aria-hidden="true">▦</span>
-              ${esc(formatDate(change.work_date))}
-            </span>
-            <span class="history-shift">
-              Shift ${esc(shift)}
+        <article class="history-transfer">
+          <div class="history-transfer-meta">
+            <span class="history-shift">${esc(shift)}</span>
+            <span class="history-station">
+              ${esc(station?.name || "-")}
             </span>
           </div>
 
-          <div class="history-cell">
-            <span class="history-mobile-label">Member yang Diganti</span>
-            <strong class="history-person-name">
-              ${esc(absent?.name || "Member belum dicatat")}
-            </strong>
-            <span class="history-detail">
-              Line: <b>${esc(targetLine?.name || "-")}</b>
-            </span>
-            <span class="history-detail">
-              Station: ${esc(station?.name || "-")}
-            </span>
+          <div class="history-transfer-flow">
+            <div class="history-person history-person-absent">
+              ${personPhoto(absent, "absent")}
+              <div>
+                <small>MP tidak masuk</small>
+                <strong>${esc(absent?.name || "Belum dicatat")}</strong>
+                <span>Line: ${esc(targetLine?.name || "-")}</span>
+                <span>Station: ${esc(station?.name || "-")}</span>
+              </div>
+            </div>
+
+            <div class="history-transfer-arrow" aria-label="digantikan oleh">
+              →
+            </div>
+
+            <div class="history-person history-person-replacement">
+              ${personPhoto(replacement, "replacement")}
+              <div>
+                <small>MP pengganti</small>
+                <strong>${esc(replacement?.name || "Tidak ditemukan")}</strong>
+                <span>Asal: ${esc(originLine?.name || "-")}</span>
+                <span>Tujuan: ${esc(targetLine?.name || "-")}</span>
+              </div>
+            </div>
           </div>
 
-          <div class="history-cell">
-            <span class="history-mobile-label">Member Pengganti</span>
-            <strong class="history-person-name">
-              ${esc(replacement?.name || "Member tidak ditemukan")}
-            </strong>
-            <span class="history-origin">
-              Line asal: <b>${esc(originLine?.name || "-")}</b>
-            </span>
-            <span class="history-detail">
-              Station: ${esc(station?.name || "-")}
-            </span>
-          </div>
-
-          <div class="history-cell history-reason-cell">
-            <span class="history-mobile-label">Alasan Tidak Masuk</span>
-            <div class="history-reason-box ${reasonClass(reason)}">
+          <div class="history-transfer-footer">
+            <div>
+              <small>Alasan</small>
               <strong>${esc(reason)}</strong>
-              <small>
-                ${notes
-                  ? esc(notes)
-                  : "Tidak ada catatan tambahan"}
-              </small>
+              ${notes ? `<span>${esc(notes)}</span>` : ""}
+            </div>
+            <div class="history-duration-summary">
+              <small>Durasi backup</small>
+              <strong>${esc(durationText)}</strong>
             </div>
           </div>
 
-          </div>
-
-          <!-- Panel Durasi Backup -->
-          <div class="history-duration-panel">
-            <div class="history-duration-heading">
-              <strong>Durasi Backup</strong>
-              ${
-                change.backup_duration_minutes != null
-                  ? `<span class="history-duration-status is-saved">Sudah diisi</span>`
-                  : `<span class="history-duration-status">Belum diisi</span>`
-              }
-            </div>
-
-            <form
-              class="history-duration-form"
-              data-change-id="${esc(change.id)}"
-            >
+          <details class="history-duration-details">
+            <summary>
+              ${duration != null ? "Ubah durasi backup" : "Isi durasi backup"}
+            </summary>
+            <form class="history-duration-form"
+                  data-change-id="${esc(change.id)}">
               <label>
-                <span>Durasi aktual</span>
-                <input
-                  type="number"
-                  name="backup_duration_minutes"
-                  min="1"
-                  step="1"
-                  inputmode="numeric"
-                  placeholder="Menit"
-                  value="${
-                    change.backup_duration_minutes != null
-                      ? esc(change.backup_duration_minutes)
-                      : ""
-                  }"
-                  aria-label="Durasi backup dalam menit"
-                >
+                Durasi aktual (menit)
+                <input type="number"
+                       name="backup_duration_minutes"
+                       min="1"
+                       step="1"
+                       value="${duration != null ? esc(duration) : ""}"
+                       required>
               </label>
-
               <button type="submit" class="primary small">
                 Simpan Durasi
               </button>
             </form>
-
-            ${
-              change.backup_duration_minutes != null
-                ? `<small class="history-duration-converted">
-                    Setara ${Math.floor(Number(change.backup_duration_minutes) / 60)} jam
-                    ${Number(change.backup_duration_minutes) % 60} menit
-                  </small>`
-                : `<small class="history-duration-help">
-                    Isi setelah proses backup selesai.
-                  </small>`
-            }
-          </div>
-
-        </article>
-
+          </details>
         </article>
       `;
     }).join("");
+
+    return `
+      <section class="history-day">
+        <header class="history-day-header">
+          <strong>▦ ${esc(formatDate(date))}</strong>
+          <span>${changes.length} pergantian</span>
+        </header>
+        <div class="history-day-entries">${entries}</div>
+      </section>
+    `;
+  })
+  .join("");
+
+if (!rows.length) {
+  historyList.innerHTML = `
+    <div class="empty history-empty">
+      Tidak ada riwayat yang cocok dengan filter.
+      <small>Coba pilih bulan lain atau ubah kata pencarian.</small>
+    </div>
+  `;
+}
+
+if (SupabaseClient.configured()) {
+  photoJobs.forEach(async job => {
+    try {
+      const url = await DB.getMemberPhotoUrl(job.path);
+      const img = [...historyList.querySelectorAll("[data-history-photo]")]
+        .find(element => element.dataset.historyPhoto === job.token);
+
+      if (!img || !url) return;
+
+      img.onload = () => img.classList.add("loaded");
+      img.onerror = () => img.remove();
+      img.src = url;
+    } catch (error) {
+      console.error("Foto riwayat gagal dimuat:", error);
+    }
+  });
+}
+
 
     if (!rows.length) {
       historyList.innerHTML = `
