@@ -508,6 +508,18 @@ function renderReplacement() {
         )
       );
 
+    
+    const datalist = $("absentMemberOptions");
+
+    if (datalist) {
+      datalist.innerHTML = activeMembers
+        .map(member => `
+          <option value="${esc(member.name || "")}"></option>
+        `)
+        .join("");
+    }
+
+
     const filteredMembers = activeMembers.filter(member =>
       String(member.name || "")
         .toLocaleLowerCase("id-ID")
@@ -1997,20 +2009,35 @@ $("changeDate")
   );
 }
   
+
     if ($("absentMemberSearch")) {
       $("absentMemberSearch").addEventListener(
         "input",
         () => {
+          const searchValue = String(
+            $("absentMemberSearch").value || ""
+          ).trim().toLocaleLowerCase("id-ID");
+
+          const matchedMember = s.members.find(member =>
+            member.active !== false &&
+            String(member.name || "")
+              .trim()
+              .toLocaleLowerCase("id-ID") === searchValue
+          );
+
           const absentSelect = $("absentMember");
 
           if (absentSelect) {
-            absentSelect.value = "";
+            absentSelect.value = matchedMember
+              ? String(matchedMember.id)
+              : "";
           }
 
-          renderReplacement();
+          renderCandidates();
         }
       );
     }
+
 
     // Simpan durasi backup dari setiap kartu Riwayat.
     if ($("historyList")) {
