@@ -947,8 +947,24 @@ function renderMembers() {
       Number(skill.skill_level) > 0
     ).length;
 
+    
+    const statusClass = String(member.status || "")
+      .trim()
+      .toUpperCase() === "PERMANENT"
+        ? "member-status-permanent"
+        : String(member.status || "")
+            .trim()
+            .toUpperCase() === "KONTRAK"
+          ? "member-status-kontrak"
+          : String(member.status || "")
+              .trim()
+              .toUpperCase() === "MAGANG"
+            ? "member-status-magang"
+            : "member-status-default";
+
+
     return `
-      <article class="member-card">
+      <article class="member-card ${statusClass}">
         <div class="member-info">
           <b>${esc(member.name)}</b>
           <small>Status: ${esc(member.status || "-")}</small>
