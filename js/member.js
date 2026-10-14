@@ -6,6 +6,9 @@ window.MemberManager = (() => {
   let selectedSkillLineIds = new Set();
   let selectedSkillLineId = "";
   let skillDraft = new Map();
+  let memberPhotoFile = null;
+  let memberPhotoPath = "";
+  let removeExistingPhoto = false;
 
   let lineSearchBound = false;
   let skillSearchBound = false;
@@ -445,6 +448,81 @@ window.MemberManager = (() => {
     }
   }
 
+  
+  function resetMemberPhoto() {
+    memberPhotoFile = null;
+    memberPhotoPath = "";
+    removeExistingPhoto = false;
+
+    const input = $("memberPhoto");
+    if (input) input.value = "";
+
+    const preview = $("memberPhotoPreview");
+    if (preview) preview.innerHTML = "<span>Foto</span>";
+
+    const removeButton = $("memberPhotoRemove");
+    if (removeButton) removeButton.hidden = true;
+  }
+
+  function showMemberPhoto(src) {
+    const preview = $("memberPhotoPreview");
+    if (!preview) return;
+
+    preview.innerHTML = "";
+
+    if (!src) {
+      preview.innerHTML = "<span>Foto</span>";
+      return;
+    }
+
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = "Foto member";
+    preview.appendChild(img);
+  }
+
+  function bindMemberPhoto() {
+    const input = $("memberPhoto");
+    const removeButton = $("memberPhotoRemove");
+
+    if (!input || input.dataset.bound === "true") return;
+    input.dataset.bound = "true";
+
+    input.addEventListener("change", () => {
+      const file = input.files?.[0] || null;
+
+      if (!file) return;
+
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        toast("Gunakan foto JPG, PNG, atau WebP.");
+        input.value = "";
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        toast("Ukuran foto maksimal 5 MB.");
+        input.value = "";
+        return;
+      }
+
+      memberPhotoFile = file;
+      removeExistingPhoto = false;
+
+      showMemberPhoto(URL.createObjectURL(file));
+
+      if (removeButton) removeButton.hidden = false;
+    });
+
+    removeButton?.addEventListener("click", () => {
+      memberPhotoFile = null;
+      removeExistingPhoto = true;
+      input.value = "";
+      showMemberPhoto("");
+
+      if (removeButton) removeButton.hidden = true;
+    });
+  }
+
   /* =====================================================
      OPEN ADD
      ===================================================== */
@@ -454,6 +532,7 @@ window.MemberManager = (() => {
     if (!form) return;
 
     form.reset();
+    resetMemberPhoto();
     resetSkillSearch();
 
     $("memberModalTitle").textContent = "Tambah Member + Skill";
@@ -479,62 +558,95 @@ window.MemberManager = (() => {
      Tampilkan semua line yang memiliki skill tersimpan.
      ===================================================== */
 
-  function openEditModal(id) {
-    const s = state();
 
-    const member = s?.members.find(
-      item => String(item.id) === String(id)
-    );
+function openEditModal(id) {
+  const s = state();
 
-    if (!member) {
-      toast("Data member tidak ditemukan.");
-      return;
-    }
+  const member = s?.members.find(
+    item => String(item.id) === String(id)
+  );
 
-    resetSkillSearch();
-
-    $("memberModalTitle").textContent = "Edit Member + Skill";
-    $("memberModalSubtitle").textContent =
-      "Perbarui data member dan Skill Matrix dalam satu form.";
-
-    $("memberEditId").value = member.id;
-
-    if ($("memberDelete")) {
-      $("memberDelete").style.display = "inline-flex";
-    }
-
-    $("memberName").value = member.name || "";
-    $("memberStatus").value = member.status || "PERMANENT";
-    $("memberShift").value = normalizeShift(member.shift);
-
-    populateLines(member.home_line_id || "");
-
-    const memberSkills = (s.skills || []).filter(skill =>
-      String(skill.member_id) === String(member.id) &&
-      Number(skill.skill_level) > 0
-    );
-
-    const skilledStationIds = new Set(
-      memberSkills.map(skill => String(skill.station_id))
-    );
-
-    getActiveStations().forEach(station => {
-      if (skilledStationIds.has(String(station.id))) {
-        selectedSkillLineIds.add(String(station.line_id));
-      }
-    });
-
-    memberSkills.forEach(skill => {
-      skillDraft.set(
-        getSkillKey(skill.station_id),
-        Number(skill.skill_level) || 0
-      );
-    });
-
-    renderMemberSkills(member.id);
-
-    $("memberModal").classList.add("open");
+  if (!member) {
+    toast("Data member tidak ditemukan.");
+    return;
   }
+
+  resetSkillSearch();
+
+  memberPhotoFile = null;
+  memberPhotoPath = member.photo_path || "";
+  removeExistingPhoto = false;
+
+  const photoInput = $("memberPhoto");
+  if (photoInput) photoInput.value = "";
+
+  const photoRemoveButton = $("memberPhotoRemove");
+  if (photoRemoveButton) {
+    photoRemoveButton.hidden = !memberPhotoPath;
+  }
+
+  showMemberPhoto("");
+
+  $("memberModalTitle").textContent = "Edit Member + Skill";
+  $("memberModalSubtitle").textContent =
+    "Perbarui data member dan Skill Matrix dalam satu form.";
+
+  $("memberEditId").value = member.id;
+
+  if ($("memberDelete")) {
+    $("memberDelete").style.display = "inline-flex";
+  }
+
+  $("memberName").value = member.name || "";
+  $("memberStatus").value = member.status || "PERMANENT";
+  $("memberShift").value = normalizeShift(member.shift);
+
+  populateLines(member.home_line_id || "");
+
+  if (memberPhotoPath && SupabaseClient.configured()) {
+    const photoPath = memberPhotoPath;
+    const memberId = String(member.id);
+
+    DB.getMemberPhotoUrl(photoPath)
+      .then(url => {
+        if (
+          $("memberEditId")?.value === memberId &&
+          memberPhotoPath === photoPath &&
+          !removeExistingPhoto
+        ) {
+          showMemberPhoto(url);
+        }
+      })
+      .catch(error => {
+        console.error("Member photo load error:", error);
+      });
+  }
+
+  const memberSkills = (s.skills || []).filter(skill =>
+    String(skill.member_id) === String(member.id) &&
+    Number(skill.skill_level) > 0
+  );
+
+  const skilledStationIds = new Set(
+    memberSkills.map(skill => String(skill.station_id))
+  );
+
+  getActiveStations().forEach(station => {
+    if (skilledStationIds.has(String(station.id))) {
+      selectedSkillLineIds.add(String(station.line_id));
+    }
+  });
+
+  memberSkills.forEach(skill => {
+    skillDraft.set(
+      getSkillKey(skill.station_id),
+      Number(skill.skill_level) || 0
+    );
+  });
+
+  renderMemberSkills(member.id);
+  $("memberModal").classList.add("open");
+}
 
   /* =====================================================
      DELETE MEMBER
@@ -625,9 +737,7 @@ window.MemberManager = (() => {
     $("memberModal")?.classList.remove("open");
   }
 
-  /* =====================================================
-     SAVE MEMBER + SKILL MATRIX
-     ===================================================== */
+
 
 async function save(event) {
   event?.preventDefault();
@@ -647,9 +757,6 @@ async function save(event) {
   const shift = normalizeShift($("memberShift").value);
   const homeLineId = $("memberHomeLine").value;
 
-  /* =========================
-     VALIDASI MEMBER
-     ========================= */
   if (!name) {
     toast("Nama member wajib diisi.");
     $("memberName").focus();
@@ -674,10 +781,6 @@ async function save(event) {
     return;
   }
 
-  /* =========================
-     SIAPKAN SELURUH SKILL
-     Pertahankan skill line lain.
-     ========================= */
   const skills = getActiveStations().map(station => {
     const stationId = getSkillKey(station.id);
     const existing = getStoredSkill(editId, station.id);
@@ -707,37 +810,83 @@ async function save(event) {
     return;
   }
 
+  if (memberPhotoFile && !SupabaseClient.configured()) {
+    toast(
+      "Upload foto memerlukan koneksi Supabase. " +
+      "Hapus pilihan foto atau aktifkan koneksi Supabase."
+    );
+    return;
+  }
+
   const button = $("memberSave");
+  const originalButtonText = button?.textContent || "Simpan Member";
+
   if (button) {
     button.disabled = true;
     button.textContent = "Menyimpan...";
   }
 
+  const existingMember = editId
+    ? (s.members || []).find(
+        item => String(item.id) === String(editId)
+      )
+    : null;
+
+  if (editId && !existingMember) {
+    toast("Member tidak ditemukan.");
+    if (button) {
+      button.disabled = false;
+      button.textContent = originalButtonText;
+    }
+    return;
+  }
+
+  const oldPhotoPath =
+    existingMember?.photo_path || memberPhotoPath || null;
+
+  let uploadedPhotoPath = null;
+  let memberSaved = false;
+
   try {
+    let nextPhotoPath = removeExistingPhoto
+      ? null
+      : oldPhotoPath;
+
+    // Upload foto baru sebelum menyimpan lokasi fotonya ke database.
+    if (memberPhotoFile && SupabaseClient.configured()) {
+      const extension =
+        memberPhotoFile.type === "image/png"
+          ? "png"
+          : memberPhotoFile.type === "image/webp"
+            ? "webp"
+            : "jpg";
+
+      uploadedPhotoPath =
+        `members/${crypto.randomUUID()}.${extension}`;
+
+      await DB.uploadMemberPhoto(
+        memberPhotoFile,
+        uploadedPhotoPath
+      );
+
+      nextPhotoPath = uploadedPhotoPath;
+    }
+
     const payload = {
       name,
       status,
       shift,
       home_line_id: homeLineId,
-      active: true
+      active: true,
+      photo_path: nextPhotoPath
     };
 
     let memberId = editId;
 
-    /* =========================
-       1. SIMPAN DATA MEMBER
-       ========================= */
+    // 1. Simpan data member.
     if (!SupabaseClient.configured()) {
       if (editId) {
-        const member = (s.members || []).find(
-          item => String(item.id) === String(editId)
-        );
-
-        if (!member) {
-          throw new Error("Member tidak ditemukan.");
-        }
-
-        Object.assign(member, payload);
+        Object.assign(existingMember, payload);
       } else {
         memberId = "demo-member-" + Date.now();
 
@@ -746,6 +895,8 @@ async function save(event) {
           ...payload
         });
       }
+
+      memberSaved = true;
     } else {
       const savedMember = editId
         ? await DB.update("members", editId, payload)
@@ -758,11 +909,11 @@ async function save(event) {
           "ID member tidak ditemukan setelah penyimpanan."
         );
       }
+
+      memberSaved = true;
     }
 
-    /* =========================
-       2. SIAPKAN PAYLOAD BATCH
-       ========================= */
+    // 2. Siapkan data Skill Matrix.
     const skillPayloads = skills.map(skill => ({
       member_id: memberId,
       station_id: skill.station_id,
@@ -770,12 +921,8 @@ async function save(event) {
       certified: skill.certified
     }));
 
-    /* =========================
-       3. SIMPAN SEMUA SKILL
-       ========================= */
+    // 3. Simpan Skill Matrix.
     if (!SupabaseClient.configured()) {
-      // Mode demo: perbarui record yang ada,
-      // tambahkan record baru bila belum ada.
       for (const skill of skillPayloads) {
         const existing = (s.skills || []).find(item =>
           String(item.member_id) === String(memberId) &&
@@ -786,14 +933,30 @@ async function save(event) {
           Object.assign(existing, skill);
         } else {
           s.skills.push({
-            id: "demo-skill-" + Date.now() + "-" + skill.station_id,
+            id: "demo-skill-" + Date.now() +
+              "-" + skill.station_id,
             ...skill
           });
         }
       }
     } else {
-      // Satu permintaan untuk seluruh station.
       await DB.saveMany("member_skills", skillPayloads);
+    }
+
+    // 4. Hapus foto lama hanya setelah penyimpanan berhasil.
+    if (
+      SupabaseClient.configured() &&
+      oldPhotoPath &&
+      oldPhotoPath !== nextPhotoPath
+    ) {
+      try {
+        await DB.removeMemberPhoto(oldPhotoPath);
+      } catch (photoError) {
+        console.error(
+          "Gagal menghapus foto lama:",
+          photoError
+        );
+      }
     }
 
     toast(
@@ -810,6 +973,23 @@ async function save(event) {
   } catch (error) {
     console.error("Member + Skill save error:", error);
 
+    // Jika data member belum berhasil disimpan,
+    // hapus upload baru agar tidak meninggalkan file yatim.
+    if (
+      uploadedPhotoPath &&
+      !memberSaved &&
+      SupabaseClient.configured()
+    ) {
+      try {
+        await DB.removeMemberPhoto(uploadedPhotoPath);
+      } catch (cleanupError) {
+        console.error(
+          "Gagal membersihkan foto upload:",
+          cleanupError
+        );
+      }
+    }
+
     toast(
       error?.message ||
       "Gagal menyimpan member dan Skill Matrix."
@@ -817,10 +997,11 @@ async function save(event) {
   } finally {
     if (button) {
       button.disabled = false;
-      button.textContent = "Simpan Member";
+      button.textContent = originalButtonText;
     }
   }
 }
+
 
   /* =====================================================
      BIND EVENTS
@@ -829,6 +1010,7 @@ async function save(event) {
   function bind() {
     bindHomeLineSearch();
     bindSkillLineSearch();
+    bindMemberPhoto();
 
     $("addMemberBtn")?.addEventListener("click", openAddModal);
     $("memberCancel")?.addEventListener("click", closeModal);
