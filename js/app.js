@@ -1403,6 +1403,60 @@ function renderMembers() {
             </div>
           </div>
 
+          </div>
+
+          <!-- Panel Durasi Backup -->
+          <div class="history-duration-panel">
+            <div class="history-duration-heading">
+              <strong>Durasi Backup</strong>
+              ${
+                change.backup_duration_minutes != null
+                  ? `<span class="history-duration-status is-saved">Sudah diisi</span>`
+                  : `<span class="history-duration-status">Belum diisi</span>`
+              }
+            </div>
+
+            <form
+              class="history-duration-form"
+              data-change-id="${esc(change.id)}"
+            >
+              <label>
+                <span>Durasi aktual</span>
+                <input
+                  type="number"
+                  name="backup_duration_minutes"
+                  min="1"
+                  step="1"
+                  inputmode="numeric"
+                  placeholder="Menit"
+                  value="${
+                    change.backup_duration_minutes != null
+                      ? esc(change.backup_duration_minutes)
+                      : ""
+                  }"
+                  aria-label="Durasi backup dalam menit"
+                >
+              </label>
+
+              <button type="submit" class="primary small">
+                Simpan Durasi
+              </button>
+            </form>
+
+            ${
+              change.backup_duration_minutes != null
+                ? `<small class="history-duration-converted">
+                    Setara ${Math.floor(Number(change.backup_duration_minutes) / 60)} jam
+                    ${Number(change.backup_duration_minutes) % 60} menit
+                  </small>`
+                : `<small class="history-duration-help">
+                    Isi setelah proses backup selesai.
+                  </small>`
+            }
+          </div>
+
+        </article>
+
         </article>
       `;
     }).join("");
@@ -1414,6 +1468,77 @@ function renderMembers() {
           <small>Coba pilih bulan lain atau ubah kata pencarian.</small>
         </div>
       `;
+    }
+  }
+
+  async function saveHistoryDuration(event) {
+    const form = event.target.closest(".history-duration-form");
+    if (!form) return;
+
+    event.preventDefault();
+
+    const input = form.querySelector(
+      '[name="backup_duration_minutes"]'
+    );
+    const button = form.querySelector('button[type="submit"]');
+    const id = form.dataset.changeId;
+    const rawValue = input.value.trim();
+
+    // Durasi wajib diisi dan harus berupa bilangan bulat positif.
+    if (
+      rawValue === "" ||
+      !Number.isInteger(Number(rawValue)) ||
+      Number(rawValue) <= 0
+    ) {
+      toast("Durasi backup harus berupa bilangan bulat lebih dari 0 menit.");
+      input.focus();
+      return;
+    }
+
+    const duration = Number(rawValue);
+    const change = s.changes.find(
+      item => String(item.id) === String(id)
+    );
+
+    if (!change) {
+      toast("Data riwayat tidak ditemukan. Muat ulang halaman.");
+      return;
+    }
+
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Menyimpan...";
+    }
+
+    try {
+      if (SupabaseClient.configured()) {
+        // Simpan hanya kolom durasi pada riwayat yang dipilih.
+        const updated = await DB.update(
+          "manpower_changes",
+          id,
+          { backup_duration_minutes: duration }
+        );
+
+        Object.assign(change, updated);
+      } else {
+        // Demo mode: perubahan hanya berada di memori browser.
+        change.backup_duration_minutes = duration;
+      }
+
+      renderHistory();
+      toast("Durasi backup berhasil disimpan.");
+    } catch (error) {
+      console.error("Gagal menyimpan durasi backup:", error);
+
+      toast(
+        error?.message ||
+        "Durasi gagal disimpan. Periksa koneksi dan izin akses."
+      );
+
+      if (button) {
+        button.disabled = false;
+        button.textContent = "Simpan Durasi";
+      }
     }
   }
 
@@ -1626,6 +1751,14 @@ $("changeDate")
     renderCandidates
   );
 }
+
+    // Simpan durasi backup dari setiap kartu Riwayat.
+    if ($("historyList")) {
+      $("historyList").addEventListener(
+        "submit",
+        saveHistoryDuration
+      );
+    }
 
 
   /* =====================================================
