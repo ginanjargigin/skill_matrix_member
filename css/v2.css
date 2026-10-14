@@ -3358,3 +3358,567 @@ button.danger:disabled {
     width: 100%;
   }
 }
+
+/* =========================================================
+   DASHBOARD BARU — STATISTIK & REPLACEMENT WORKSPACE
+   ========================================================= */
+
+/* Cegah konten dashboard melebar keluar layar */
+#page-dashboard {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#page-dashboard > * {
+  min-width: 0;
+}
+
+/* ---------------------------------------------------------
+   1. EMPAT KARTU STATISTIK HORIZONTAL
+   --------------------------------------------------------- */
+
+#page-dashboard .dashboard-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+#page-dashboard .kpi {
+  min-width: 0;
+  min-height: 118px;
+  padding: 17px;
+  box-sizing: border-box;
+  border: 1px solid #dbe7f8;
+  border-radius: 15px;
+  background: linear-gradient(145deg, #ffffff, #f5f8ff);
+  box-shadow: 0 4px 14px rgba(31, 71, 130, 0.045);
+}
+
+#page-dashboard .kpi-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 11px;
+}
+
+#page-dashboard .kpi-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #e8f1ff;
+  color: #2563eb;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+#page-dashboard .kpi-heading small {
+  color: #536985;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+#page-dashboard .kpi > b {
+  display: block;
+  margin: 0 0 5px;
+  color: #173c72;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+#page-dashboard .kpi-caption {
+  display: block;
+  color: #71819a;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* ---------------------------------------------------------
+   2. PANEL UTAMA REPLACEMENT
+   --------------------------------------------------------- */
+
+#page-dashboard .dashboard-workspace {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid #e0e9f6;
+  border-radius: 17px;
+  background: #ffffff;
+  box-shadow: 0 5px 18px rgba(31, 71, 130, 0.035);
+}
+
+#page-dashboard .dashboard-workspace-heading {
+  margin-bottom: 20px;
+}
+
+#page-dashboard .dashboard-workspace-heading h2 {
+  margin: 0 0 6px;
+  color: #16365f;
+  font-size: 21px;
+  line-height: 1.3;
+}
+
+#page-dashboard .dashboard-workspace-heading p {
+  margin: 0;
+  color: #647995;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ---------------------------------------------------------
+   3. PEMILIHAN LINE
+   --------------------------------------------------------- */
+
+#page-dashboard .dashboard-line-section {
+  margin-bottom: 22px;
+  padding: 15px;
+  border: 1px solid #d9e6fa;
+  border-radius: 13px;
+  background: #f7faff;
+}
+
+#page-dashboard .dashboard-line-section > h3 {
+  margin: 0 0 12px;
+  color: #17365f;
+  font-size: 15px;
+}
+
+#page-dashboard .dashboard-line-search {
+  position: relative;
+  margin: 0 0 12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+#page-dashboard .dashboard-line-search .dashboard-search-icon {
+  position: absolute;
+  z-index: 1;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #2563eb;
+  font-size: 22px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+#page-dashboard #dashboardLineSearch {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  box-sizing: border-box;
+  padding: 12px 14px 12px 46px;
+  border: 1px solid #b9cdec;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #10213b;
+  font: inherit;
+  font-size: 15px;
+  box-shadow: none;
+}
+
+#page-dashboard #dashboardLineSearch::placeholder {
+  color: #71819a;
+  opacity: 1;
+  font-weight: 400;
+}
+
+#page-dashboard #dashboardLineSearch:focus {
+  border-color: #2563eb;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+}
+
+/* Daftar line menjadi pilihan ringkas di desktop */
+#page-dashboard #lineList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  min-width: 0;
+}
+
+#page-dashboard #lineList .line-card {
+  min-width: 0;
+  padding: 11px;
+  gap: 9px;
+  border-radius: 10px;
+}
+
+#page-dashboard #lineList .line-card .line-icon {
+  flex: 0 0 30px;
+}
+
+#page-dashboard #lineList .line-card > span,
+#page-dashboard #lineList .line-card > div {
+  min-width: 0;
+}
+
+#page-dashboard #lineList .line-card strong {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+#page-dashboard #lineList .line-card small {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* ---------------------------------------------------------
+   4. LINE TERPILIH
+   --------------------------------------------------------- */
+
+#page-dashboard .dashboard-selected-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px 15px;
+  border-left: 4px solid #2563eb;
+  border-radius: 9px;
+  background: #eff5ff;
+}
+
+#page-dashboard .section-eyebrow {
+  display: block;
+  margin-bottom: 5px;
+  color: #647995;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+#page-dashboard #selectedLine {
+  margin: 0;
+  color: #17458b;
+  font-size: 17px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+/* ---------------------------------------------------------
+   5. LAYOUT STATION, FORM, DAN KANDIDAT
+   --------------------------------------------------------- */
+
+#page-dashboard .replacement-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.35fr);
+  align-items: start;
+  gap: 14px;
+  min-width: 0;
+}
+
+#page-dashboard .replacement-layout > .card {
+  min-width: 0;
+  padding: 17px;
+  border: 1px solid #e1e9f4;
+  border-radius: 13px;
+  background: #ffffff;
+  box-shadow: none;
+}
+
+#page-dashboard .replacement-layout .step-title {
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+#page-dashboard .replacement-layout .step-title h2 {
+  margin: 0 0 5px;
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+#page-dashboard .replacement-layout .step-title p {
+  margin: 0;
+  color: #71819a;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* ---------------------------------------------------------
+   6. FORM INTERNAL DUA KOLOM DI DESKTOP
+   --------------------------------------------------------- */
+
+#page-dashboard .replacement-form-card .form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 13px;
+  min-width: 0;
+}
+
+#page-dashboard .replacement-form-card .form > label {
+  min-width: 0;
+  gap: 6px;
+  color: #344a66;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+#page-dashboard .replacement-form-card .form input,
+#page-dashboard .replacement-form-card .form select,
+#page-dashboard .replacement-form-card .form textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1px solid #d3deec;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #10213b;
+  font: inherit;
+  font-size: 13px;
+}
+
+#page-dashboard .replacement-form-card .form input,
+#page-dashboard .replacement-form-card .form select {
+  min-height: 42px;
+  padding: 10px;
+}
+
+#page-dashboard .replacement-form-card .form textarea {
+  min-height: 72px;
+  padding: 10px;
+  resize: vertical;
+}
+
+#page-dashboard .replacement-form-card .form input:focus,
+#page-dashboard .replacement-form-card .form select:focus,
+#page-dashboard .replacement-form-card .form textarea:focus {
+  border-color: #2563eb;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+/* Catatan menggunakan lebar penuh */
+#page-dashboard .replacement-form-card .form > label:last-child {
+  grid-column: 1 / -1;
+}
+
+/* ---------------------------------------------------------
+   7. PANEL KANDIDAT
+   --------------------------------------------------------- */
+
+#page-dashboard .replacement-layout > .candidate-section {
+  grid-column: 1 / -1;
+}
+
+#page-dashboard .candidate-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  min-width: 0;
+}
+
+#page-dashboard .candidate {
+  min-width: 0;
+  padding: 13px;
+  border-radius: 11px;
+}
+
+#page-dashboard .candidate > * {
+  min-width: 0;
+}
+
+#page-dashboard .candidate strong,
+#page-dashboard .candidate b {
+  overflow-wrap: anywhere;
+}
+
+/* Pertahankan indikator bintang skill */
+#page-dashboard .candidate .stars,
+#page-dashboard .candidate .skill-stars,
+#page-dashboard .candidate .star-rating {
+  color: #e5a900;
+  letter-spacing: 1px;
+}
+
+/* ---------------------------------------------------------
+   8. TABLET
+   --------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+  #page-dashboard .dashboard-kpi-grid {
+    gap: 10px;
+  }
+
+  #page-dashboard .kpi {
+    padding: 13px;
+  }
+
+  #page-dashboard .kpi > b {
+    font-size: 27px;
+  }
+
+  #page-dashboard #lineList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #page-dashboard .replacement-layout {
+    grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+    gap: 10px;
+  }
+
+  #page-dashboard .replacement-layout > .card {
+    padding: 13px;
+  }
+
+  #page-dashboard .candidate-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------------------------------------------------------
+   9. MOBILE
+   --------------------------------------------------------- */
+
+@media (max-width: 700px) {
+  #page-dashboard {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  #page-dashboard .dashboard-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    margin-bottom: 14px;
+  }
+
+  #page-dashboard .kpi {
+    min-height: 105px;
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  #page-dashboard .kpi-heading {
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 9px;
+  }
+
+  #page-dashboard .kpi-icon {
+    flex-basis: 29px;
+    width: 29px;
+    height: 29px;
+    font-size: 16px;
+  }
+
+  #page-dashboard .kpi-heading small {
+    font-size: 11px;
+  }
+
+  #page-dashboard .kpi > b {
+    font-size: 25px;
+  }
+
+  #page-dashboard .kpi-caption {
+    font-size: 10px;
+  }
+
+  #page-dashboard .dashboard-workspace {
+    padding: 13px;
+    border-radius: 13px;
+  }
+
+  #page-dashboard .dashboard-workspace-heading {
+    margin-bottom: 15px;
+  }
+
+  #page-dashboard .dashboard-workspace-heading h2 {
+    font-size: 19px;
+  }
+
+  #page-dashboard .dashboard-line-section {
+    margin-bottom: 16px;
+    padding: 11px;
+  }
+
+  #page-dashboard #lineList {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  #page-dashboard #lineList .line-card {
+    padding: 12px;
+  }
+
+  #page-dashboard .dashboard-selected-line {
+    margin-bottom: 12px;
+    padding: 11px;
+  }
+
+  #page-dashboard #selectedLine {
+    font-size: 16px;
+  }
+
+  #page-dashboard .replacement-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  #page-dashboard .replacement-layout > .card,
+  #page-dashboard .replacement-layout > .candidate-section {
+    grid-column: 1;
+    width: 100%;
+    min-width: 0;
+    padding: 13px;
+  }
+
+  #page-dashboard .replacement-form-card .form {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  #page-dashboard .replacement-form-card .form > label:last-child {
+    grid-column: 1;
+  }
+
+  #page-dashboard .replacement-form-card .form input,
+  #page-dashboard .replacement-form-card .form select {
+    min-height: 46px;
+    font-size: 16px;
+  }
+
+  #page-dashboard .replacement-form-card .form textarea {
+    min-height: 82px;
+    font-size: 16px;
+  }
+
+  #page-dashboard .candidate-list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
+  }
+
+  #page-dashboard .candidate {
+    padding: 13px;
+  }
+}
+
+@media (max-width: 380px) {
+  #page-dashboard .kpi {
+    padding: 10px;
+  }
+
+  #page-dashboard .kpi-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  #page-dashboard .kpi > b {
+    font-size: 23px;
+  }
+
+  #page-dashboard .dashboard-workspace {
+    padding: 10px;
+  }
+}
