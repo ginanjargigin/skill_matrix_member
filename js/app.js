@@ -701,81 +701,115 @@ const candidates = s.members
        VERTICAL CANDIDATE CARD
        =================================================== */
 
-    $("candidateList").innerHTML =
+   
+$("candidateList").innerHTML =
+  candidates.map(member => `
+    <article class="candidate">
 
-      candidates
-        .map(member => `
+      <div class="candidate-profile">
+        <div class="candidate-photo">
+          <span class="candidate-photo-initial">
+            ${esc(
+              String(member.name || "?")
+                .trim()
+                .charAt(0)
+                .toUpperCase()
+            )}
+          </span>
 
-          <article
-            class="candidate"
-          >
+          ${
+            member.photo_path
+              ? `<img
+                  data-candidate-photo="${esc(member.id)}"
+                  alt="Foto ${esc(member.name)}"
+                  loading="lazy"
+                >`
+              : ""
+          }
+        </div>
 
-            <div class="candidate-info">
+        <div class="candidate-info">
+          <span class="candidate-rank">KANDIDAT</span>
 
-              <span class="candidate-rank">
-                Kandidat
-              </span>
+          <b class="candidate-name">
+            ${esc(member.name || "-")}
+          </b>
 
-              <b class="candidate-name">
-                ${esc(member.name)}
-              </b>
+          <small>Status: ${esc(member.status || "-")}</small>
+          <small>Shift: ${esc(member.shift || "-")}</small>
+        </div>
+      </div>
 
-             
-              <small>
-                Status:
-                ${esc(member.status)}
-              </small>
+      <div class="candidate-skill">
+        <span>Skill</span>
 
-              <small>
-                Shift:
-                ${esc(member.shift || "-")}
-              </small>
+        <strong>
+          <span class="skill-stars ${
+            Number(member.level) === 6 ? "skill-master" : ""
+          }">
+            ${getSkillStars(member.level)}
+          </span>
 
-            </div>
+          <span class="skill-percent">
+            ${getSkillPercent(member.level)}%
+          </span>
+        </strong>
+      </div>
 
+      <button
+        class="primary candidate-pick"
+        data-pick="${esc(member.id)}"
+        type="button"
+      >
+        Pilih sebagai Pengganti
+      </button>
 
-            <div class="candidate-skill">
-            
-              <span>
-                Skill
-              </span>
-            
-              <strong>
-            
-               <span class="skill-stars ${Number(member.level) === 6 ? "skill-master" : ""}">
-                ${getSkillStars(member.level)}
-              </span>
-                            
-                <span class="skill-percent">
-                  ${getSkillPercent(member.level)}%
-                </span>
-            
-              </strong>
-            
-            </div>
+    </article>
+  `).join("") || `
+    <div class="empty">
+      Tidak ada kandidat dengan skill di atas 0.
+    </div>
+  `;
+    
+const candidateList = $("candidateList");
 
+if (SupabaseClient.configured()) {
+  candidates.forEach(async member => {
+    if (!member.photo_path) return;
 
-            <button
-              class="primary candidate-pick"
-              data-pick="${esc(member.id)}"
-              type="button"
-            >
-              Pilih sebagai Pengganti
-            </button>
+    try {
+      const url = await DB.getMemberPhotoUrl(
+        member.photo_path
+      );
 
-          </article>
+      const img = [...candidateList.querySelectorAll(
+        "[data-candidate-photo]"
+      )].find(
+        element =>
+          element.dataset.candidatePhoto === String(member.id)
+      );
 
-        `)
-        .join("")
+      if (!img || !url) return;
 
-      ||
+      img.onload = () => {
+        img.classList.add("loaded");
+      };
 
-      `<div class="empty">
+      img.onerror = () => {
+        img.remove();
+      };
 
-        Tidak ada kandidat dengan
-        skill di atas 0.
+      img.src = url;
+    } catch (error) {
+      console.error(
+        "Gagal memuat foto kandidat:",
+        member.name,
+        error
+      );
+    }
+  });
+}
 
-      </div>`;
 
 
     /* ===================================================
