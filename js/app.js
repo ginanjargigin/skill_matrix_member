@@ -199,7 +199,7 @@
 
 
     $("mode").textContent =
-      "SUPABASE";
+      "ONLINE";
 
   }
 
