@@ -1,5 +1,49 @@
 
 window.DB = (() => {
+  
+  /* =========================
+     MEMBER PHOTO STORAGE
+     ========================= */
+
+  async function uploadMemberPhoto(file, path) {
+    const supabase = await requireSession();
+
+    const { data, error } = await supabase.storage
+      .from("member-photos")
+      .upload(path, file, {
+        upsert: false,
+        contentType: file.type
+      });
+
+    if (error) throw error;
+    return data.path;
+  }
+
+  async function getMemberPhotoUrl(path) {
+    if (!path || !SupabaseClient.configured()) return "";
+
+    const supabase = await requireSession();
+
+    const { data, error } = await supabase.storage
+      .from("member-photos")
+      .createSignedUrl(path, 3600);
+
+    if (error) throw error;
+    return data.signedUrl;
+  }
+
+  async function removeMemberPhoto(path) {
+    if (!path || !SupabaseClient.configured()) return;
+
+    const supabase = await requireSession();
+
+    const { error } = await supabase.storage
+      .from("member-photos")
+      .remove([path]);
+
+    if (error) throw error;
+  }
+
   const demo = () => window.DEMO_DATA;
 
   const client = () => {
@@ -263,6 +307,9 @@ window.DB = (() => {
     remove,
     signIn,
     signOut,
-    getSession
+    getSession,
+    uploadMemberPhoto,
+    getMemberPhotoUrl,
+    removeMemberPhoto,
   };
 })();
