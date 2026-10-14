@@ -1199,82 +1199,66 @@ async function deleteStation(id) {
   }
 }
 
-  /* ===================================================
-     CEK DATA SKILL
-     =================================================== */
 
-  const skillCount =
-    (s.skills || [])
-      .filter(
-        skill =>
-          String(skill.station_id) ===
-          String(id)
-      )
-      .length;
+/* ===================================================
+   CEK DATA SKILL
+   =================================================== */
 
-
-  if (skillCount > 0) {
-
-    toast(
-      `Station "${station.name}" tidak dapat dihapus karena masih memiliki ${skillCount} data skill.`
-    );
-
-    return;
-
-  }
-
-
-  /* ===================================================
-     KONFIRMASI
-     =================================================== */
-
-  if (
-    !window.confirm(
-      `Hapus Station "${station.name}"?`
+const skillCount =
+  (s.skills || [])
+    .filter(
+      skill =>
+        String(skill.station_id) ===
+        String(id)
     )
-  ) {
+    .length;
 
-    return;
+if (skillCount > 0) {
+  toast(
+    `Station "${station.name}" tidak dapat dihapus karena masih memiliki ${skillCount} data skill.`
+  );
 
-  }
-
-
-  try {
-
-    await DB.remove(
-      "stations",
-      id
-    );
-
-
-    toast(
-      "Station berhasil dihapus."
-    );
-
-
-    if (refresh) {
-
-      await refresh();
-
-    }
-
-
-  } catch (error) {
-
-    console.error(
-      "Station delete error:",
-      error
-    );
-
-
-    toast(
-      error?.message ||
-      "Gagal menghapus Station."
-    );
-
-  }
-
+  return;
 }
+
+/* ===================================================
+   KONFIRMASI
+   =================================================== */
+
+if (
+  !window.confirm(
+    `Hapus Station "${station.name}"?`
+  )
+) {
+  return;
+}
+
+try {
+  await DB.remove(
+    "stations",
+    id
+  );
+
+  toast(
+    "Station berhasil dihapus."
+  );
+
+  if (refresh) {
+    await refresh();
+  }
+} catch (error) {
+  console.error(
+    "Station delete error:",
+    error
+  );
+
+  toast(
+    error?.message ||
+    "Gagal menghapus Station."
+  );
+}
+
+
 
   /* =====================================================
      CLOSE MODALS
