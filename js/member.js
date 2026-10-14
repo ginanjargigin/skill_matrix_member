@@ -781,21 +781,24 @@ async function save(event) {
     return;
   }
 
-  const skills = getActiveStations().map(station => {
-    const stationId = getSkillKey(station.id);
-    const existing = getStoredSkill(editId, station.id);
+  
+  // Ambil hanya station yang benar-benar tampil
+  // dan nilainya sudah dikumpulkan dari form.
+  const skills = getActiveStations()
+    .filter(station => {
+      const stationId = getSkillKey(station.id);
+      return skillDraft.has(stationId);
+    })
+    .map(station => {
+      const stationId = getSkillKey(station.id);
+      const level = Number(skillDraft.get(stationId)) || 0;
 
-    const level = skillDraft.has(stationId)
-      ? Number(skillDraft.get(stationId)) || 0
-      : Number(existing?.skill_level || 0);
-
-    return {
-      station_id: station.id,
-      skill_level: level,
-      certified: level >= 4
-    };
-  });
-
+      return {
+        station_id: station.id,
+        skill_level: level,
+        certified: level >= 4
+      };
+    });
   if (!skills.length) {
     toast(
       "Skill Matrix belum tersedia. Tambahkan station terlebih dahulu."
