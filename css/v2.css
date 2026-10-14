@@ -216,22 +216,20 @@ button {
   display: block;
 }
 
-/* =====================================================
-   KPI
-   ===================================================== */
 
 /* =====================================================
    KPI — DASHBOARD
+   ===================================================== */
 
 #page-dashboard > .grid {
   display: grid;
-   ===================================================== */
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
 }
 
 #page-dashboard .kpi {
   position: relative;
+  min-width: 0;
   overflow: hidden;
   padding: 20px;
   border: 1px solid rgba(59, 130, 246, 0.13);
@@ -251,8 +249,11 @@ button {
 }
 
 #page-dashboard .kpi small {
+  display: block;
   color: #526783;
   font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 #page-dashboard .kpi b {
@@ -264,9 +265,6 @@ button {
   font-weight: 800;
 }
 
-/* =====================================================
-   LAYOUT
-   ===================================================== */
 
 /* =====================================================
    DASHBOARD LAYOUT
