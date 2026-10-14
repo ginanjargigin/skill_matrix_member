@@ -3935,3 +3935,57 @@ button.danger:disabled {
 #page-dashboard .station-card.is-selected b {
   color: #1d4ed8;
 }
+
+
+/* Warna kartu berdasarkan status member */
+
+/* PERMANENT — biru */
+#page-members .member-card.member-status-permanent {
+  background: linear-gradient(
+    110deg,
+    #dbeafe 0%,
+    #eff6ff 45%,
+    #ffffff 100%
+  );
+  border-color: #93c5fd;
+}
+
+#page-members .member-card.member-status-permanent .member-info b {
+  color: #1d4ed8;
+}
+
+/* KONTRAK — hijau */
+#page-members .member-card.member-status-kontrak {
+  background: linear-gradient(
+    110deg,
+    #dcfce7 0%,
+    #f0fdf4 45%,
+    #ffffff 100%
+  );
+  border-color: #86efac;
+}
+
+#page-members .member-card.member-status-kontrak .member-info b {
+  color: #15803d;
+}
+
+/* MAGANG — merah muda */
+#page-members .member-card.member-status-magang {
+  background: linear-gradient(
+    110deg,
+    #fce7f3 0%,
+    #fdf2f8 45%,
+    #ffffff 100%
+  );
+  border-color: #f9a8d4;
+}
+
+#page-members .member-card.member-status-magang .member-info b {
+  color: #be185d;
+}
+
+/* Status lain — warna netral */
+#page-members .member-card.member-status-default {
+  background: #ffffff;
+  border-color: #d1d5db;
+}
