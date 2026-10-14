@@ -3922,3 +3922,16 @@ button.danger:disabled {
     padding: 10px;
   }
 }
+
+/* Dashboard: indikator pilihan line dan station */
+#page-dashboard .line-card.is-selected,
+#page-dashboard .station-card.is-selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.10);
+}
+
+#page-dashboard .line-card.is-selected b,
+#page-dashboard .station-card.is-selected b {
+  color: #1d4ed8;
+}
