@@ -1087,42 +1087,22 @@ function renderMembers() {
       Member tidak ditemukan.
     </div>
   `;
-
-  memberList.querySelectorAll("[data-edit-member]")
-    .forEach(button => {
-      button.addEventListener("click", () => {
-        MemberManager.openEditModal(
-          button.dataset.editMember
-        );
-      });
-    });
-}
-  if (SupabaseClient.configured()) {
+if (SupabaseClient.configured()) {
   rows.forEach(async member => {
     if (!member.photo_path) return;
 
     try {
-      const url = await DB.getMemberPhotoUrl(
-        member.photo_path
-      );
+      const url = await DB.getMemberPhotoUrl(member.photo_path);
 
-      const img = [...memberList.querySelectorAll(
-        "[data-member-photo]"
-      )].find(
-        element =>
+      const img = [...memberList.querySelectorAll("[data-member-photo]")]
+        .find(element =>
           element.dataset.memberPhoto === String(member.id)
-      );
+        );
 
       if (!img || !url) return;
 
-      img.onload = () => {
-        img.classList.add("loaded");
-      };
-
-      img.onerror = () => {
-        img.remove();
-      };
-
+      img.onload = () => img.classList.add("loaded");
+      img.onerror = () => img.remove();
       img.src = url;
     } catch (error) {
       console.error(
@@ -1133,6 +1113,16 @@ function renderMembers() {
     }
   });
 }
+  memberList.querySelectorAll("[data-edit-member]")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        MemberManager.openEditModal(
+          button.dataset.editMember
+        );
+      });
+    });
+}
+ 
 
   /* =====================================================
      OPEN SKILL EDITOR
