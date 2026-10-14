@@ -49,13 +49,6 @@
 
       <button
         type="button"
-        data-page="replacement"
-      >
-        ⇄ Replacement
-      </button>
-
-      <button
-        type="button"
         data-page="members"
       >
         👥 Member & Skill
@@ -118,121 +111,231 @@
     </header>
 
 
-    <!-- ===================================================
-         DASHBOARD
-         =================================================== -->
+   
+<!-- ===================================================
+     DASHBOARD — PUSAT PEKERJAAN
+     =================================================== -->
 
-    <section
-      class="page active"
-      id="page-dashboard"
-    >
+<section class="page active" id="page-dashboard">
 
-      <div class="grid">
+  <!-- STATISTIK UTAMA -->
+  <div class="grid dashboard-kpi-grid">
 
-        <div class="kpi">
-          <small>Member aktif</small>
-          <b id="kpiMembers">0</b>
-        </div>
+    <article class="kpi">
+      <div class="kpi-heading">
+        <span class="kpi-icon" aria-hidden="true">👥</span>
+        <small>Member Aktif</small>
+      </div>
+      <b id="kpiMembers">0</b>
+      <span class="kpi-caption">Member aktif terdaftar</span>
+    </article>
 
-        <div class="kpi">
-          <small>Line aktif</small>
-          <b id="kpiLines">0</b>
-        </div>
+    <article class="kpi">
+      <div class="kpi-heading">
+        <span class="kpi-icon" aria-hidden="true">▦</span>
+        <small>Line Aktif</small>
+      </div>
+      <b id="kpiLines">0</b>
+      <span class="kpi-caption">Line produksi aktif</span>
+    </article>
 
-        <div class="kpi">
-          <small>Total perubahan</small>
-          <b id="kpiChanges">0</b>
-        </div>
+    <article class="kpi">
+      <div class="kpi-heading">
+        <span class="kpi-icon" aria-hidden="true">⇄</span>
+        <small>Total Perubahan</small>
+      </div>
+      <b id="kpiChanges">0</b>
+      <span class="kpi-caption">Total riwayat replacement</span>
+    </article>
 
-        <div class="kpi">
-          <small>Perubahan hari ini</small>
-          <b id="kpiToday">0</b>
-        </div>
+    <article class="kpi">
+      <div class="kpi-heading">
+        <span class="kpi-icon" aria-hidden="true">◷</span>
+        <small>Perubahan Hari Ini</small>
+      </div>
+      <b id="kpiToday">0</b>
+      <span class="kpi-caption">Replacement hari ini</span>
+    </article>
 
+  </div>
+
+  <!-- AREA KERJA REPLACEMENT -->
+  <section class="card dashboard-workspace">
+
+    <div class="dashboard-workspace-heading">
+      <div>
+        <h2>Replacement Manpower</h2>
+        <p>
+          Pilih line, tentukan manpower yang tidak masuk,
+          lalu pilih kandidat pengganti.
+        </p>
+      </div>
+    </div>
+
+    <!-- PILIH LINE -->
+    <section class="dashboard-line-section">
+
+      <h3>Pilih Line</h3>
+
+      <div class="dashboard-line-search">
+        <span
+          class="dashboard-search-icon"
+          aria-hidden="true"
+        >⌕</span>
+
+        <input
+          type="search"
+          id="dashboardLineSearch"
+          class="search"
+          placeholder="Cari nama line..."
+          autocomplete="off"
+          aria-label="Cari nama line"
+        >
       </div>
 
+      <div id="lineList"></div>
 
-      <div class="layout">
+    </section>
 
-        <section class="card">
+    <!-- FORM REPLACEMENT -->
+    <section
+      class="dashboard-replacement-section"
+      id="dashboardReplacementSection"
+    >
 
-         
-          <h2>
-            Pilih Line
-          </h2>
-          
-          <p>
-            Pilih line untuk memulai proses replacement.
-          </p>
-          
-          <!-- Pencarian line pada Dashboard -->
-          <div class="dashboard-line-search">
-            <span class="dashboard-search-icon" aria-hidden="true">⌕</span>
-            <input
-              type="search"
-              id="dashboardLineSearch"
-              class="search"
-              placeholder="Cari nama line..."
-              autocomplete="off"
-              aria-label="Cari nama line di Dashboard"
-            >
+      <div class="dashboard-selected-line">
+        <div>
+          <span class="section-eyebrow">LINE TERPILIH</span>
+          <h3 id="selectedLine">
+            Pilih line untuk memulai replacement
+          </h3>
+        </div>
+      </div>
+
+      <div class="replacement-layout">
+
+        <!-- PILIH STATION -->
+        <section class="card replacement-station-card">
+
+          <div class="step-title">
+            <span class="step-number">1</span>
+
+            <div>
+              <h2>Pilih Station</h2>
+              <p>
+                Tentukan station yang membutuhkan pengganti.
+              </p>
+            </div>
           </div>
-          
-          <div id="lineList"></div>
 
+          <div id="stationList"></div>
 
         </section>
 
+        <!-- DATA REPLACEMENT -->
+        <section class="card replacement-form-card">
 
-        <section class="card">
-
-          <h2>
-            Alur Replacement
-          </h2>
-
-          <p>
-            Gunakan urutan berikut saat manpower tidak masuk.
-          </p>
-
-          <div class="workflow-vertical">
+          <div class="step-title">
+            <span class="step-number">2</span>
 
             <div>
-              <strong>1</strong>
-              <span>Pilih Line</span>
+              <h2>Data Replacement</h2>
+              <p>
+                Isi detail ketidakhadiran manpower.
+              </p>
             </div>
+          </div>
 
-            <div>
-              <strong>2</strong>
-              <span>Pilih Station</span>
-            </div>
+          <div class="form">
 
-            <div>
-              <strong>3</strong>
-              <span>Cari kandidat</span>
-            </div>
+            <label>
+              Tanggal
+              <input id="changeDate" type="date">
+            </label>
 
-            <div>
-              <strong>4</strong>
-              <span>Pilih manpower</span>
-            </div>
+            <label>
+              Shift <span class="required">*</span>
+              <select id="changeShift" required>
+                <option value="Non Shift">Non Shift</option>
+                <option value="Red">Red</option>
+                <option value="White">White</option>
+              </select>
+            </label>
 
-            <div>
-              <strong>5</strong>
-              <span>Konfirmasi</span>
-            </div>
+            <label>
+              Member Tidak Masuk
+              <select id="absentMember" required>
+                <option value="">
+                  Pilih member yang tidak masuk
+                </option>
+              </select>
+            </label>
 
-            <div>
-              <strong>6</strong>
-              <span>Masuk Riwayat</span>
-            </div>
+            <label>
+              Station
+              <select id="replaceStation"></select>
+            </label>
+
+            <label>
+              Alasan Tidak Masuk
+              <select id="changeReason" required>
+                <option value="">Pilih alasan</option>
+                <option value="Sakit">Sakit</option>
+                <option value="Izin">Izin</option>
+                <option value="Cuti">Cuti</option>
+                <option value="Keperluan Pribadi">
+                  Keperluan Pribadi
+                </option>
+                <option value="Terlambat">Terlambat</option>
+                <option value="Tanpa Keterangan">
+                  Tanpa Keterangan
+                </option>
+                <option value="Lainnya">Lainnya</option>
+              </select>
+            </label>
+
+            <label>
+              Catatan
+              <textarea
+                id="changeNotes"
+                rows="2"
+                placeholder="Catatan tambahan (opsional)"
+              ></textarea>
+            </label>
 
           </div>
+
+        </section>
+
+        <!-- KANDIDAT PENGGANTI -->
+        <section class="card candidate-section">
+
+          <div class="step-title">
+            <span class="step-number">3</span>
+
+            <div>
+              <h2>Kandidat Replacement</h2>
+              <p>
+                Periksa kecocokan skill dan shift kandidat.
+              </p>
+            </div>
+          </div>
+
+          <div
+            id="candidateList"
+            class="candidate-list"
+          ></div>
 
         </section>
 
       </div>
 
     </section>
+
+  </section>
+
+</section>
+
 
 
     <!-- ===================================================
