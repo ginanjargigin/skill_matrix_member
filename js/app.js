@@ -917,83 +917,170 @@ const candidates = s.members
      ===================================================== */
 
   
+
 function renderMembers() {
-  const query = $("memberSearch").value
+  const searchInput = $("memberSearch");
+  const memberList = $("memberList");
+
+  if (!searchInput || !memberList) return;
+
+  const query = searchInput.value
     .trim()
     .toLocaleLowerCase("id-ID");
 
   const rows = s.members.filter(member => {
-    const line = s.lines.find(
-      item => String(item.id) === String(member.home_line_id)
+    const homeLine = s.lines.find(
+      line =>
+        String(line.id) === String(member.home_line_id)
     );
 
     const searchable = [
       member.name,
       member.status,
       normalizeShift(member.shift),
-      line?.name
+      homeLine?.name
     ].join(" ").toLocaleLowerCase("id-ID");
 
     return !query || searchable.includes(query);
   });
 
-  $("memberList").innerHTML = rows.map(member => {
-    const line = s.lines.find(
-      item => String(item.id) === String(member.home_line_id)
-    );
+  const getStatusClass = status => {
+    const value = String(status || "")
+      .trim()
+      .toLowerCase();
 
-    const skillCount = s.skills.filter(skill =>
+    if (value.includes("magang")) return "magang";
+    if (value.includes("kontrak")) return "kontrak";
+
+    return "permanent";
+  };
+
+  memberList.innerHTML = rows.map(member => {
+    const statusClass = getStatusClass(member.status);
+
+    const initials = String(member.name || "?")
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map(word => word.charAt(0))
+      .join("")
+      .toUpperCase();
+
+    // Ambil station yang memiliki skill aktif.
+    const memberSkills = s.skills.filter(skill =>
       String(skill.member_id) === String(member.id) &&
       Number(skill.skill_level) > 0
-    ).length;
+    );
 
-    
-    const statusClass = String(member.status || "")
-      .trim()
-      .toUpperCase() === "PERMANENT"
-        ? "member-status-permanent"
-        : String(member.status || "")
-            .trim()
-            .toUpperCase() === "KONTRAK"
-          ? "member-status-kontrak"
-          : String(member.status || "")
-              .trim()
-              .toUpperCase() === "MAGANG"
-            ? "member-status-magang"
-            : "member-status-default";
+    const skillCount = memberSkills.length;
 
+    // Ubah station yang dikuasai menjadi daftar nama line unik.
+    const skilledLineIds = new Set(
+      memberSkills.map(skill => {
+        const station = s.stations.find(
+          item =>
+            String(item.id) === String(skill.station_id)
+        );
+
+        return station?.line_id == null
+          ? null
+          : String(station.line_id);
+      }).filter(Boolean)
+    );
+
+    const skilledLines = s.lines.filter(line =>
+      skilledLineIds.has(String(line.id))
+    );
+
+    const lineChips = skilledLines.length
+      ? skilledLines.map(line => `
+          <span class="member-line-chip">
+            ${esc(line.name)}
+          </span>
+        `).join("")
+      : `<span class="member-no-skill">Belum ada line dengan skill aktif</span>`;
 
     return `
-      <article class="member-card ${statusClass}">
-        <div class="member-info">
-          <b>${esc(member.name)}</b>
-          <small>Status: ${esc(member.status || "-")}</small>
-          <small>Shift: ${esc(normalizeShift(member.shift) || "-")}</small>
-          <small class="member-origin-line">
-            Line asal: ${esc(line?.name || "-")}
-          </small>
-          <small>Skill terisi: ${skillCount}</small>
+      <article class="member-card member-id-card ${statusClass}">
+
+        <div class="member-photo" aria-label="Avatar ${esc(member.name)}">
+          <span>${esc(initials)}</span>
         </div>
 
-        <div class="member-actions">
-          <button
-            class="secondary small"
-            data-edit-member="${esc(member.id)}"
-            type="button"
-          >
-            Edit Member + Skill
-          </button>
+        <div class="member-id-content">
+
+          <div class="member-id-heading">
+            <div class="member-id-name">
+              <h3>${esc(member.name || "-")}</h3>
+
+              <span class="member-status-badge ${statusClass}">
+                ${esc(member.status || "-")}
+              </span>
+            </div>
+
+            <div class="member-skill-count">
+              <span class="member-skill-label">Skill aktif</span>
+              <strong>${skillCount}</strong>
+            </div>
+          </div>
+
+          <div class="member-meta">
+            <span>
+              <span class="member-meta-label">SHIFT</span>
+              <strong>${esc(normalizeShift(member.shift) || "-")}</strong>
+            </span>
+
+            <span>
+              <span class="member-meta-label">LINE ASAL</span>
+              <strong>${esc(
+                s.lines.find(
+                  line =>
+                    String(line.id) ===
+                    String(member.home_line_id)
+                )?.name || "-"
+              )}</strong>
+            </span>
+          </div>
+
+          <div class="member-capabilities">
+            <span class="member-meta-label">
+              LINE YANG BISA DIKERJAKAN
+            </span>
+
+            <div class="member-line-list">
+              ${lineChips}
+            </div>
+          </div>
+
+          <div class="member-id-actions">
+            <button
+              class="secondary small"
+              data-edit-member="${esc(member.id)}"
+              type="button"
+            >
+              ✎ Edit Member + Skill
+            </button>
+          </div>
+
         </div>
       </article>
     `;
-  }).join("") || `<div class="empty">Member tidak ditemukan.</div>`;
+  }).join("") || `
+    <div class="empty">
+      Member tidak ditemukan.
+    </div>
+  `;
 
-  document.querySelectorAll("[data-edit-member]").forEach(button => {
-    button.addEventListener("click", () => {
-      MemberManager.openEditModal(button.dataset.editMember);
+  memberList.querySelectorAll("[data-edit-member]")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        MemberManager.openEditModal(
+          button.dataset.editMember
+        );
+      });
     });
-  });
 }
+
 
   /* =====================================================
      OPEN SKILL EDITOR
