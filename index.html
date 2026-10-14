@@ -293,20 +293,22 @@
             <label>
               Member Tidak Masuk
             
-              <input
-                id="absentMemberSearch"
-                type="search"
-                placeholder="Cari nama member..."
-                autocomplete="off"
-                aria-label="Cari nama member yang tidak masuk"
-              >
-            
-              <select id="absentMember" required>
-                <option value="">
-                  Pilih member yang tidak masuk
-                </option>
-              </select>
-            </label>
+           
+          <input
+            id="absentMemberSearch"
+            type="search"
+            list="absentMemberOptions"
+            placeholder="Ketik nama member..."
+            autocomplete="off"
+            aria-label="Cari nama member yang tidak masuk"
+          >
+          
+          <datalist id="absentMemberOptions"></datalist>
+          
+          <select id="absentMember" required>
+            <option value="">Pilih member yang tidak masuk</option>
+          </select>
+          </label>
           
 
             <label>
