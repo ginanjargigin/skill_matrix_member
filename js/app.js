@@ -1002,11 +1002,28 @@ function renderMembers() {
 
     return `
       <article class="member-card member-id-card ${statusClass}">
+      <div class="member-photo-thumb">
+  <span class="member-photo-initial">
+    ${esc(
+      String(member.name || "?")
+        .trim()
+        .charAt(0)
+        .toUpperCase()
+    )}
+  </span>
 
-        <div class="member-photo" aria-label="Avatar ${esc(member.name)}">
-          <span>${esc(initials)}</span>
-        </div>
+  ${
+    member.photo_path
+      ? `<img
+          data-member-photo="${esc(member.id)}"
+          alt="Foto ${esc(member.name)}"
+          loading="lazy"
+        >`
+      : ""
+  }
+</div>
 
+       
         <div class="member-id-content">
 
           <div class="member-id-heading">
@@ -1080,7 +1097,42 @@ function renderMembers() {
       });
     });
 }
+  if (SupabaseClient.configured()) {
+  rows.forEach(async member => {
+    if (!member.photo_path) return;
 
+    try {
+      const url = await DB.getMemberPhotoUrl(
+        member.photo_path
+      );
+
+      const img = [...memberList.querySelectorAll(
+        "[data-member-photo]"
+      )].find(
+        element =>
+          element.dataset.memberPhoto === String(member.id)
+      );
+
+      if (!img || !url) return;
+
+      img.onload = () => {
+        img.classList.add("loaded");
+      };
+
+      img.onerror = () => {
+        img.remove();
+      };
+
+      img.src = url;
+    } catch (error) {
+      console.error(
+        "Gagal memuat foto member:",
+        member.name,
+        error
+      );
+    }
+  });
+}
 
   /* =====================================================
      OPEN SKILL EDITOR
