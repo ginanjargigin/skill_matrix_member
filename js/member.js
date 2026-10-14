@@ -837,12 +837,14 @@ async function save(event) {
 
     $("memberForm")?.addEventListener("submit", save);
 
-    $("memberModal")?.addEventListener("click", event => {
-      if (event.target === $("memberModal")) {
-        closeModal();
-      }
-    });
+    // Klik area luar modal tidak menutup form.
+// Isian tetap tersimpan selama form masih terbuka.
+$("memberModal")?.addEventListener("click", event => {
+  if (event.target === $("memberModal")) {
+    event.stopPropagation();
   }
+});
+    }
 
   return {
     configure,
