@@ -436,7 +436,7 @@ function renderLines() {
       });
     });
   });
-
+}
 
   /* =====================================================
      REPLACEMENT
@@ -597,111 +597,7 @@ function renderReplacement() {
   renderCandidates();
 }
 
-    /* ===================================================
-       STATION LIST
-       =================================================== */
-
-    $("stationList").innerHTML =
-
-      stations
-        .map(station => `
-
-          <button
-            class="station-card"
-            data-station="${esc(station.id)}"
-            type="button"
-          >
-
-            <span>
-
-              <b>
-                ${esc(station.name)}
-              </b>
-
-              <small>
-                ${esc(
-                  station.position_name ||
-                  ""
-                )}
-              </small>
-
-            </span>
-
-            <strong>
-              ›
-            </strong>
-
-          </button>
-
-        `)
-        .join("")
-
-      ||
-
-      `<div class="empty">
-        Belum ada station.
-      </div>`;
-
-
-    /* ===================================================
-       STATION SELECT
-       =================================================== */
-
-    $("replaceStation").innerHTML =
-
-      stations
-        .map(station => `
-
-          <option
-            value="${esc(station.id)}"
-          >
-            ${esc(station.name)}
-
-            ${
-              station.position_name
-                ? " — " +
-                  esc(
-                    station.position_name
-                  )
-                : ""
-            }
-
-          </option>
-
-        `)
-        .join("");
-
-
-    /* ===================================================
-       STATION BUTTON
-       =================================================== */
-
-    document
-      .querySelectorAll(
-        "[data-station]"
-      )
-      .forEach(button => {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            $("replaceStation").value =
-              button.dataset.station;
-
-
-            renderCandidates();
-
-          }
-        );
-
-      });
-
-
-    renderCandidates();
-
-  }
-
+  
 /* =====================================================
    SKILL DISPLAY
    ===================================================== */
