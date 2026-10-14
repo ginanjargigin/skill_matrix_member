@@ -4325,3 +4325,353 @@ button.danger:disabled {
     font-size: 11px;
   }
 }
+
+/* =========================================
+   MEMBER & SKILL — ID CARD LAYOUT
+   ========================================= */
+
+#memberList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-items: stretch;
+}
+
+/* Kartu dasar */
+
+.member-card.member-id-card {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  align-items: start;
+  gap: 13px;
+  min-width: 0;
+  min-height: 190px;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid #dce5f0;
+  border-left: 4px solid #94a3b8;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 3px 12px rgba(25, 45, 80, 0.04);
+  transition: box-shadow .2s ease, transform .2s ease;
+}
+
+.member-card.member-id-card:hover {
+  box-shadow: 0 7px 20px rgba(25, 45, 80, 0.09);
+  transform: translateY(-1px);
+}
+
+/* Warna kartu berdasarkan status */
+
+.member-card.member-id-card.permanent {
+  background: linear-gradient(135deg, #eaf2ff, #ffffff 78%);
+  border-color: #b8d2ff;
+  border-left-color: #2563eb;
+}
+
+.member-card.member-id-card.kontrak {
+  background: linear-gradient(135deg, #e8fbf0, #ffffff 78%);
+  border-color: #a8ebc3;
+  border-left-color: #16a34a;
+}
+
+.member-card.member-id-card.magang {
+  background: linear-gradient(135deg, #fff0f7, #ffffff 78%);
+  border-color: #f5b6d4;
+  border-left-color: #db2777;
+}
+
+/* Area foto / avatar */
+
+.member-photo {
+  width: 84px;
+  height: 104px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid #d6e2f2;
+  border-radius: 11px;
+  background: linear-gradient(145deg, #dbeafe, #eff6ff);
+  color: #1d4ed8;
+}
+
+.member-photo span {
+  font-size: 27px;
+  font-weight: 900;
+  letter-spacing: .04em;
+}
+
+.member-id-card.kontrak .member-photo {
+  background: linear-gradient(145deg, #bbf7d0, #f0fdf4);
+  color: #15803d;
+}
+
+.member-id-card.magang .member-photo {
+  background: linear-gradient(145deg, #fbcfe8, #fdf2f8);
+  color: #be185d;
+}
+
+/* Informasi utama */
+
+.member-id-content {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.member-id-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.member-id-name {
+  min-width: 0;
+}
+
+.member-id-name h3 {
+  margin: 0 0 7px;
+  font-size: 15px;
+  line-height: 1.35;
+  font-weight: 850;
+  overflow-wrap: anywhere;
+}
+
+.member-id-card.permanent .member-id-name h3 {
+  color: #1d4ed8;
+}
+
+.member-id-card.kontrak .member-id-name h3 {
+  color: #15803d;
+}
+
+.member-id-card.magang .member-id-name h3 {
+  color: #be185d;
+}
+
+/* Label status */
+
+.member-status-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 850;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.member-status-badge.permanent {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.member-status-badge.kontrak {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.member-status-badge.magang {
+  background: #fce7f3;
+  color: #be185d;
+}
+
+/* Jumlah skill */
+
+.member-skill-count {
+  flex-shrink: 0;
+  width: 53px;
+  min-height: 53px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  border: 2px solid rgba(37, 99, 235, .13);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .72);
+  color: #1d4ed8;
+}
+
+.member-id-card.kontrak .member-skill-count {
+  border-color: rgba(22, 163, 74, .15);
+  color: #15803d;
+}
+
+.member-id-card.magang .member-skill-count {
+  border-color: rgba(219, 39, 119, .15);
+  color: #be185d;
+}
+
+.member-skill-label {
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.member-skill-count strong {
+  font-size: 21px;
+  line-height: 1;
+}
+
+/* Shift dan line asal */
+
+.member-meta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+.member-meta > span {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.member-meta-label {
+  display: block;
+  color: #64748b;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .045em;
+}
+
+.member-meta strong {
+  color: #26364d;
+  font-size: 11px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+/* Daftar line yang dikuasai */
+
+.member-capabilities {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.member-line-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.member-line-chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 5px 8px;
+  border: 1px solid #d6e4f6;
+  border-radius: 6px;
+  background: #e5efff;
+  color: #193858;
+  font-size: 10px;
+  font-weight: 750;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.member-id-card.kontrak .member-line-chip {
+  border-color: #b7e9cb;
+  background: #dcfce7;
+}
+
+.member-id-card.magang .member-line-chip {
+  border-color: #f5c2da;
+  background: #fce7f3;
+}
+
+.member-no-skill {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+/* Tombol aksi */
+
+.member-id-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 9px;
+  border-top: 1px solid rgba(148, 163, 184, .25);
+}
+
+.member-id-actions button {
+  min-height: 36px;
+  font-size: 10px;
+}
+
+/* Tablet */
+
+@media (max-width: 1200px) {
+  #memberList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 700px) {
+  #memberList {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .member-card.member-id-card {
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: 12px;
+    min-height: 0;
+    padding: 13px;
+  }
+
+  .member-photo {
+    width: 76px;
+    height: 96px;
+  }
+
+  .member-id-name h3 {
+    font-size: 15px;
+  }
+
+  .member-id-content {
+    gap: 10px;
+  }
+
+  .member-id-actions button {
+    min-height: 42px;
+  }
+}
+
+@media (max-width: 380px) {
+  .member-card.member-id-card {
+    grid-template-columns: 60px minmax(0, 1fr);
+    gap: 9px;
+    padding: 10px;
+  }
+
+  .member-photo {
+    width: 60px;
+    height: 78px;
+  }
+
+  .member-photo span {
+    font-size: 22px;
+  }
+
+  .member-skill-count {
+    width: 46px;
+    min-height: 46px;
+  }
+
+  .member-skill-count strong {
+    font-size: 18px;
+  }
+}
