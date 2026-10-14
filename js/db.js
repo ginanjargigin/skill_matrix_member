@@ -77,8 +77,10 @@ window.DB = (() => {
     return supabase;
   }
 
+ 
   /* =========================
-     LIST
+     LIST - PAGINATION
+     Membaca seluruh data Supabase
      ========================= */
   async function list(table, order = "created_at") {
     if (!SupabaseClient.configured()) {
@@ -86,18 +88,39 @@ window.DB = (() => {
     }
 
     const supabase = await requireSession();
+    const pageSize = 500;
+    const allData = [];
+    let from = 0;
 
-    const { data, error } = await supabase
-      .from(table)
-      .select("*")
-      .order(order, { ascending: true });
+    while (true) {
+      const to = from + pageSize - 1;
 
-    if (error) {
-      console.error("DB.list error:", table, error);
-      throw error;
+      const { data, error } = await supabase
+        .from(table)
+        .select("*")
+        .order(order, { ascending: true })
+        .range(from, to);
+
+      if (error) {
+        console.error("DB.list error:", table, error);
+        throw error;
+      }
+
+      const rows = data || [];
+      allData.push(...rows);
+
+      if (rows.length < pageSize) {
+        break;
+      }
+
+      from += pageSize;
     }
 
-    return data || [];
+    console.log(
+      `DB.list: ${table} berhasil membaca ${allData.length} record.`
+    );
+
+    return allData;
   }
 
   /* =========================
